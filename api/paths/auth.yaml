@@ -1,0 +1,21 @@
+telegramAuth:
+  post:
+    summary: Authenticate with Telegram WebApp
+    operationId: authTelegram
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              initData:
+                type: string
+                description: Telegram initData string
+    responses:
+      "200":
+        description: Auth success
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas.yaml#/User"

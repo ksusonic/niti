@@ -1,0 +1,53 @@
+Event:
+  type: object
+  properties:
+    id: { type: integer }
+    title: { type: string }
+    description: { type: string }
+    location: { type: string }
+    video_url: { type: string, format: uri }
+    starts_at: { type: string, format: date-time }
+    participants_count: { type: integer }
+    djs:
+      type: array
+      items:
+        $ref: "#/DJ"
+
+DJ:
+  type: object
+  properties:
+    id: { type: integer }
+    stage_name: { type: string }
+    avatar_url: { type: string, format: uri }
+    socials:
+      type: object
+      additionalProperties: true
+
+EventDetails:
+  allOf:
+    - $ref: "#/Event"
+    - type: object
+      properties:
+        participants:
+          type: array
+          items:
+            $ref: "#/User"
+
+User:
+  type: object
+  properties:
+    id: { type: integer }
+    telegram_id: { type: integer }
+    username: { type: string }
+    avatar_url: { type: string, format: uri }
+    is_dj: { type: boolean }
+
+UserProfile:
+  allOf:
+    - $ref: "#/User"
+    - type: object
+      properties:
+        subscriptions:
+          type: array
+          items:
+            $ref: "#/Event"

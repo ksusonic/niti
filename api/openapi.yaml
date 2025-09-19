@@ -1,0 +1,17 @@
+openapi: 3.0.3
+info:
+  title: DJ Community Events API
+  version: 1.0.0
+servers:
+  - url: https://api.djapp.com
+paths:
+  /events:
+    $ref: "./paths/events.yaml#/events"
+  /event/{id}:
+    $ref: "./paths/events.yaml#/eventById"
+  /subscribe/{id}:
+    $ref: "./paths/subscribe.yaml#/subscribe"
+  /me:
+    $ref: "./paths/profile.yaml#/me"
+  /auth/telegram:
+    $ref: "./paths/auth.yaml#/telegramAuth"

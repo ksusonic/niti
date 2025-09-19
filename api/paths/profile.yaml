@@ -1,0 +1,11 @@
+me:
+  get:
+    summary: Get current user profile and subscriptions
+    operationId: getProfile
+    responses:
+      "200":
+        description: User profile
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas.yaml#/UserProfile"

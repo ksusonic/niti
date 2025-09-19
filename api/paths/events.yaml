@@ -1,0 +1,31 @@
+events:
+  get:
+    summary: Get list of events
+    operationId: listEvents
+    responses:
+      "200":
+        description: List of events
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "../components/schemas.yaml#/Event"
+
+eventById:
+  get:
+    summary: Get event by ID
+    operationId: getEvent
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    responses:
+      "200":
+        description: Event details
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas.yaml#/EventDetails"
