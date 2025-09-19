@@ -4,14 +4,170 @@ info:
   version: 1.0.0
 servers:
   - url: https://api.djapp.com
+
 paths:
   /events:
-    $ref: "./paths/events.yaml#/events"
+    get:
+      summary: Get list of events
+      operationId: listEvents
+      responses:
+        "200":
+          description: List of events
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Event"
+
   /event/{id}:
-    $ref: "./paths/events.yaml#/eventById"
+    get:
+      summary: Get event by ID
+      operationId: getEvent
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Event details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventDetails"
+
   /subscribe/{id}:
-    $ref: "./paths/subscribe.yaml#/subscribe"
+    post:
+      summary: Subscribe to event
+      operationId: subscribeEvent
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Subscription success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  participants_count:
+                    type: integer
+
   /me:
-    $ref: "./paths/profile.yaml#/me"
+    get:
+      summary: Get user profile
+      operationId: getProfile
+      responses:
+        "200":
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+
   /auth/telegram:
-    $ref: "./paths/auth.yaml#/telegramAuth"
+    post:
+      summary: Authenticate with Telegram WebApp
+      operationId: authTelegram
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                initData:
+                  type: string
+                  description: Telegram initData string
+      responses:
+        "200":
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+components:
+  schemas:
+    Event:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        location:
+          type: string
+        video_url:
+          type: string
+          format: uri
+        starts_at:
+          type: string
+          format: date-time
+        participants_count:
+          type: integer
+        djs:
+          type: array
+          items:
+            $ref: "#/components/schemas/DJ"
+
+    DJ:
+      type: object
+      properties:
+        id:
+          type: integer
+        stage_name:
+          type: string
+        avatar_url:
+          type: string
+          format: uri
+        socials:
+          type: object
+          additionalProperties: true
+
+    EventDetails:
+      allOf:
+        - $ref: "#/components/schemas/Event"
+        - type: object
+          properties:
+            participants:
+              type: array
+              items:
+                $ref: "#/components/schemas/User"
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        telegram_id:
+          type: integer
+        username:
+          type: string
+        avatar_url:
+          type: string
+          format: uri
+        is_dj:
+          type: boolean
+
+    UserProfile:
+      allOf:
+        - $ref: "#/components/schemas/User"
+        - type: object
+          properties:
+            subscriptions:
+              type: array
+              items:
+                $ref: "#/components/schemas/Event"
