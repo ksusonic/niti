@@ -2,12 +2,122 @@ openapi: 3.0.3
 info:
   title: Niti Events API
   version: 1.0.0
+  description: Telegram mini App API for managing events and user subscriptions
 
 paths:
+  /auth/telegram-init-data:
+    post:
+      summary: Authenticate with Telegram WebApp
+      operationId: authTelegramInitData
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                init_data:
+                  type: string
+                  description: Telegram initData string
+      responses:
+        "200":
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - access_token
+                  - refresh_token
+                  - user
+                properties:
+                  access_token:
+                    type: string
+                    description: Short JWT token
+                  refresh_token:
+                    type: string
+                    description: JWT token for refreshing access token
+                  expires_in:
+                    type: integer
+                    description: Token expiration time in seconds
+                    example: 900
+                  user:
+                    $ref: "#/components/schemas/User"
+        "400":
+          description: Bad request - invalid initData
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized - invalid Telegram authentication
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /auth/refresh:
+    post:
+      summary: Refresh access token
+      operationId: authRefreshToken
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - refresh_token
+              properties:
+                refresh_token:
+                  type: string
+                  description: Refresh token
+      responses:
+        "200":
+          description: New access and refresh tokens
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - access_token
+                  - refresh_token
+                properties:
+                  access_token:
+                    type: string
+                    description: New short-lived JWT
+                  refresh_token:
+                    type: string
+                    description: Rotated refresh token
+                  expires_in:
+                    type: integer
+                    description: Access token lifetime in seconds
+                    example: 900
+        "400":
+          description: Bad request - invalid initData
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
   /events:
     get:
       summary: Get list of events
       operationId: listEvents
+      security:
+        - bearerAuth: []
       responses:
         "200":
           description: List of events
@@ -17,11 +127,25 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Event"
+        "401":
+          description: Unauthorized - authentication required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
   /subscribe/{id}:
     post:
       summary: Subscribe to event
       operationId: subscribeEvent
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -42,11 +166,31 @@ paths:
                     type: string
                   participants_count:
                     type: integer
+        "401":
+          description: Unauthorized - authentication required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Event not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
-  /me:
+  /profile:
     get:
       summary: Get user profile
       operationId: getProfile
+      security:
+        - bearerAuth: []
       responses:
         "200":
           description: User profile
@@ -54,30 +198,32 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UserProfile"
-
-  /auth/telegram:
-    post:
-      summary: Authenticate with Telegram WebApp
-      operationId: authTelegram
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                initData:
-                  type: string
-                  description: Telegram initData string
-      responses:
-        "200":
-          description: Authentication successful
+        "401":
+          description: Unauthorized - authentication required
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: User profile not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
     Event:
       type: object
@@ -108,8 +254,6 @@ components:
     DJ:
       type: object
       properties:
-        id:
-          type: integer
         stage_name:
           type: string
         avatar_url:
@@ -135,17 +279,26 @@ components:
     User:
       type: object
       properties:
-        id:
-          type: integer
         telegram_id:
           type: integer
+          format: int64
         username:
+          type: string
+        first_name:
+          type: string
+        last_name:
           type: string
         avatar_url:
           type: string
           format: uri
         is_dj:
           type: boolean
+      required:
+        - telegram_id
+        - username
+        - first_name
+        - avatar_url
+        - is_dj
 
     UserProfile:
       allOf:
@@ -156,3 +309,11 @@ components:
               type: array
               items:
                 $ref: "#/components/schemas/Event"
+
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message

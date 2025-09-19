@@ -2,13 +2,15 @@ name: OpenAPI Validator
 
 on:
   push:
+    branches:
+      - main
     paths:
       - "api/**"
-      - "backend/pgk/api/**"
+      - "backend/pgk/genapi/**"
   pull_request:
     paths:
       - "api/**"
-      - "backend/pgk/api/**"
+      - "backend/pgk/genapi/**"
 
 jobs:
   validate-openapi:
@@ -32,7 +34,7 @@ jobs:
         run: go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
 
       - name: Run go generate
-        working-directory: backend/pgk/api
+        working-directory: backend/pgk/genapi
         run: go generate
 
       - name: Check for changes
