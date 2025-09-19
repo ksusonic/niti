@@ -3,10 +3,10 @@ name: OpenAPI Validator
 on:
   push:
     paths:
-      - 'api/**'
+      - "api/**"
   pull_request:
     paths:
-      - 'api/**'
+      - "api/**"
 
 jobs:
   validate-openapi:
@@ -19,4 +19,4 @@ jobs:
       - name: OpenAPI Validator
         uses: thiyagu06/openapi-validator-action@v1
         with:
-          openapi-file: 'api/**/*.yaml'
+          filepath: "api/openapi.yaml"
