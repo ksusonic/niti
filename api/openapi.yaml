@@ -2,8 +2,31 @@ openapi: 3.0.3
 info:
   title: Niti Events API
   version: 1.0.0
+  description: Telegram mini App API for managing events and user subscriptions
 
 paths:
+  /auth/telegram:
+    post:
+      summary: Authenticate with Telegram WebApp
+      operationId: authTelegram
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                initData:
+                  type: string
+                  description: Telegram initData string
+      responses:
+        "200":
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
   /events:
     get:
       summary: Get list of events
@@ -43,7 +66,7 @@ paths:
                   participants_count:
                     type: integer
 
-  /me:
+  /profile:
     get:
       summary: Get user profile
       operationId: getProfile
@@ -54,28 +77,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UserProfile"
-
-  /auth/telegram:
-    post:
-      summary: Authenticate with Telegram WebApp
-      operationId: authTelegram
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                initData:
-                  type: string
-                  description: Telegram initData string
-      responses:
-        "200":
-          description: Authentication successful
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/User"
 
 components:
   schemas:

@@ -80,7 +80,7 @@ type ServerInterface interface {
 	// (GET /events)
 	ListEvents(w http.ResponseWriter, r *http.Request)
 	// Get user profile
-	// (GET /me)
+	// (GET /profile)
 	GetProfile(w http.ResponseWriter, r *http.Request)
 	// Subscribe to event
 	// (POST /subscribe/{id})
@@ -104,7 +104,7 @@ func (_ Unimplemented) ListEvents(w http.ResponseWriter, r *http.Request) {
 }
 
 // Get user profile
-// (GET /me)
+// (GET /profile)
 func (_ Unimplemented) GetProfile(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
@@ -311,7 +311,7 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/events", wrapper.ListEvents)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/me", wrapper.GetProfile)
+		r.Get(options.BaseURL+"/profile", wrapper.GetProfile)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/subscribe/{id}", wrapper.SubscribeEvent)
@@ -399,7 +399,7 @@ type StrictServerInterface interface {
 	// (GET /events)
 	ListEvents(ctx context.Context, request ListEventsRequestObject) (ListEventsResponseObject, error)
 	// Get user profile
-	// (GET /me)
+	// (GET /profile)
 	GetProfile(ctx context.Context, request GetProfileRequestObject) (GetProfileResponseObject, error)
 	// Subscribe to event
 	// (POST /subscribe/{id})
