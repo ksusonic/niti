@@ -1,0 +1,158 @@
+openapi: 3.0.3
+info:
+  title: Niti Events API
+  version: 1.0.0
+
+paths:
+  /events:
+    get:
+      summary: Get list of events
+      operationId: listEvents
+      responses:
+        "200":
+          description: List of events
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Event"
+
+  /subscribe/{id}:
+    post:
+      summary: Subscribe to event
+      operationId: subscribeEvent
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Subscription success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  participants_count:
+                    type: integer
+
+  /me:
+    get:
+      summary: Get user profile
+      operationId: getProfile
+      responses:
+        "200":
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+
+  /auth/telegram:
+    post:
+      summary: Authenticate with Telegram WebApp
+      operationId: authTelegram
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                initData:
+                  type: string
+                  description: Telegram initData string
+      responses:
+        "200":
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+components:
+  schemas:
+    Event:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        location:
+          type: string
+        video_url:
+          type: string
+          format: uri
+        starts_at:
+          type: string
+          format: date-time
+        participants_count:
+          type: integer
+        is_subscribed:
+          type: boolean
+        djs:
+          type: array
+          items:
+            $ref: "#/components/schemas/DJ"
+
+    DJ:
+      type: object
+      properties:
+        id:
+          type: integer
+        stage_name:
+          type: string
+        avatar_url:
+          type: string
+          format: uri
+        socials:
+          type: array
+          items:
+            $ref: "#/components/schemas/Social"
+
+    Social:
+      type: object
+      properties:
+        name:
+          type: string
+        url:
+          type: string
+          format: uri
+        icon:
+          type: string
+          format: uri
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        telegram_id:
+          type: integer
+        username:
+          type: string
+        avatar_url:
+          type: string
+          format: uri
+        is_dj:
+          type: boolean
+
+    UserProfile:
+      allOf:
+        - $ref: "#/components/schemas/User"
+        - type: object
+          properties:
+            subscriptions:
+              type: array
+              items:
+                $ref: "#/components/schemas/Event"
