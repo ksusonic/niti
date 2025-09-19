@@ -9,7 +9,7 @@ import (
 )
 
 func (s *Server) AuthTelegramInitData(ctx context.Context, request genapi.AuthTelegramInitDataRequestObject) (genapi.AuthTelegramInitDataResponseObject, error) {
-	if !validateRequest(request) {
+	if request.Body == nil || request.Body.InitData == nil || *request.Body.InitData == "" {
 		return genapi.AuthTelegramInitData400JSONResponse{Message: "invalid request"}, nil
 	}
 
@@ -25,8 +25,7 @@ func (s *Server) AuthTelegramInitData(ctx context.Context, request genapi.AuthTe
 		return nil, err
 	}
 
-	// generate access and refresh tokens
-	// accessToken, refreshToken := s.auth.GenerateTokens(initData)
+	// TODO: database
 
 	return genapi.AuthTelegramInitData200JSONResponse{
 		AccessToken:  tokens.AccessToken,
@@ -40,8 +39,4 @@ func (s *Server) AuthTelegramInitData(ctx context.Context, request genapi.AuthTe
 			IsDj:       false, // TODO
 		},
 	}, nil
-}
-
-func validateRequest(request genapi.AuthTelegramInitDataRequestObject) bool {
-	return request.Body != nil && request.Body.InitData != nil && *request.Body.InitData != ""
 }

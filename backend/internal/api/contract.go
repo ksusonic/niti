@@ -1,3 +1,5 @@
+//go:generate go tool mockgen -destination=./mocks/mock_auth.go -package=mocks -source=contract.go
+
 package api
 
 import (
