@@ -28,6 +28,7 @@ type Event struct {
 	Description       *string    `json:"description,omitempty"`
 	Djs               *[]DJ      `json:"djs,omitempty"`
 	Id                *int       `json:"id,omitempty"`
+	IsSubscribed      *bool      `json:"is_subscribed,omitempty"`
 	Location          *string    `json:"location,omitempty"`
 	ParticipantsCount *int       `json:"participants_count,omitempty"`
 	StartsAt          *time.Time `json:"starts_at,omitempty"`

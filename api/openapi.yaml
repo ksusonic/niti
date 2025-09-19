@@ -98,6 +98,8 @@ components:
           format: date-time
         participants_count:
           type: integer
+        is_subscribed:
+          type: boolean
         djs:
           type: array
           items:
