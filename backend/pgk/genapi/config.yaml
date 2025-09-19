@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=../../../configuration-schema.json
-package: api
+package: genapi
 output: generated.go
 generate:
   models: true
-  chi-server: true
+  gin-server: true
   strict-server: true
 output-options:
   skip-prune: true
