@@ -46,7 +46,7 @@ func LoadConfig() (*Config, error) {
 	}
 
 	// Load server port (default: 8080)
-	config.ServerPort = os.Getenv("SERVER_PORT")
+	config.ServerPort = os.Getenv("PORT")
 	if config.ServerPort == "" {
 		config.ServerPort = "8080"
 	}
