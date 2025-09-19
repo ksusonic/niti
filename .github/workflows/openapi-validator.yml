@@ -1,0 +1,22 @@
+name: OpenAPI Validator
+
+on:
+  push:
+    paths:
+      - 'api/**'
+  pull_request:
+    paths:
+      - 'api/**'
+
+jobs:
+  validate-openapi:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: OpenAPI Validator
+        uses: thiyagu06/openapi-validator-action@v1
+        with:
+          openapi-file: 'api/**/*.yaml'
