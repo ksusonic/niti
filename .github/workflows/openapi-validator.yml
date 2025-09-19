@@ -4,9 +4,11 @@ on:
   push:
     paths:
       - "api/**"
+      - "backend/pgk/api/**"
   pull_request:
     paths:
       - "api/**"
+      - "backend/pgk/api/**"
 
 jobs:
   validate-openapi:
@@ -20,3 +22,22 @@ jobs:
         uses: thiyagu06/openapi-validator-action@v1
         with:
           filepath: "api/openapi.yaml"
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version-file: "backend/go.mod"
+
+      - name: Install oapi-codegen
+        run: go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
+
+      - name: Run go generate
+        working-directory: backend/pgk/api
+        run: go generate
+
+      - name: Check for changes
+        run: |
+          if ! git diff --exit-code; then
+            echo "Generated code is not up to date. Please run 'go generate' in backend/pgk/api and commit the changes."
+            exit 1
+          fi
