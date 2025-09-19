@@ -17,10 +17,10 @@ import (
 
 // DJ defines model for DJ.
 type DJ struct {
-	AvatarUrl *string                 `json:"avatar_url,omitempty"`
-	Id        *int                    `json:"id,omitempty"`
-	Socials   *map[string]interface{} `json:"socials,omitempty"`
-	StageName *string                 `json:"stage_name,omitempty"`
+	AvatarUrl *string   `json:"avatar_url,omitempty"`
+	Id        *int      `json:"id,omitempty"`
+	Socials   *[]Social `json:"socials,omitempty"`
+	StageName *string   `json:"stage_name,omitempty"`
 }
 
 // Event defines model for Event.
@@ -35,17 +35,11 @@ type Event struct {
 	VideoUrl          *string    `json:"video_url,omitempty"`
 }
 
-// EventDetails defines model for EventDetails.
-type EventDetails struct {
-	Description       *string    `json:"description,omitempty"`
-	Djs               *[]DJ      `json:"djs,omitempty"`
-	Id                *int       `json:"id,omitempty"`
-	Location          *string    `json:"location,omitempty"`
-	Participants      *[]User    `json:"participants,omitempty"`
-	ParticipantsCount *int       `json:"participants_count,omitempty"`
-	StartsAt          *time.Time `json:"starts_at,omitempty"`
-	Title             *string    `json:"title,omitempty"`
-	VideoUrl          *string    `json:"video_url,omitempty"`
+// Social defines model for Social.
+type Social struct {
+	Icon *string `json:"icon,omitempty"`
+	Name *string `json:"name,omitempty"`
+	Url  *string `json:"url,omitempty"`
 }
 
 // User defines model for User.
@@ -81,9 +75,6 @@ type ServerInterface interface {
 	// Authenticate with Telegram WebApp
 	// (POST /auth/telegram)
 	AuthTelegram(w http.ResponseWriter, r *http.Request)
-	// Get event by ID
-	// (GET /event/{id})
-	GetEvent(w http.ResponseWriter, r *http.Request, id int)
 	// Get list of events
 	// (GET /events)
 	ListEvents(w http.ResponseWriter, r *http.Request)
@@ -102,12 +93,6 @@ type Unimplemented struct{}
 // Authenticate with Telegram WebApp
 // (POST /auth/telegram)
 func (_ Unimplemented) AuthTelegram(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// Get event by ID
-// (GET /event/{id})
-func (_ Unimplemented) GetEvent(w http.ResponseWriter, r *http.Request, id int) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -143,31 +128,6 @@ func (siw *ServerInterfaceWrapper) AuthTelegram(w http.ResponseWriter, r *http.R
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.AuthTelegram(w, r)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// GetEvent operation middleware
-func (siw *ServerInterfaceWrapper) GetEvent(w http.ResponseWriter, r *http.Request) {
-
-	var err error
-
-	// ------------- Path parameter "id" -------------
-	var id int
-
-	err = runtime.BindStyledParameterWithOptions("simple", "id", chi.URLParam(r, "id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
-		return
-	}
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetEvent(w, r, id)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -347,9 +307,6 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Post(options.BaseURL+"/auth/telegram", wrapper.AuthTelegram)
 	})
 	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/event/{id}", wrapper.GetEvent)
-	})
-	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/events", wrapper.ListEvents)
 	})
 	r.Group(func(r chi.Router) {
@@ -373,23 +330,6 @@ type AuthTelegramResponseObject interface {
 type AuthTelegram200JSONResponse User
 
 func (response AuthTelegram200JSONResponse) VisitAuthTelegramResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(200)
-
-	return json.NewEncoder(w).Encode(response)
-}
-
-type GetEventRequestObject struct {
-	Id int `json:"id"`
-}
-
-type GetEventResponseObject interface {
-	VisitGetEventResponse(w http.ResponseWriter) error
-}
-
-type GetEvent200JSONResponse EventDetails
-
-func (response GetEvent200JSONResponse) VisitGetEventResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
@@ -454,9 +394,6 @@ type StrictServerInterface interface {
 	// Authenticate with Telegram WebApp
 	// (POST /auth/telegram)
 	AuthTelegram(ctx context.Context, request AuthTelegramRequestObject) (AuthTelegramResponseObject, error)
-	// Get event by ID
-	// (GET /event/{id})
-	GetEvent(ctx context.Context, request GetEventRequestObject) (GetEventResponseObject, error)
 	// Get list of events
 	// (GET /events)
 	ListEvents(ctx context.Context, request ListEventsRequestObject) (ListEventsResponseObject, error)
@@ -521,32 +458,6 @@ func (sh *strictHandler) AuthTelegram(w http.ResponseWriter, r *http.Request) {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(AuthTelegramResponseObject); ok {
 		if err := validResponse.VisitAuthTelegramResponse(w); err != nil {
-			sh.options.ResponseErrorHandlerFunc(w, r, err)
-		}
-	} else if response != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
-	}
-}
-
-// GetEvent operation middleware
-func (sh *strictHandler) GetEvent(w http.ResponseWriter, r *http.Request, id int) {
-	var request GetEventRequestObject
-
-	request.Id = id
-
-	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.GetEvent(ctx, request.(GetEventRequestObject))
-	}
-	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetEvent")
-	}
-
-	response, err := handler(r.Context(), w, r, request)
-
-	if err != nil {
-		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(GetEventResponseObject); ok {
-		if err := validResponse.VisitGetEventResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
