@@ -1,9 +1,7 @@
 openapi: 3.0.3
 info:
-  title: DJ Community Events API
+  title: Niti Events API
   version: 1.0.0
-servers:
-  - url: https://api.djapp.com
 
 paths:
   /events:
@@ -19,24 +17,6 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Event"
-
-  /event/{id}:
-    get:
-      summary: Get event by ID
-      operationId: getEvent
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        "200":
-          description: Event details
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/EventDetails"
 
   /subscribe/{id}:
     post:
@@ -134,18 +114,21 @@ components:
           type: string
           format: uri
         socials:
-          type: object
-          additionalProperties: true
+          type: array
+          items:
+            $ref: "#/components/schemas/Social"
 
-    EventDetails:
-      allOf:
-        - $ref: "#/components/schemas/Event"
-        - type: object
-          properties:
-            participants:
-              type: array
-              items:
-                $ref: "#/components/schemas/User"
+    Social:
+      type: object
+      properties:
+        name:
+          type: string
+        url:
+          type: string
+          format: uri
+        icon:
+          type: string
+          format: uri
 
     User:
       type: object
