@@ -2,6 +2,8 @@ name: OpenAPI Validator
 
 on:
   push:
+    branches:
+      - main
     paths:
       - "api/**"
       - "backend/pgk/genapi/**"
