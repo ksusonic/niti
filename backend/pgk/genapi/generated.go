@@ -84,6 +84,15 @@ type AuthTelegramInitDataJSONBody struct {
 	InitData *string `json:"init_data,omitempty"`
 }
 
+// ListEventsParams defines parameters for ListEvents.
+type ListEventsParams struct {
+	// Limit Maximum number of events to return
+	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Offset Number of events to skip before starting to collect the result set
+	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+}
+
 // AuthRefreshTokenJSONRequestBody defines body for AuthRefreshToken for application/json ContentType.
 type AuthRefreshTokenJSONRequestBody AuthRefreshTokenJSONBody
 
@@ -92,19 +101,22 @@ type AuthTelegramInitDataJSONRequestBody AuthTelegramInitDataJSONBody
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
-	// Refresh access token
+
 	// (POST /auth/refresh)
 	AuthRefreshToken(c *gin.Context)
-	// Authenticate with Telegram WebApp
+
 	// (POST /auth/telegram-init-data)
 	AuthTelegramInitData(c *gin.Context)
-	// Get list of events
+
 	// (GET /events)
-	ListEvents(c *gin.Context)
-	// Get user profile
+	ListEvents(c *gin.Context, params ListEventsParams)
+
+	// (GET /health)
+	Healthcheck(c *gin.Context)
+
 	// (GET /profile)
 	GetProfile(c *gin.Context)
-	// Subscribe to event
+
 	// (POST /subscribe/{id})
 	SubscribeEvent(c *gin.Context, id int)
 }
@@ -147,7 +159,28 @@ func (siw *ServerInterfaceWrapper) AuthTelegramInitData(c *gin.Context) {
 // ListEvents operation middleware
 func (siw *ServerInterfaceWrapper) ListEvents(c *gin.Context) {
 
+	var err error
+
 	c.Set(BearerAuthScopes, []string{})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListEventsParams
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "limit", c.Request.URL.Query(), &params.Limit)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter limit: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	// ------------- Optional query parameter "offset" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "offset", c.Request.URL.Query(), &params.Offset)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter offset: %w", err), http.StatusBadRequest)
+		return
+	}
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
@@ -156,7 +189,20 @@ func (siw *ServerInterfaceWrapper) ListEvents(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.ListEvents(c)
+	siw.Handler.ListEvents(c, params)
+}
+
+// Healthcheck operation middleware
+func (siw *ServerInterfaceWrapper) Healthcheck(c *gin.Context) {
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		middleware(c)
+		if c.IsAborted() {
+			return
+		}
+	}
+
+	siw.Handler.Healthcheck(c)
 }
 
 // GetProfile operation middleware
@@ -230,6 +276,7 @@ func RegisterHandlersWithOptions(router gin.IRouter, si ServerInterface, options
 	router.POST(options.BaseURL+"/auth/refresh", wrapper.AuthRefreshToken)
 	router.POST(options.BaseURL+"/auth/telegram-init-data", wrapper.AuthTelegramInitData)
 	router.GET(options.BaseURL+"/events", wrapper.ListEvents)
+	router.GET(options.BaseURL+"/health", wrapper.Healthcheck)
 	router.GET(options.BaseURL+"/profile", wrapper.GetProfile)
 	router.POST(options.BaseURL+"/subscribe/:id", wrapper.SubscribeEvent)
 }
@@ -333,6 +380,7 @@ func (response AuthTelegramInitData500JSONResponse) VisitAuthTelegramInitDataRes
 }
 
 type ListEventsRequestObject struct {
+	Params ListEventsParams
 }
 
 type ListEventsResponseObject interface {
@@ -362,6 +410,24 @@ type ListEvents500JSONResponse Error
 func (response ListEvents500JSONResponse) VisitListEventsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(500)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type HealthcheckRequestObject struct {
+}
+
+type HealthcheckResponseObject interface {
+	VisitHealthcheckResponse(w http.ResponseWriter) error
+}
+
+type Healthcheck200JSONResponse struct {
+	Status string `json:"status"`
+}
+
+func (response Healthcheck200JSONResponse) VisitHealthcheckResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
@@ -459,19 +525,22 @@ func (response SubscribeEvent500JSONResponse) VisitSubscribeEventResponse(w http
 
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
-	// Refresh access token
+
 	// (POST /auth/refresh)
 	AuthRefreshToken(ctx context.Context, request AuthRefreshTokenRequestObject) (AuthRefreshTokenResponseObject, error)
-	// Authenticate with Telegram WebApp
+
 	// (POST /auth/telegram-init-data)
 	AuthTelegramInitData(ctx context.Context, request AuthTelegramInitDataRequestObject) (AuthTelegramInitDataResponseObject, error)
-	// Get list of events
+
 	// (GET /events)
 	ListEvents(ctx context.Context, request ListEventsRequestObject) (ListEventsResponseObject, error)
-	// Get user profile
+
+	// (GET /health)
+	Healthcheck(ctx context.Context, request HealthcheckRequestObject) (HealthcheckResponseObject, error)
+
 	// (GET /profile)
 	GetProfile(ctx context.Context, request GetProfileRequestObject) (GetProfileResponseObject, error)
-	// Subscribe to event
+
 	// (POST /subscribe/{id})
 	SubscribeEvent(ctx context.Context, request SubscribeEventRequestObject) (SubscribeEventResponseObject, error)
 }
@@ -555,8 +624,10 @@ func (sh *strictHandler) AuthTelegramInitData(ctx *gin.Context) {
 }
 
 // ListEvents operation middleware
-func (sh *strictHandler) ListEvents(ctx *gin.Context) {
+func (sh *strictHandler) ListEvents(ctx *gin.Context, params ListEventsParams) {
 	var request ListEventsRequestObject
+
+	request.Params = params
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
 		return sh.ssi.ListEvents(ctx, request.(ListEventsRequestObject))
@@ -572,6 +643,31 @@ func (sh *strictHandler) ListEvents(ctx *gin.Context) {
 		ctx.Status(http.StatusInternalServerError)
 	} else if validResponse, ok := response.(ListEventsResponseObject); ok {
 		if err := validResponse.VisitListEventsResponse(ctx.Writer); err != nil {
+			ctx.Error(err)
+		}
+	} else if response != nil {
+		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// Healthcheck operation middleware
+func (sh *strictHandler) Healthcheck(ctx *gin.Context) {
+	var request HealthcheckRequestObject
+
+	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.Healthcheck(ctx, request.(HealthcheckRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "Healthcheck")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		ctx.Error(err)
+		ctx.Status(http.StatusInternalServerError)
+	} else if validResponse, ok := response.(HealthcheckResponseObject); ok {
+		if err := validResponse.VisitHealthcheckResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {

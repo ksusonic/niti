@@ -6,6 +6,6 @@ import (
 	"github.com/ksusonic/niti/backend/pgk/genapi"
 )
 
-func (s *Server) AuthRefreshToken(ctx context.Context, request genapi.AuthRefreshTokenRequestObject) (genapi.AuthRefreshTokenResponseObject, error) {
+func (a *API) AuthRefreshToken(ctx context.Context, request genapi.AuthRefreshTokenRequestObject) (genapi.AuthRefreshTokenResponseObject, error) {
 	return genapi.AuthRefreshToken200JSONResponse{}, nil
 }

@@ -4,14 +4,13 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/ksusonic/niti/backend/pgk/config"
 	"go.uber.org/zap"
 )
 
 type Storage struct {
-	conn   *pgx.Conn
-	logger *zap.Logger
+	*pgxpool.Pool
 }
 
 func New(ctx context.Context, cfg config.PostgresConfig, logger *zap.Logger) (*Storage, error) {
@@ -19,29 +18,24 @@ func New(ctx context.Context, cfg config.PostgresConfig, logger *zap.Logger) (*S
 		return nil, fmt.Errorf("PostgreSQL DSN is not configured")
 	}
 
-	logger.Debug("connecting to postgres")
+	logger.Debug("connecting to postgres...")
 
-	conn, err := pgx.Connect(ctx, cfg.DSN)
+	pool, err := pgxpool.New(ctx, cfg.DSN)
 	if err != nil {
 		return nil, fmt.Errorf("connect to postgres: %w", err)
 	}
 
-	logger.Info("successfully connected to postgres")
-
-	if err := conn.Ping(ctx); err != nil {
+	if err := pool.Ping(ctx); err != nil {
 		return nil, fmt.Errorf("ping postgres: %w", err)
 	}
 
+	logger.Info("postgres health check ok")
+
 	return &Storage{
-		conn:   conn,
-		logger: logger,
+		Pool: pool,
 	}, nil
 }
 
-func (s *Storage) Close(ctx context.Context) error {
-	return s.conn.Close(ctx)
-}
-
-func (s *Storage) GetConn() *pgx.Conn {
-	return s.conn
+func (s *Storage) Close(_ context.Context) {
+	s.Pool.Close()
 }

@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ksusonic/niti/backend/internal/auth"
 	"github.com/ksusonic/niti/backend/internal/storage"
 	"github.com/ksusonic/niti/backend/pgk/config"
 	"github.com/ksusonic/niti/backend/pgk/logger"
@@ -16,10 +15,11 @@ type App struct {
 	log    *zap.Logger
 
 	// lazy-init
-	authService *auth.Service
-	storage     *storage.Storage
+	storage      *storage.Storage
+	repositories repositories
+	services     services
 
-	closer []func(context.Context) error
+	closer []func(context.Context)
 }
 
 func New() *App {
@@ -39,22 +39,11 @@ func New() *App {
 
 func (a *App) Close(ctx context.Context) {
 	for _, closeFunc := range a.closer {
-		err := closeFunc(ctx)
-		if err != nil {
-			a.log.Error("close", zap.Error(err))
-		}
+		closeFunc(ctx)
 	}
 }
 
-func (a *App) Config() *config.Config {
-	return a.config
-}
-
-func (a *App) Logger() *zap.Logger {
-	return a.log
-}
-
-func (a *App) Storage(ctx context.Context) *storage.Storage {
+func (a *App) postgresPool(ctx context.Context) *storage.Storage {
 	if a.storage == nil {
 		db, err := storage.New(ctx, a.config.Postgres, a.log)
 		if err != nil {
@@ -66,12 +55,4 @@ func (a *App) Storage(ctx context.Context) *storage.Storage {
 	}
 
 	return a.storage
-}
-
-func (a *App) AuthService() *auth.Service {
-	if a.authService == nil {
-		a.authService = auth.NewService(a.config.AuthConfig, a.log)
-	}
-
-	return a.authService
 }

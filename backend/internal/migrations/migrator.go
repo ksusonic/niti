@@ -2,6 +2,7 @@ package migrations
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/golang-migrate/migrate/v4"
@@ -58,7 +59,7 @@ func NewMigratorWithDB(db *sql.DB, cfg config.PostgresConfig) (*Migrator, error)
 // Up runs all up migrations
 func (m *Migrator) Up() error {
 	err := m.migrate.Up()
-	if err == migrate.ErrNoChange {
+	if errors.Is(err, migrate.ErrNoChange) {
 		return nil
 	}
 	return err

@@ -6,6 +6,6 @@ import (
 	"github.com/ksusonic/niti/backend/pgk/genapi"
 )
 
-func (s *Server) GetProfile(ctx context.Context, request genapi.GetProfileRequestObject) (genapi.GetProfileResponseObject, error) {
+func (a *API) GetProfile(ctx context.Context, request genapi.GetProfileRequestObject) (genapi.GetProfileResponseObject, error) {
 	return genapi.GetProfile200JSONResponse{}, nil
 }

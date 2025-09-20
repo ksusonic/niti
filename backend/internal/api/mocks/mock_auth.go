@@ -10,6 +10,7 @@
 package mocks
 
 import (
+	context "context"
 	reflect "reflect"
 
 	models "github.com/ksusonic/niti/backend/internal/models"
@@ -42,18 +43,18 @@ func (m *Mockauth) EXPECT() *MockauthMockRecorder {
 }
 
 // GenerateToken mocks base method.
-func (m *Mockauth) GenerateToken(arg0 int64) (models.JWTAuth, error) {
+func (m *Mockauth) GenerateToken(arg0 context.Context, arg1 int64) (models.JWTAuth, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GenerateToken", arg0)
+	ret := m.ctrl.Call(m, "GenerateToken", arg0, arg1)
 	ret0, _ := ret[0].(models.JWTAuth)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GenerateToken indicates an expected call of GenerateToken.
-func (mr *MockauthMockRecorder) GenerateToken(arg0 any) *gomock.Call {
+func (mr *MockauthMockRecorder) GenerateToken(arg0, arg1 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateToken", reflect.TypeOf((*Mockauth)(nil).GenerateToken), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateToken", reflect.TypeOf((*Mockauth)(nil).GenerateToken), arg0, arg1)
 }
 
 // ParseInitData mocks base method.

@@ -6,18 +6,18 @@ import (
 )
 
 // compile-time implementation check
-var _ genapi.StrictServerInterface = (*Server)(nil)
+var _ genapi.StrictServerInterface = (*API)(nil)
 
-type Server struct {
+type API struct {
 	auth   auth
 	logger *zap.Logger
 }
 
-func NewServer(
+func NewAPI(
 	auth auth,
 	logger *zap.Logger,
-) *Server {
-	return &Server{
+) *API {
+	return &API{
 		auth:   auth,
 		logger: logger,
 	}
