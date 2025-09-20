@@ -22,5 +22,9 @@ func (s *Service) ValidateAccessToken(tokenStr string) (int64, error) {
 		return 0, fmt.Errorf("invalid access token")
 	}
 
-	return claims.UserID, nil
+	if claims.TgUserID == 0 {
+		return 0, fmt.Errorf("TgUserID is zero")
+	}
+
+	return claims.TgUserID, nil
 }

@@ -15,7 +15,7 @@ func (s *Service) GenerateToken(ctx context.Context, telegramUserID int64) (mode
 
 	// access
 	ac := accessClaims{
-		UserID: telegramUserID,
+		TgUserID: telegramUserID,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(now.Add(s.cfg.AccessTTL)),
 			IssuedAt:  jwt.NewNumericDate(now),
@@ -31,8 +31,8 @@ func (s *Service) GenerateToken(ctx context.Context, telegramUserID int64) (mode
 	jti := uuid.New()
 	refreshExpiresAt := now.Add(s.cfg.RefreshTTL)
 	rc := refreshClaims{
-		UserID: telegramUserID,
-		JTI:    jti.String(),
+		TgUserID: telegramUserID,
+		JTI:      jti.String(),
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(refreshExpiresAt),
 			IssuedAt:  jwt.NewNumericDate(now),
