@@ -22,7 +22,7 @@ func (r *Repository) WithTx(ctx context.Context, fn func(ctx context.Context) er
 		if err != nil {
 			err2 := tx.Rollback(ctx)
 			if err2 != nil {
-				err = fmt.Errorf("rollback: %w, originial error: %w", err2, err)
+				err = fmt.Errorf("rollback: %w, original error: %w", err2, err)
 			}
 		} else {
 			err2 := tx.Commit(ctx)
