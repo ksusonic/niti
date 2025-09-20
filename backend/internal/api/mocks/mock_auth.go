@@ -154,3 +154,41 @@ func (mr *MockusersRepoMockRecorder) Get(ctx, telegramID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockusersRepo)(nil).Get), ctx, telegramID)
 }
+
+// MocksubscriptionsRepo is a mock of subscriptionsRepo interface.
+type MocksubscriptionsRepo struct {
+	ctrl     *gomock.Controller
+	recorder *MocksubscriptionsRepoMockRecorder
+	isgomock struct{}
+}
+
+// MocksubscriptionsRepoMockRecorder is the mock recorder for MocksubscriptionsRepo.
+type MocksubscriptionsRepoMockRecorder struct {
+	mock *MocksubscriptionsRepo
+}
+
+// NewMocksubscriptionsRepo creates a new mock instance.
+func NewMocksubscriptionsRepo(ctrl *gomock.Controller) *MocksubscriptionsRepo {
+	mock := &MocksubscriptionsRepo{ctrl: ctrl}
+	mock.recorder = &MocksubscriptionsRepoMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MocksubscriptionsRepo) EXPECT() *MocksubscriptionsRepoMockRecorder {
+	return m.recorder
+}
+
+// CreateSubscription mocks base method.
+func (m *MocksubscriptionsRepo) CreateSubscription(ctx context.Context, userID int64, eventID int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateSubscription", ctx, userID, eventID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateSubscription indicates an expected call of CreateSubscription.
+func (mr *MocksubscriptionsRepoMockRecorder) CreateSubscription(ctx, userID, eventID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateSubscription", reflect.TypeOf((*MocksubscriptionsRepo)(nil).CreateSubscription), ctx, userID, eventID)
+}

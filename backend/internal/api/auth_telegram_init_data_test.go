@@ -207,6 +207,7 @@ func TestAuthTelegramInitData(t *testing.T) {
 			srv := api.NewAPI(
 				tt.fields.auth(ctrl),
 				tt.fields.usersRepo(ctrl),
+				nil,
 				zap.NewNop(),
 			)
 

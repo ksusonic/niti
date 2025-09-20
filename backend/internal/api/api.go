@@ -9,19 +9,22 @@ import (
 var _ genapi.StrictServerInterface = (*API)(nil)
 
 type API struct {
-	auth      auth
-	usersRepo usersRepo
-	logger    *zap.Logger
+	auth              auth
+	usersRepo         usersRepo
+	subscriptionsRepo subscriptionsRepo
+	logger            *zap.Logger
 }
 
 func NewAPI(
 	auth auth,
 	usersRepo usersRepo,
+	subscriptionsRepo subscriptionsRepo,
 	logger *zap.Logger,
 ) *API {
 	return &API{
-		auth:      auth,
-		usersRepo: usersRepo,
-		logger:    logger,
+		auth:              auth,
+		usersRepo:         usersRepo,
+		subscriptionsRepo: subscriptionsRepo,
+		logger:            logger,
 	}
 }

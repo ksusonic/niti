@@ -1,4 +1,4 @@
-package repository
+package subscriptions
 
 import (
 	"github.com/jackc/pgx/v5/pgxpool"

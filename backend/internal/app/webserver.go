@@ -16,6 +16,7 @@ func (a *App) WebServer() int {
 	impl := api.NewAPI(
 		a.AuthService(),
 		a.UsersRepo(),
+		a.SubscriptionsRepo(),
 		a.log,
 	)
 

@@ -19,3 +19,7 @@ type usersRepo interface {
 	Get(ctx context.Context, telegramID int64) (*models.User, error)
 	Create(ctx context.Context, in *models.User) (*models.User, error)
 }
+
+type subscriptionsRepo interface {
+	CreateSubscription(ctx context.Context, userID int64, eventID int) error
+}
