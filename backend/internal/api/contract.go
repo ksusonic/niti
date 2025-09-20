@@ -11,5 +11,7 @@ import (
 
 type auth interface {
 	ParseInitData(string) (*initdata.InitData, error)
-	GenerateToken(context.Context, int64) (models.JWTAuth, error)
+	GenerateTokens(context.Context, int64) (models.JWTokens, error)
+	ValidateRefreshToken(ctx context.Context, refreshTokenStr string) (*models.RefreshToken, error)
+	RollTokens(ctx context.Context, refresh *models.RefreshToken) (*models.JWTokens, error)
 }

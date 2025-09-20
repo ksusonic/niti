@@ -50,6 +50,7 @@ paths:
                   - access_token
                   - refresh_token
                   - user
+                  - expires_in
                 properties:
                   access_token:
                     type: string
@@ -57,12 +58,12 @@ paths:
                   refresh_token:
                     type: string
                     description: JWT token for refreshing access token
+                  user:
+                    $ref: "#/components/schemas/User"
                   expires_in:
                     type: integer
                     description: Token expiration time in seconds
                     example: 900
-                  user:
-                    $ref: "#/components/schemas/User"
         "400":
           description: Bad request - invalid initData
           content:
@@ -110,6 +111,7 @@ paths:
                 required:
                   - access_token
                   - refresh_token
+                  - expires_in
                 properties:
                   access_token:
                     type: string

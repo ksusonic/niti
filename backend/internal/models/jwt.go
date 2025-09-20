@@ -6,10 +6,11 @@ import (
 	"github.com/google/uuid"
 )
 
-type JWTAuth struct {
+type JWTokens struct {
 	AccessToken  string
 	RefreshToken string
 	JTI          uuid.UUID
+	ExpiresIn    time.Duration
 }
 
 type RefreshToken struct {

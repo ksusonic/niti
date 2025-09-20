@@ -294,7 +294,7 @@ type AuthRefreshToken200JSONResponse struct {
 	AccessToken string `json:"access_token"`
 
 	// ExpiresIn Access token lifetime in seconds
-	ExpiresIn *int `json:"expires_in,omitempty"`
+	ExpiresIn int `json:"expires_in"`
 
 	// RefreshToken Rotated refresh token
 	RefreshToken string `json:"refresh_token"`
@@ -338,7 +338,7 @@ type AuthTelegramInitData200JSONResponse struct {
 	AccessToken string `json:"access_token"`
 
 	// ExpiresIn Token expiration time in seconds
-	ExpiresIn *int `json:"expires_in,omitempty"`
+	ExpiresIn int `json:"expires_in"`
 
 	// RefreshToken JWT token for refreshing access token
 	RefreshToken string `json:"refresh_token"`

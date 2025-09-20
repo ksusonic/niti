@@ -42,19 +42,19 @@ func (m *Mockauth) EXPECT() *MockauthMockRecorder {
 	return m.recorder
 }
 
-// GenerateToken mocks base method.
-func (m *Mockauth) GenerateToken(arg0 context.Context, arg1 int64) (models.JWTAuth, error) {
+// GenerateTokens mocks base method.
+func (m *Mockauth) GenerateTokens(arg0 context.Context, arg1 int64) (models.JWTokens, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GenerateToken", arg0, arg1)
-	ret0, _ := ret[0].(models.JWTAuth)
+	ret := m.ctrl.Call(m, "GenerateTokens", arg0, arg1)
+	ret0, _ := ret[0].(models.JWTokens)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GenerateToken indicates an expected call of GenerateToken.
-func (mr *MockauthMockRecorder) GenerateToken(arg0, arg1 any) *gomock.Call {
+// GenerateTokens indicates an expected call of GenerateTokens.
+func (mr *MockauthMockRecorder) GenerateTokens(arg0, arg1 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateToken", reflect.TypeOf((*Mockauth)(nil).GenerateToken), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateTokens", reflect.TypeOf((*Mockauth)(nil).GenerateTokens), arg0, arg1)
 }
 
 // ParseInitData mocks base method.
@@ -70,4 +70,34 @@ func (m *Mockauth) ParseInitData(arg0 string) (*initdata.InitData, error) {
 func (mr *MockauthMockRecorder) ParseInitData(arg0 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ParseInitData", reflect.TypeOf((*Mockauth)(nil).ParseInitData), arg0)
+}
+
+// RollTokens mocks base method.
+func (m *Mockauth) RollTokens(ctx context.Context, refresh *models.RefreshToken) (*models.JWTokens, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RollTokens", ctx, refresh)
+	ret0, _ := ret[0].(*models.JWTokens)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// RollTokens indicates an expected call of RollTokens.
+func (mr *MockauthMockRecorder) RollTokens(ctx, refresh any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RollTokens", reflect.TypeOf((*Mockauth)(nil).RollTokens), ctx, refresh)
+}
+
+// ValidateRefreshToken mocks base method.
+func (m *Mockauth) ValidateRefreshToken(ctx context.Context, refreshTokenStr string) (*models.RefreshToken, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ValidateRefreshToken", ctx, refreshTokenStr)
+	ret0, _ := ret[0].(*models.RefreshToken)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ValidateRefreshToken indicates an expected call of ValidateRefreshToken.
+func (mr *MockauthMockRecorder) ValidateRefreshToken(ctx, refreshTokenStr any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidateRefreshToken", reflect.TypeOf((*Mockauth)(nil).ValidateRefreshToken), ctx, refreshTokenStr)
 }

@@ -19,7 +19,7 @@ func (a *API) AuthTelegramInitData(ctx context.Context, request genapi.AuthTeleg
 		return genapi.AuthTelegramInitData400JSONResponse{Message: "invalid token"}, nil
 	}
 
-	tokens, err := a.auth.GenerateToken(ctx, initData.User.ID)
+	tokens, err := a.auth.GenerateTokens(ctx, initData.User.ID)
 	if err != nil {
 		a.logger.Error("generate token", zap.Error(err), zap.Int64("user_id", initData.User.ID))
 		return nil, err
