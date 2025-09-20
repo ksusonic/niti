@@ -3,7 +3,7 @@ package auth
 import (
 	"time"
 
-	"github.com/ksusonic/niti/backend/internal/models"
+	"github.com/ksusonic/niti/backend/pgk/config"
 	"go.uber.org/zap"
 )
 
@@ -17,12 +17,12 @@ type Service struct {
 	logger        *zap.Logger
 }
 
-func NewService(cfg *models.Config, logger *zap.Logger) *Service {
+func NewService(cfg config.AuthConfig, logger *zap.Logger) *Service {
 	return &Service{
 		token:         cfg.TelegramToken,
 		expiresIn:     cfg.TelegramExpiresIn,
-		accessSecret:  cfg.AccessSecret,
-		refreshSecret: cfg.RefreshSecret,
+		accessSecret:  []byte(cfg.AccessSecret),
+		refreshSecret: []byte(cfg.RefreshSecret),
 		accessTTL:     cfg.AccessTTL,
 		refreshTTL:    cfg.RefreshTTL,
 		logger:        logger,
