@@ -139,3 +139,18 @@ func (mr *MockusersRepoMockRecorder) Create(ctx, in any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockusersRepo)(nil).Create), ctx, in)
 }
+
+// Get mocks base method.
+func (m *MockusersRepo) Get(ctx context.Context, telegramID int64) (*models.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Get", ctx, telegramID)
+	ret0, _ := ret[0].(*models.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Get indicates an expected call of Get.
+func (mr *MockusersRepoMockRecorder) Get(ctx, telegramID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockusersRepo)(nil).Get), ctx, telegramID)
+}

@@ -34,7 +34,7 @@ func (r *Repository) Get(ctx context.Context, telegramID int64) (*models.User, e
 		&user.IsDJ,
 	)
 	if err == pgx.ErrNoRows {
-		return nil, nil
+		return nil, models.ErrNotFound
 	}
 	if err != nil {
 		return nil, err

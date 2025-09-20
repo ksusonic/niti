@@ -23,7 +23,7 @@ func (r *Repository) GetValid(ctx context.Context, jti uuid.UUID) (*models.Refre
 	var token models.RefreshToken
 	err := row.Scan(&token.JTI, &token.UserID, &token.ExpiresAt, &token.Revoked, &token.CreatedAt)
 	if err == pgx.ErrNoRows {
-		return nil, nil
+		return nil, models.ErrNotFound
 	}
 
 	if err != nil {

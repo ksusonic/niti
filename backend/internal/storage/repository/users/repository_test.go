@@ -55,8 +55,8 @@ func TestUsersRepository_CRUD(t *testing.T) {
 	// CREATE
 	user := &models.User{
 		TelegramID: telegramID,
-		Username:   &username,
-		FirstName:  &firstName,
+		Username:   username,
+		FirstName:  firstName,
 		LastName:   &lastName,
 		AvatarURL:  &avatarURL,
 		IsDJ:       isDJ,
@@ -65,8 +65,8 @@ func TestUsersRepository_CRUD(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, created)
 	require.Equal(t, telegramID, created.TelegramID)
-	require.Equal(t, username, utils.Deref(created.Username))
-	require.Equal(t, firstName, utils.Deref(created.FirstName))
+	require.Equal(t, username, created.Username)
+	require.Equal(t, firstName, created.FirstName)
 	require.Equal(t, lastName, utils.Deref(created.LastName))
 	require.Equal(t, avatarURL, utils.Deref(created.AvatarURL))
 	require.Equal(t, isDJ, created.IsDJ)
@@ -76,25 +76,25 @@ func TestUsersRepository_CRUD(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, got)
 	require.Equal(t, telegramID, got.TelegramID)
-	require.Equal(t, username, utils.Deref(got.Username))
-	require.Equal(t, firstName, utils.Deref(got.FirstName))
-	require.Equal(t, lastName, utils.Deref(got.LastName))
+	require.Equal(t, username, got.Username)
+	require.Equal(t, firstName, got.FirstName)
+	require.Equal(t, lastName, *got.LastName)
 	require.Equal(t, avatarURL, utils.Deref(got.AvatarURL))
 	require.Equal(t, isDJ, got.IsDJ)
 
 	// UPDATE (change username)
 	newUsername := "updateduser"
-	user.Username = &newUsername
+	user.Username = newUsername
 	updated, err := repo.Create(ctx, user)
 	require.NoError(t, err)
 	require.NotNil(t, updated)
-	require.Equal(t, newUsername, utils.Deref(updated.Username))
+	require.Equal(t, newUsername, updated.Username)
 
 	// GET after update
 	gotUpdated, err := repo.Get(ctx, telegramID)
 	require.NoError(t, err)
 	require.NotNil(t, gotUpdated)
-	require.Equal(t, newUsername, utils.Deref(gotUpdated.Username))
+	require.Equal(t, newUsername, gotUpdated.Username)
 
 	// DELETE
 	err = repo.Delete(ctx, telegramID)
@@ -102,6 +102,6 @@ func TestUsersRepository_CRUD(t *testing.T) {
 
 	// GET after delete (should be nil)
 	gotDeleted, err := repo.Get(ctx, telegramID)
-	require.NoError(t, err)
+	require.ErrorIs(t, err, models.ErrNotFound)
 	require.Nil(t, gotDeleted)
 }

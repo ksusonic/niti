@@ -76,7 +76,7 @@ func TestRefreshTokenRepository_CRUD(t *testing.T) {
 
 		// SELECT after revoke (should be nil)
 		revokedToken, err := repo.GetValid(ctx, jti)
-		require.NoError(t, err)
+		require.ErrorIs(t, err, models.ErrNotFound)
 		require.Nil(t, revokedToken)
 
 		// Simulate expiration for DELETE
