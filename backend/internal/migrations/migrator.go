@@ -94,7 +94,7 @@ func MigrateUp(cfg config.PostgresConfig) error {
 	if err != nil {
 		return err
 	}
-	defer migrator.Close()
+	defer func() { _ = migrator.Close() }()
 
 	return migrator.Up()
 }

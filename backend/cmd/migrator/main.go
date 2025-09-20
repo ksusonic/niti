@@ -35,7 +35,7 @@ func main() {
 		if err != nil {
 			log.Fatalf("Failed to create migrator: %v", err)
 		}
-		defer migrator.Close()
+		defer func() { _ = migrator.Close() }()
 
 		currentVersion, dirty, err := migrator.Version()
 		if err != nil {
