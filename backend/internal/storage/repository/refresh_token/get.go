@@ -8,7 +8,7 @@ import (
 	"github.com/ksusonic/niti/backend/internal/models"
 )
 
-func (r *RefreshTokenRepository) GetValid(ctx context.Context, jti uuid.UUID) (*models.RefreshToken, error) {
+func (r *Repository) GetValid(ctx context.Context, jti uuid.UUID) (*models.RefreshToken, error) {
 	row := r.QueryRow(
 		ctx,
 		`SELECT jti, user_id, expires_at, revoked, created_at

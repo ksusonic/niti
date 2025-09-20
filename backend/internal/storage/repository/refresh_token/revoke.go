@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func (r *RefreshTokenRepository) Revoke(ctx context.Context, jti uuid.UUID) error {
+func (r *Repository) Revoke(ctx context.Context, jti uuid.UUID) error {
 	_, err := r.Exec(
 		ctx,
 		`UPDATE

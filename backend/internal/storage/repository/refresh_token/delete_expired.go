@@ -2,7 +2,7 @@ package repository
 
 import "context"
 
-func (r *RefreshTokenRepository) DeleteExpired(ctx context.Context) (int64, error) {
+func (r *Repository) DeleteExpired(ctx context.Context) (int64, error) {
 	res, err := r.Exec(
 		ctx,
 		`DELETE FROM refresh_tokens

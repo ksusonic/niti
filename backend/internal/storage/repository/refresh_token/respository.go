@@ -5,10 +5,10 @@ import (
 	"github.com/ksusonic/niti/backend/internal/storage/repository/base"
 )
 
-type RefreshTokenRepository struct {
+type Repository struct {
 	*base.Repository
 }
 
-func NewRefreshTokenRepository(pool *pgxpool.Pool) *RefreshTokenRepository {
-	return &RefreshTokenRepository{Repository: base.NewBaseRepository(pool)}
+func New(pool *pgxpool.Pool) *Repository {
+	return &Repository{Repository: base.NewBaseRepository(pool)}
 }

@@ -82,7 +82,7 @@ func TestAuthTelegramInitData(t *testing.T) {
 						Return(&initdata.InitData{User: initdata.User{ID: 123}}, nil)
 
 					mock.EXPECT().
-						GenerateToken(int64(123)).
+						GenerateToken(ctx, int64(123)).
 						Return(models.JWTAuth{}, assert.AnError)
 
 					return mock

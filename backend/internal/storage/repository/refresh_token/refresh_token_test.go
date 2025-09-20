@@ -12,6 +12,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
+	"github.com/ksusonic/niti/backend/internal/models"
 	repository "github.com/ksusonic/niti/backend/internal/storage/repository/refresh_token"
 	"github.com/ksusonic/niti/backend/pgk/config"
 	"github.com/stretchr/testify/require"
@@ -43,7 +44,7 @@ func setupTestPool(t *testing.T) *pgxpool.Pool {
 func TestRefreshTokenRepository_CRUD(t *testing.T) {
 	pool := setupTestPool(t)
 
-	repo := repository.NewRefreshTokenRepository(pool)
+	repo := repository.New(pool)
 	ctx := context.Background()
 
 	jti := uuid.New()
@@ -52,26 +53,31 @@ func TestRefreshTokenRepository_CRUD(t *testing.T) {
 
 	err := repo.WithRollback(ctx, func(ctx context.Context) {
 		// INSERT
-		err := repo.Insert(ctx, jti, userID, expiresAt)
+		token := models.RefreshToken{
+			JTI:       jti,
+			UserID:    userID,
+			ExpiresAt: expiresAt,
+		}
+		err := repo.Insert(ctx, token)
 		require.NoError(t, err)
 
 		// SELECT valid
-		token, err := repo.GetValid(ctx, jti)
+		retrievedToken, err := repo.GetValid(ctx, jti)
 		require.NoError(t, err)
-		require.NotNil(t, token)
-		require.Equal(t, jti, token.JTI)
-		require.Equal(t, userID, token.UserID)
-		require.False(t, token.Revoked)
-		require.True(t, token.ExpiresAt.After(time.Now()))
+		require.NotNil(t, retrievedToken)
+		require.Equal(t, jti, retrievedToken.JTI)
+		require.Equal(t, userID, retrievedToken.UserID)
+		require.False(t, retrievedToken.Revoked)
+		require.True(t, retrievedToken.ExpiresAt.After(time.Now()))
 
 		// UPDATE (revoke)
 		err = repo.Revoke(ctx, jti)
 		require.NoError(t, err)
 
 		// SELECT after revoke (should be nil)
-		token, err = repo.GetValid(ctx, jti)
+		revokedToken, err := repo.GetValid(ctx, jti)
 		require.NoError(t, err)
-		require.Nil(t, token)
+		require.Nil(t, revokedToken)
 
 		// Simulate expiration for DELETE
 		_, err = repo.Exec(ctx, `UPDATE refresh_tokens SET expires_at = now() - interval '1 minute' WHERE jti = $1`, jti)

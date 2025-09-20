@@ -11,7 +11,7 @@ func (s *Service) ParseInitData(data string) (*initdata.InitData, error) {
 		return nil, fmt.Errorf("empty initData")
 	}
 
-	if err := initdata.Validate(data, s.token, s.expiresIn); err != nil {
+	if err := initdata.Validate(data, s.cfg.TelegramToken, s.cfg.TelegramExpiresIn); err != nil {
 		return nil, fmt.Errorf("validate token: %w", err)
 	}
 
