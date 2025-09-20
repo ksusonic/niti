@@ -18,6 +18,16 @@ type Service struct {
 }
 
 func NewService(cfg config.AuthConfig, logger *zap.Logger) *Service {
+	if cfg.AccessSecret == "" {
+		logger.Fatal("ACCESS_SECRET required")
+	}
+	if cfg.RefreshSecret == "" {
+		logger.Fatal("REFRESH_SECRET required")
+	}
+	if cfg.TelegramToken == "" {
+		logger.Fatal("TELEGRAM_TOKEN required")
+	}
+
 	return &Service{
 		token:         cfg.TelegramToken,
 		expiresIn:     cfg.TelegramExpiresIn,
