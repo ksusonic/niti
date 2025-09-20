@@ -25,7 +25,7 @@ func NewService(cfg config.AuthConfig, logger *zap.Logger) *Service {
 		logger.Fatal("REFRESH_SECRET required")
 	}
 	if cfg.TelegramToken == "" {
-		logger.Fatal("TELEGRAM_TOKEN required")
+		logger.Fatal("TELEGRAM_BOT_TOKEN required")
 	}
 
 	return &Service{

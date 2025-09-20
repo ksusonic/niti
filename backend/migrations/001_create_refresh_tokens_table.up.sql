@@ -1,8 +1,8 @@
 CREATE TABLE refresh_tokens (
-    jti         UUID PRIMARY KEY,              -- уникальный ID токена (JWT ID)
-    user_id     BIGINT NOT NULL,               -- ID пользователя
-    expires_at  TIMESTAMPTZ NOT NULL,          -- срок жизни токена
-    revoked     BOOLEAN NOT NULL DEFAULT false,-- отозван ли
+    jti         UUID PRIMARY KEY,
+    user_id     BIGINT NOT NULL,
+    expires_at  TIMESTAMPTZ NOT NULL,
+    revoked     BOOLEAN NOT NULL DEFAULT false,
     created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 

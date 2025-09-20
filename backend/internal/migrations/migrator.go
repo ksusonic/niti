@@ -27,11 +27,6 @@ func NewMigrator(cfg config.PostgresConfig) (*Migrator, error) {
 		migrationsPath = "migrations"
 	}
 
-	// Ensure the migrations path has the file:// prefix
-	if len(migrationsPath) < 7 || migrationsPath[0:7] != "file://" {
-		migrationsPath = "file://" + migrationsPath
-	}
-
 	m, err := migrate.New(migrationsPath, cfg.DSN)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create migrate instance: %w", err)
@@ -45,11 +40,6 @@ func NewMigratorWithDB(db *sql.DB, cfg config.PostgresConfig) (*Migrator, error)
 	migrationsPath := cfg.MigrationsPath
 	if migrationsPath == "" {
 		migrationsPath = "migrations"
-	}
-
-	// Ensure the migrations path has the file:// prefix
-	if len(migrationsPath) < 7 || migrationsPath[0:7] != "file://" {
-		migrationsPath = "file://" + migrationsPath
 	}
 
 	driver, err := pgx.WithInstance(db, &pgx.Config{})
