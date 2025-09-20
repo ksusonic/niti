@@ -1,12 +1,14 @@
 package app
 
 import (
+	"fmt"
 	"time"
 
 	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
 	"github.com/ksusonic/niti/backend/internal/api"
 	"github.com/ksusonic/niti/backend/pgk/genapi"
+	middleware "github.com/oapi-codegen/gin-middleware"
 	"go.uber.org/zap"
 )
 
@@ -32,6 +34,13 @@ func (a *App) WebServe() int {
 		a.Logger().Warn("Failed to set trusted proxies", zap.Error(err))
 	}
 
+	validator, err := middleware.OapiValidatorFromYamlFile("../api/openapi.yaml")
+	if err != nil {
+		a.Logger().Error("openapi validator middleware", zap.Error(err))
+		return 1
+	}
+	r.Use(validator)
+
 	// healthcheck endpoint
 	r.Handle("GET", "/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{"status": "ok"})
@@ -39,7 +48,7 @@ func (a *App) WebServe() int {
 
 	genapi.RegisterHandlers(r, h)
 
-	err := r.Run(":" + a.config.ServerPort)
+	err = r.Run(fmt.Sprintf(":%d", a.config.ServerPort))
 	if err != nil {
 		a.log.Error("web serve", zap.Error(err))
 		return 1

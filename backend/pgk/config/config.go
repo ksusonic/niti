@@ -9,7 +9,7 @@ import (
 
 type Config struct {
 	// Webserver
-	ServerPort     string   `env:"PORT" envDefault:"8080"`
+	ServerPort     int      `env:"PORT" envDefault:"8080"`
 	TrustedProxies []string `env:"TRUSTED_PROXIES" envDefault:"127.0.0.1"`
 
 	// Logger
