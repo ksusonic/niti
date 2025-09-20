@@ -2,6 +2,10 @@
 generate:
     cd backend && go mod tidy && go generate ./...
 
+# Lint backend code
+lint:
+    cd backend && golangci-lint run --fix
+
 # Run the backend server
 back-run:
     cd backend && go run ./cmd/server/main.go
