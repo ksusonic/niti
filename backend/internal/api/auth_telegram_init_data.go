@@ -3,9 +3,10 @@ package api
 import (
 	"context"
 
-	"github.com/ksusonic/niti/backend/internal/utils"
+	"github.com/ksusonic/niti/backend/internal/models"
 	"github.com/ksusonic/niti/backend/pgk/genapi"
 	"go.uber.org/zap"
+	"golang.org/x/sync/errgroup"
 )
 
 func (a *API) AuthTelegramInitData(ctx context.Context, request genapi.AuthTelegramInitDataRequestObject) (genapi.AuthTelegramInitDataResponseObject, error) {
@@ -13,30 +14,51 @@ func (a *API) AuthTelegramInitData(ctx context.Context, request genapi.AuthTeleg
 		return genapi.AuthTelegramInitData400JSONResponse{Message: "invalid request"}, nil
 	}
 
-	initData, err := a.auth.ParseInitData(*request.Body.InitData)
+	userData, err := a.auth.ParseInitData(*request.Body.InitData)
 	if err != nil {
 		a.logger.Debug("validate request", zap.Error(err), zap.String("init_data", *request.Body.InitData))
 		return genapi.AuthTelegramInitData400JSONResponse{Message: "invalid token"}, nil
 	}
 
-	tokens, err := a.auth.GenerateTokens(ctx, initData.User.ID)
-	if err != nil {
-		a.logger.Error("generate token", zap.Error(err), zap.Int64("user_id", initData.User.ID))
-		return nil, err
-	}
+	var (
+		tokens models.JWTokens
+		user   *models.User
+	)
 
-	// TODO: database
+	eg, gCtx := errgroup.WithContext(ctx)
+
+	eg.Go(func() (err error) {
+		tokens, err = a.auth.GenerateTokens(gCtx, userData.TelegramID)
+		if err != nil {
+			a.logger.Error("generate token", zap.Error(err), zap.Int64("user_id", user.TelegramID))
+		}
+
+		return err
+	})
+
+	eg.Go(func() (err error) {
+		user, err = a.usersRepo.Create(gCtx, userData)
+		if err != nil {
+			a.logger.Error("create user", zap.Error(err), zap.Int64("user_id", userData.TelegramID))
+		}
+
+		return err
+	})
+
+	if err := eg.Wait(); err != nil {
+		return genapi.AuthTelegramInitData500JSONResponse{Message: "internal server error"}, nil
+	}
 
 	return genapi.AuthTelegramInitData200JSONResponse{
 		AccessToken:  tokens.AccessToken,
 		RefreshToken: tokens.RefreshToken,
 		User: genapi.User{
-			TelegramId: initData.User.ID,
-			FirstName:  initData.User.FirstName,
-			LastName:   utils.NilIfEmpty(initData.User.LastName),
-			Username:   initData.User.Username,
-			AvatarUrl:  initData.User.PhotoURL,
-			IsDj:       false, // TODO
+			TelegramId: user.TelegramID,
+			FirstName:  user.FirstName,
+			LastName:   user.LastName,
+			Username:   user.Username,
+			AvatarUrl:  user.AvatarURL,
+			IsDj:       user.IsDJ,
 		},
 	}, nil
 }

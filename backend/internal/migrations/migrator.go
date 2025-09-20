@@ -65,6 +65,11 @@ func (m *Migrator) Up() error {
 	return err
 }
 
+// Down runs all down migrations
+func (m *Migrator) Down() error {
+	return m.migrate.Down()
+}
+
 // Version returns the current migration version and dirty state
 func (m *Migrator) Version() (version uint, dirty bool, err error) {
 	return m.migrate.Version()
@@ -88,4 +93,14 @@ func MigrateUp(cfg config.PostgresConfig) error {
 	defer func() { _ = migrator.Close() }()
 
 	return migrator.Up()
+}
+
+func MigrateDrop(cfg config.PostgresConfig) error {
+	migrator, err := NewMigrator(cfg)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = migrator.Close() }()
+
+	return migrator.Down()
 }

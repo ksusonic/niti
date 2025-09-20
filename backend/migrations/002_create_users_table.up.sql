@@ -4,7 +4,9 @@ CREATE TABLE users (
     first_name TEXT,
     last_name TEXT,
     avatar_url TEXT,
-    is_dj BOOLEAN DEFAULT false
+    is_dj BOOLEAN DEFAULT false,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE INDEX idx_users_username ON users(username);

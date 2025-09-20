@@ -14,7 +14,6 @@ import (
 	reflect "reflect"
 
 	models "github.com/ksusonic/niti/backend/internal/models"
-	initdata "github.com/telegram-mini-apps/init-data-golang"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -43,33 +42,33 @@ func (m *Mockauth) EXPECT() *MockauthMockRecorder {
 }
 
 // GenerateTokens mocks base method.
-func (m *Mockauth) GenerateTokens(arg0 context.Context, arg1 int64) (models.JWTokens, error) {
+func (m *Mockauth) GenerateTokens(ctx context.Context, userID int64) (models.JWTokens, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GenerateTokens", arg0, arg1)
+	ret := m.ctrl.Call(m, "GenerateTokens", ctx, userID)
 	ret0, _ := ret[0].(models.JWTokens)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GenerateTokens indicates an expected call of GenerateTokens.
-func (mr *MockauthMockRecorder) GenerateTokens(arg0, arg1 any) *gomock.Call {
+func (mr *MockauthMockRecorder) GenerateTokens(ctx, userID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateTokens", reflect.TypeOf((*Mockauth)(nil).GenerateTokens), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateTokens", reflect.TypeOf((*Mockauth)(nil).GenerateTokens), ctx, userID)
 }
 
 // ParseInitData mocks base method.
-func (m *Mockauth) ParseInitData(arg0 string) (*initdata.InitData, error) {
+func (m *Mockauth) ParseInitData(initData string) (*models.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ParseInitData", arg0)
-	ret0, _ := ret[0].(*initdata.InitData)
+	ret := m.ctrl.Call(m, "ParseInitData", initData)
+	ret0, _ := ret[0].(*models.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ParseInitData indicates an expected call of ParseInitData.
-func (mr *MockauthMockRecorder) ParseInitData(arg0 any) *gomock.Call {
+func (mr *MockauthMockRecorder) ParseInitData(initData any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ParseInitData", reflect.TypeOf((*Mockauth)(nil).ParseInitData), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ParseInitData", reflect.TypeOf((*Mockauth)(nil).ParseInitData), initData)
 }
 
 // RollTokens mocks base method.
@@ -100,4 +99,43 @@ func (m *Mockauth) ValidateRefreshToken(ctx context.Context, refreshTokenStr str
 func (mr *MockauthMockRecorder) ValidateRefreshToken(ctx, refreshTokenStr any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidateRefreshToken", reflect.TypeOf((*Mockauth)(nil).ValidateRefreshToken), ctx, refreshTokenStr)
+}
+
+// MockusersRepo is a mock of usersRepo interface.
+type MockusersRepo struct {
+	ctrl     *gomock.Controller
+	recorder *MockusersRepoMockRecorder
+	isgomock struct{}
+}
+
+// MockusersRepoMockRecorder is the mock recorder for MockusersRepo.
+type MockusersRepoMockRecorder struct {
+	mock *MockusersRepo
+}
+
+// NewMockusersRepo creates a new mock instance.
+func NewMockusersRepo(ctrl *gomock.Controller) *MockusersRepo {
+	mock := &MockusersRepo{ctrl: ctrl}
+	mock.recorder = &MockusersRepoMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockusersRepo) EXPECT() *MockusersRepoMockRecorder {
+	return m.recorder
+}
+
+// Create mocks base method.
+func (m *MockusersRepo) Create(ctx context.Context, in *models.User) (*models.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Create", ctx, in)
+	ret0, _ := ret[0].(*models.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Create indicates an expected call of Create.
+func (mr *MockusersRepoMockRecorder) Create(ctx, in any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockusersRepo)(nil).Create), ctx, in)
 }

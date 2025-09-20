@@ -350,7 +350,6 @@ components:
         - telegram_id
         - username
         - first_name
-        - avatar_url
         - is_dj
 
     UserProfile:

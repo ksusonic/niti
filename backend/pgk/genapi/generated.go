@@ -53,7 +53,7 @@ type Social struct {
 
 // User defines model for User.
 type User struct {
-	AvatarUrl  string  `json:"avatar_url"`
+	AvatarUrl  *string `json:"avatar_url,omitempty"`
 	FirstName  string  `json:"first_name"`
 	IsDj       bool    `json:"is_dj"`
 	LastName   *string `json:"last_name,omitempty"`
@@ -63,7 +63,7 @@ type User struct {
 
 // UserProfile defines model for UserProfile.
 type UserProfile struct {
-	AvatarUrl     string   `json:"avatar_url"`
+	AvatarUrl     *string  `json:"avatar_url,omitempty"`
 	FirstName     string   `json:"first_name"`
 	IsDj          bool     `json:"is_dj"`
 	LastName      *string  `json:"last_name,omitempty"`

@@ -5,7 +5,9 @@ CREATE TABLE events (
     location TEXT,
     video_url TEXT,
     starts_at TIMESTAMP NOT NULL,
-    created_by BIGINT REFERENCES users(telegram_id)
+    created_by BIGINT REFERENCES users(telegram_id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE INDEX idx_events_starts_at ON events(starts_at);
