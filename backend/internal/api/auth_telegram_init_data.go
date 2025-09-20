@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ksusonic/niti/backend/internal/models"
 	"github.com/ksusonic/niti/backend/pgk/genapi"
@@ -30,7 +31,7 @@ func (a *API) AuthTelegramInitData(ctx context.Context, request genapi.AuthTeleg
 	eg.Go(func() (err error) {
 		tokens, err = a.auth.GenerateTokens(gCtx, userData.TelegramID)
 		if err != nil {
-			a.logger.Error("generate token", zap.Error(err), zap.Int64("user_id", user.TelegramID))
+			return fmt.Errorf("generate tokens: %w", err)
 		}
 
 		return err
@@ -39,13 +40,15 @@ func (a *API) AuthTelegramInitData(ctx context.Context, request genapi.AuthTeleg
 	eg.Go(func() (err error) {
 		user, err = a.usersRepo.Create(gCtx, userData)
 		if err != nil {
-			a.logger.Error("create user", zap.Error(err), zap.Int64("user_id", userData.TelegramID))
+			return fmt.Errorf("create user: %w", err)
 		}
 
 		return err
 	})
 
 	if err := eg.Wait(); err != nil {
+		a.logger.Error("process user save and gen token", zap.Error(err), zap.Any("user_data", *userData))
+
 		return genapi.AuthTelegramInitData500JSONResponse{Message: "internal server error"}, nil
 	}
 
