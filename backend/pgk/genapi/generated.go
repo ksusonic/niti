@@ -101,6 +101,9 @@ type ServerInterface interface {
 	// Get list of events
 	// (GET /events)
 	ListEvents(c *gin.Context)
+	// Healthcheck endpoint
+	// (GET /health)
+	Healthcheck(c *gin.Context)
 	// Get user profile
 	// (GET /profile)
 	GetProfile(c *gin.Context)
@@ -157,6 +160,19 @@ func (siw *ServerInterfaceWrapper) ListEvents(c *gin.Context) {
 	}
 
 	siw.Handler.ListEvents(c)
+}
+
+// Healthcheck operation middleware
+func (siw *ServerInterfaceWrapper) Healthcheck(c *gin.Context) {
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		middleware(c)
+		if c.IsAborted() {
+			return
+		}
+	}
+
+	siw.Handler.Healthcheck(c)
 }
 
 // GetProfile operation middleware
@@ -230,6 +246,7 @@ func RegisterHandlersWithOptions(router gin.IRouter, si ServerInterface, options
 	router.POST(options.BaseURL+"/auth/refresh", wrapper.AuthRefreshToken)
 	router.POST(options.BaseURL+"/auth/telegram-init-data", wrapper.AuthTelegramInitData)
 	router.GET(options.BaseURL+"/events", wrapper.ListEvents)
+	router.GET(options.BaseURL+"/health", wrapper.Healthcheck)
 	router.GET(options.BaseURL+"/profile", wrapper.GetProfile)
 	router.POST(options.BaseURL+"/subscribe/:id", wrapper.SubscribeEvent)
 }
@@ -366,6 +383,24 @@ func (response ListEvents500JSONResponse) VisitListEventsResponse(w http.Respons
 	return json.NewEncoder(w).Encode(response)
 }
 
+type HealthcheckRequestObject struct {
+}
+
+type HealthcheckResponseObject interface {
+	VisitHealthcheckResponse(w http.ResponseWriter) error
+}
+
+type Healthcheck200JSONResponse struct {
+	Status string `json:"status"`
+}
+
+func (response Healthcheck200JSONResponse) VisitHealthcheckResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 type GetProfileRequestObject struct {
 }
 
@@ -468,6 +503,9 @@ type StrictServerInterface interface {
 	// Get list of events
 	// (GET /events)
 	ListEvents(ctx context.Context, request ListEventsRequestObject) (ListEventsResponseObject, error)
+	// Healthcheck endpoint
+	// (GET /health)
+	Healthcheck(ctx context.Context, request HealthcheckRequestObject) (HealthcheckResponseObject, error)
 	// Get user profile
 	// (GET /profile)
 	GetProfile(ctx context.Context, request GetProfileRequestObject) (GetProfileResponseObject, error)
@@ -572,6 +610,31 @@ func (sh *strictHandler) ListEvents(ctx *gin.Context) {
 		ctx.Status(http.StatusInternalServerError)
 	} else if validResponse, ok := response.(ListEventsResponseObject); ok {
 		if err := validResponse.VisitListEventsResponse(ctx.Writer); err != nil {
+			ctx.Error(err)
+		}
+	} else if response != nil {
+		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// Healthcheck operation middleware
+func (sh *strictHandler) Healthcheck(ctx *gin.Context) {
+	var request HealthcheckRequestObject
+
+	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.Healthcheck(ctx, request.(HealthcheckRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "Healthcheck")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		ctx.Error(err)
+		ctx.Status(http.StatusInternalServerError)
+	} else if validResponse, ok := response.(HealthcheckResponseObject); ok {
+		if err := validResponse.VisitHealthcheckResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {

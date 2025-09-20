@@ -5,6 +5,24 @@ info:
   description: Telegram mini App API for managing events and user subscriptions
 
 paths:
+  /health:
+    get:
+      summary: Healthcheck endpoint
+      operationId: healthcheck
+      responses:
+        "200":
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - status
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+
   /auth/telegram-init-data:
     post:
       summary: Authenticate with Telegram WebApp

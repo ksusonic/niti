@@ -41,11 +41,6 @@ func (a *App) WebServe() int {
 	}
 	r.Use(validator)
 
-	// healthcheck endpoint
-	r.Handle("GET", "/health", func(c *gin.Context) {
-		c.JSON(200, gin.H{"status": "ok"})
-	})
-
 	genapi.RegisterHandlers(r, h)
 
 	err = r.Run(fmt.Sprintf(":%d", a.config.ServerPort))
