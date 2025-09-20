@@ -84,6 +84,15 @@ type AuthTelegramInitDataJSONBody struct {
 	InitData *string `json:"init_data,omitempty"`
 }
 
+// ListEventsParams defines parameters for ListEvents.
+type ListEventsParams struct {
+	// Limit Maximum number of events to return
+	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Offset Number of events to skip before starting to collect the result set
+	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+}
+
 // AuthRefreshTokenJSONRequestBody defines body for AuthRefreshToken for application/json ContentType.
 type AuthRefreshTokenJSONRequestBody AuthRefreshTokenJSONBody
 
@@ -92,22 +101,22 @@ type AuthTelegramInitDataJSONRequestBody AuthTelegramInitDataJSONBody
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
-	// Refresh access token
+
 	// (POST /auth/refresh)
 	AuthRefreshToken(c *gin.Context)
-	// Authenticate with Telegram WebApp
+
 	// (POST /auth/telegram-init-data)
 	AuthTelegramInitData(c *gin.Context)
-	// Get list of events
+
 	// (GET /events)
-	ListEvents(c *gin.Context)
-	// Healthcheck endpoint
+	ListEvents(c *gin.Context, params ListEventsParams)
+
 	// (GET /health)
 	Healthcheck(c *gin.Context)
-	// Get user profile
+
 	// (GET /profile)
 	GetProfile(c *gin.Context)
-	// Subscribe to event
+
 	// (POST /subscribe/{id})
 	SubscribeEvent(c *gin.Context, id int)
 }
@@ -150,7 +159,28 @@ func (siw *ServerInterfaceWrapper) AuthTelegramInitData(c *gin.Context) {
 // ListEvents operation middleware
 func (siw *ServerInterfaceWrapper) ListEvents(c *gin.Context) {
 
+	var err error
+
 	c.Set(BearerAuthScopes, []string{})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListEventsParams
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "limit", c.Request.URL.Query(), &params.Limit)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter limit: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	// ------------- Optional query parameter "offset" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "offset", c.Request.URL.Query(), &params.Offset)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter offset: %w", err), http.StatusBadRequest)
+		return
+	}
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
@@ -159,7 +189,7 @@ func (siw *ServerInterfaceWrapper) ListEvents(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.ListEvents(c)
+	siw.Handler.ListEvents(c, params)
 }
 
 // Healthcheck operation middleware
@@ -350,6 +380,7 @@ func (response AuthTelegramInitData500JSONResponse) VisitAuthTelegramInitDataRes
 }
 
 type ListEventsRequestObject struct {
+	Params ListEventsParams
 }
 
 type ListEventsResponseObject interface {
@@ -494,22 +525,22 @@ func (response SubscribeEvent500JSONResponse) VisitSubscribeEventResponse(w http
 
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
-	// Refresh access token
+
 	// (POST /auth/refresh)
 	AuthRefreshToken(ctx context.Context, request AuthRefreshTokenRequestObject) (AuthRefreshTokenResponseObject, error)
-	// Authenticate with Telegram WebApp
+
 	// (POST /auth/telegram-init-data)
 	AuthTelegramInitData(ctx context.Context, request AuthTelegramInitDataRequestObject) (AuthTelegramInitDataResponseObject, error)
-	// Get list of events
+
 	// (GET /events)
 	ListEvents(ctx context.Context, request ListEventsRequestObject) (ListEventsResponseObject, error)
-	// Healthcheck endpoint
+
 	// (GET /health)
 	Healthcheck(ctx context.Context, request HealthcheckRequestObject) (HealthcheckResponseObject, error)
-	// Get user profile
+
 	// (GET /profile)
 	GetProfile(ctx context.Context, request GetProfileRequestObject) (GetProfileResponseObject, error)
-	// Subscribe to event
+
 	// (POST /subscribe/{id})
 	SubscribeEvent(ctx context.Context, request SubscribeEventRequestObject) (SubscribeEventResponseObject, error)
 }
@@ -593,8 +624,10 @@ func (sh *strictHandler) AuthTelegramInitData(ctx *gin.Context) {
 }
 
 // ListEvents operation middleware
-func (sh *strictHandler) ListEvents(ctx *gin.Context) {
+func (sh *strictHandler) ListEvents(ctx *gin.Context, params ListEventsParams) {
 	var request ListEventsRequestObject
+
+	request.Params = params
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
 		return sh.ssi.ListEvents(ctx, request.(ListEventsRequestObject))

@@ -20,7 +20,12 @@ func (a *App) WebServer() int {
 
 	a.log.Debug("built server deps", zap.Duration("build_took", time.Since(buildStart)))
 
-	engine := server.NewGinServer(impl, a.config, a.log)
+	engine := server.NewGinServer(
+		impl,
+		a.AuthService(),
+		a.config,
+		a.log,
+	)
 
 	err := engine.Run(fmt.Sprintf(":%d", a.config.ServerPort))
 	if err != nil {

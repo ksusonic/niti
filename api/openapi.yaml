@@ -7,7 +7,7 @@ info:
 paths:
   /health:
     get:
-      summary: Healthcheck endpoint
+      description: Health check
       operationId: healthcheck
       responses:
         "200":
@@ -25,8 +25,10 @@ paths:
 
   /auth/telegram-init-data:
     post:
-      summary: Authenticate with Telegram WebApp
+      description: Authenticates a user using Telegram WebApp initData. Returns access and refresh tokens along with user information.
       operationId: authTelegramInitData
+      tags:
+        - Auth
       requestBody:
         required: true
         content:
@@ -39,7 +41,7 @@ paths:
                   description: Telegram initData string
       responses:
         "200":
-          description: Authentication successful
+          description: Authentication successful. Returns JWT tokens and user info.
           content:
             application/json:
               schema:
@@ -82,8 +84,10 @@ paths:
 
   /auth/refresh:
     post:
-      summary: Refresh access token
+      description: Refreshes the user's access token using a valid refresh token. Returns new access and refresh tokens.
       operationId: authRefreshToken
+      tags:
+        - Auth
       requestBody:
         required: true
         content:
@@ -98,7 +102,7 @@ paths:
                   description: Refresh token
       responses:
         "200":
-          description: New access and refresh tokens
+          description: New access and refresh tokens returned.
           content:
             application/json:
               schema:
@@ -132,10 +136,29 @@ paths:
 
   /events:
     get:
-      summary: Get list of events
+      description: Returns a list of all available events. Supports pagination via query parameters.
       operationId: listEvents
+      tags:
+        - Events
       security:
         - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Maximum number of events to return
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            example: 10
+        - name: offset
+          in: query
+          description: Number of events to skip before starting to collect the result set
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            example: 0
       responses:
         "200":
           description: List of events
@@ -160,8 +183,10 @@ paths:
 
   /subscribe/{id}:
     post:
-      summary: Subscribe to event
+      description: Subscribes the authenticated user to the specified event by ID.
       operationId: subscribeEvent
+      tags:
+        - Events
       security:
         - bearerAuth: []
       parameters:
@@ -205,8 +230,10 @@ paths:
 
   /profile:
     get:
-      summary: Get user profile
+      description: Returns the profile information of the authenticated user, including their event subscriptions.
       operationId: getProfile
+      tags:
+        - Profile
       security:
         - bearerAuth: []
       responses:
@@ -250,18 +277,24 @@ components:
           type: integer
         title:
           type: string
+          example: "Summer Party"
         description:
           type: string
+          example: "A fun summer event"
         location:
           type: string
+          example: "Rzn"
         video_url:
           type: string
           format: uri
+          example: "https://example.com/video.mp4"
         starts_at:
           type: string
           format: date-time
+          example: "2024-07-01T18:00:00Z"
         participants_count:
           type: integer
+          example: 50
         is_subscribed:
           type: boolean
         djs:
