@@ -98,7 +98,7 @@ func TestAuthTelegramInitData(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			srv := api.NewServer(
+			srv := api.NewAPI(
 				tt.fields.auth(ctrl),
 				zap.NewNop(),
 			)

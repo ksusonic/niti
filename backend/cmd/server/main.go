@@ -11,5 +11,5 @@ func main() {
 	app := app.New()
 	defer app.Close(context.Background())
 
-	os.Exit(app.WebServe())
+	os.Exit(app.WebServer())
 }

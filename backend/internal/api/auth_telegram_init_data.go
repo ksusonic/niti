@@ -8,20 +8,20 @@ import (
 	"go.uber.org/zap"
 )
 
-func (s *Server) AuthTelegramInitData(ctx context.Context, request genapi.AuthTelegramInitDataRequestObject) (genapi.AuthTelegramInitDataResponseObject, error) {
+func (a *API) AuthTelegramInitData(ctx context.Context, request genapi.AuthTelegramInitDataRequestObject) (genapi.AuthTelegramInitDataResponseObject, error) {
 	if request.Body == nil || request.Body.InitData == nil || *request.Body.InitData == "" {
 		return genapi.AuthTelegramInitData400JSONResponse{Message: "invalid request"}, nil
 	}
 
-	initData, err := s.auth.ParseInitData(*request.Body.InitData)
+	initData, err := a.auth.ParseInitData(*request.Body.InitData)
 	if err != nil {
-		s.logger.Debug("validate request", zap.Error(err), zap.String("init_data", *request.Body.InitData))
+		a.logger.Debug("validate request", zap.Error(err), zap.String("init_data", *request.Body.InitData))
 		return genapi.AuthTelegramInitData400JSONResponse{Message: "invalid token"}, nil
 	}
 
-	tokens, err := s.auth.GenerateToken(ctx, initData.User.ID)
+	tokens, err := a.auth.GenerateToken(ctx, initData.User.ID)
 	if err != nil {
-		s.logger.Error("generate token", zap.Error(err), zap.Int64("user_id", initData.User.ID))
+		a.logger.Error("generate token", zap.Error(err), zap.Int64("user_id", initData.User.ID))
 		return nil, err
 	}
 

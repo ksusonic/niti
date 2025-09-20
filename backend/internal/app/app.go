@@ -43,14 +43,6 @@ func (a *App) Close(ctx context.Context) {
 	}
 }
 
-func (a *App) Config() *config.Config {
-	return a.config
-}
-
-func (a *App) Logger() *zap.Logger {
-	return a.log
-}
-
 func (a *App) postgresPool(ctx context.Context) *storage.Storage {
 	if a.storage == nil {
 		db, err := storage.New(ctx, a.config.Postgres, a.log)
