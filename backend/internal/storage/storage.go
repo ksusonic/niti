@@ -16,7 +16,7 @@ type Storage struct {
 
 func New(ctx context.Context, cfg config.PostgresConfig, logger *zap.Logger) (*Storage, error) {
 	if cfg.DSN == "" {
-		return nil, fmt.Errorf("POSTGRES_DSN environment variable is not set")
+		return nil, fmt.Errorf("PostgreSQL DSN is not configured")
 	}
 
 	logger.Debug("connecting to postgres")
@@ -26,7 +26,7 @@ func New(ctx context.Context, cfg config.PostgresConfig, logger *zap.Logger) (*S
 		return nil, fmt.Errorf("connect to postgres: %w", err)
 	}
 
-	logger.Info("success connect to postgres")
+	logger.Info("successfully connected to postgres")
 
 	if err := conn.Ping(ctx); err != nil {
 		return nil, fmt.Errorf("ping postgres: %w", err)
