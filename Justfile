@@ -1,11 +1,11 @@
 generate:
-    cd backend && go generate ./...
+    cd backend && go mod tidy && go generate ./...
 
-backend:
+back-run:
     cd backend && go run ./cmd/server/main.go
 
-backend-lint:
+back-lint:
     cd backend && golangci-lint run
 
-backend-test:
+back-test:
     cd backend && go test ./...
