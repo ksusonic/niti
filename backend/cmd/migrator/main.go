@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
@@ -19,35 +18,35 @@ func main() {
 
 	cfg, err := config.LoadConfig()
 	if err != nil && !*force {
-		log.Fatalf("Failed to load config: %v", err)
+		log.Fatalf("load config: %v", err)
 	}
 
 	switch *command {
 	case "up":
 		err = migrations.MigrateUp(cfg.Postgres)
 		if err != nil {
-			log.Fatalf("Failed to run migrations: %v", err)
+			log.Fatalf("run migrations: %v", err)
 		}
-		fmt.Println("Migrations applied successfully")
+		log.Println("Migrations applied successfully")
 
 	case "version":
 		migrator, err := migrations.NewMigrator(cfg.Postgres)
 		if err != nil {
-			log.Fatalf("Failed to create migrator: %v", err)
+			log.Fatalf("create migrator: %v", err)
 		}
 		defer func() { _ = migrator.Close() }()
 
 		currentVersion, dirty, err := migrator.Version()
 		if err != nil {
-			log.Fatalf("Failed to get version: %v", err)
+			log.Fatalf("get version: %v", err)
 		}
 		if dirty {
-			fmt.Printf("Current version: %d (dirty)\n", currentVersion)
+			log.Printf("current version: %d (dirty)\n", currentVersion)
 		} else {
-			fmt.Printf("Current version: %d\n", currentVersion)
+			log.Printf("current version: %d\n", currentVersion)
 		}
 
 	default:
-		log.Fatalf("Unknown command: %s. Available commands: up, version", *command)
+		log.Fatalf("unknown command: %s. Available commands: up, version", *command)
 	}
 }
