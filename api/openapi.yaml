@@ -139,7 +139,7 @@ paths:
   /events:
     get:
       description: Returns a list of all available events. Supports pagination via query parameters.
-      operationId: listEvents
+      operationId: events
       tags:
         - Events
       security:

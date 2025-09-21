@@ -231,3 +231,18 @@ func (mr *MockeventsRepoMockRecorder) GetUserEvents(ctx, userID any) *gomock.Cal
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserEvents", reflect.TypeOf((*MockeventsRepo)(nil).GetUserEvents), ctx, userID)
 }
+
+// ListEvents mocks base method.
+func (m *MockeventsRepo) ListEvents(ctx context.Context, userID int64, limit, offset int) ([]models.EventEnriched, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListEvents", ctx, userID, limit, offset)
+	ret0, _ := ret[0].([]models.EventEnriched)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListEvents indicates an expected call of ListEvents.
+func (mr *MockeventsRepoMockRecorder) ListEvents(ctx, userID, limit, offset any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListEvents", reflect.TypeOf((*MockeventsRepo)(nil).ListEvents), ctx, userID, limit, offset)
+}

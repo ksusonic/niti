@@ -2,7 +2,6 @@ package events
 
 import (
 	"context"
-	"encoding/json"
 
 	"github.com/ksusonic/niti/backend/internal/models"
 )
@@ -19,6 +18,7 @@ const (
 			e.video_url,
 			e.starts_at,
 			e.created_by,
+			true as is_subscribed,
 			COALESCE(participants.count, 0) as participants_count,
 			COALESCE(dj_lineup.djs_json, '[]'::jsonb) as djs_json
 		FROM
@@ -66,48 +66,10 @@ func (r *Repository) GetUserEvents(
 	ctx context.Context,
 	userID int64,
 ) ([]models.EventEnriched, error) {
-	rows, err := r.Query(
+	return r.enrichedEvents(
 		ctx,
 		getUserEventsQuery,
 		userID,
 		eventsLimit,
 	)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	events := make([]models.EventEnriched, 0, len(rows.RawValues()))
-	for rows.Next() {
-		event := models.EventEnriched{
-			IsSubscribed: true,
-		}
-		var djsJSON []byte
-
-		if err := rows.Scan(
-			&event.ID,
-			&event.Title,
-			&event.Description,
-			&event.Location,
-			&event.CoverURL,
-			&event.VideoURL,
-			&event.StartsAt,
-			&event.CreatedBy,
-			&event.ParticipantsCount,
-			&djsJSON,
-		); err != nil {
-			return nil, err
-		}
-
-		event.DJs = make([]models.DJ, 0)
-		if len(djsJSON) > 0 && string(djsJSON) != "null" {
-			if err := json.Unmarshal(djsJSON, &event.DJs); err != nil {
-				event.DJs = make([]models.DJ, 0)
-			}
-		}
-
-		events = append(events, event)
-	}
-
-	return events, rows.Err()
 }
