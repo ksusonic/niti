@@ -14,8 +14,10 @@ func (a *API) Events(ctx context.Context, request genapi.EventsRequestObject) (g
 	tgUserID := models.MustTGUserID(ctx)
 
 	limit := utils.Deref(request.Params.Limit)
-	if limit == 0 {
+	if limit <= 0 {
 		limit = 30
+	} else if limit > 100 {
+		limit = 100
 	}
 
 	offset := utils.Deref(request.Params.Offset)
