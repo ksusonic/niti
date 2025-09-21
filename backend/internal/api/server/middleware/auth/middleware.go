@@ -1,4 +1,4 @@
-package middleware
+package auth
 
 import (
 	"net/http"
@@ -7,10 +7,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/ksusonic/niti/backend/pgk/genapi"
 )
-
-type AuthDeps interface {
-	ValidateAccessToken(tokenStr string) (int64, error)
-}
 
 func AuthMw(auth AuthDeps) genapi.MiddlewareFunc {
 	return func(c *gin.Context) {
@@ -23,7 +19,7 @@ func AuthMw(auth AuthDeps) genapi.MiddlewareFunc {
 			}
 
 			parts := strings.SplitN(header, " ", 2)
-			if len(parts) != 2 || parts[0] != "Bearer" {
+			if len(parts) != 2 || parts[0] != "Bearer" || parts[1] == "" {
 				c.AbortWithStatusJSON(http.StatusUnauthorized, genapi.Error{Message: "unauthorized"})
 				return
 			}
