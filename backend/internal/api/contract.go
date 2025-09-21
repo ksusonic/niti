@@ -29,4 +29,10 @@ type eventsRepo interface {
 		ctx context.Context,
 		userID int64,
 	) ([]models.EventEnriched, error)
+
+	ListEvents(
+		ctx context.Context,
+		userID int64,
+		limit, offset int,
+	) ([]models.EventEnriched, error)
 }

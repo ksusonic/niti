@@ -21,7 +21,7 @@ func NewBaseRepository(pool *pgxpool.Pool) *Repository {
 }
 
 // Exec executes a query using transaction if available in context
-func (r *Repository) Exec(ctx context.Context, sql string, arguments ...interface{}) (pgconn.CommandTag, error) {
+func (r *Repository) Exec(ctx context.Context, sql string, arguments ...any) (pgconn.CommandTag, error) {
 	if tx, ok := ctx.Value(txKey).(pgx.Tx); ok {
 		return tx.Exec(ctx, sql, arguments...)
 	}
@@ -29,7 +29,7 @@ func (r *Repository) Exec(ctx context.Context, sql string, arguments ...interfac
 }
 
 // Query executes a query using transaction if available in context
-func (r *Repository) Query(ctx context.Context, sql string, args ...interface{}) (pgx.Rows, error) {
+func (r *Repository) Query(ctx context.Context, sql string, args ...any) (pgx.Rows, error) {
 	if tx, ok := ctx.Value(txKey).(pgx.Tx); ok {
 		return tx.Query(ctx, sql, args...)
 	}
@@ -37,7 +37,7 @@ func (r *Repository) Query(ctx context.Context, sql string, args ...interface{})
 }
 
 // QueryRow executes a query that returns a single row using transaction if available in context
-func (r *Repository) QueryRow(ctx context.Context, sql string, args ...interface{}) pgx.Row {
+func (r *Repository) QueryRow(ctx context.Context, sql string, args ...any) pgx.Row {
 	if tx, ok := ctx.Value(txKey).(pgx.Tx); ok {
 		return tx.QueryRow(ctx, sql, args...)
 	}

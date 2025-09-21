@@ -4,6 +4,7 @@ package events_test
 
 import (
 	"context"
+	"fmt"
 	"testing"
 	"time"
 
@@ -23,6 +24,8 @@ func TestEventsRepository_CRUD(t *testing.T) {
 	err := repo.WithRollback(ctx, func(ctx context.Context) {
 		// First create users that will be referenced by events
 		creatorTelegramID := int64(12345)
+		viewerTelegramID := int64(67890)
+
 		user := &models.User{
 			TelegramID: creatorTelegramID,
 			Username:   "testuser",
@@ -30,6 +33,15 @@ func TestEventsRepository_CRUD(t *testing.T) {
 		}
 
 		_, err := userRepo.Create(ctx, user)
+		require.NoError(t, err)
+
+		viewer := &models.User{
+			TelegramID: viewerTelegramID,
+			Username:   "viewer",
+			FirstName:  "Viewer",
+		}
+
+		_, err = userRepo.Create(ctx, viewer)
 		require.NoError(t, err)
 
 		// Test data
@@ -62,13 +74,13 @@ func TestEventsRepository_CRUD(t *testing.T) {
 		require.Equal(t, videoURL, *retrievedEvent.VideoURL)
 		require.Equal(t, creatorTelegramID, *retrievedEvent.CreatedBy)
 
-		// LIST events to verify creation
-		events, err := repo.ListEvents(ctx)
+		// LIST events to verify creation (using viewer user ID)
+		events, err := repo.ListEvents(ctx, viewerTelegramID, 10, 0)
 		require.NoError(t, err)
 		require.GreaterOrEqual(t, len(events), 1) // May have other events in DB
 
 		// Find our event in the list
-		var foundEvent *models.Event
+		var foundEvent *models.EventEnriched
 		for _, e := range events {
 			if e.ID == eventID {
 				foundEvent = &e
@@ -81,6 +93,10 @@ func TestEventsRepository_CRUD(t *testing.T) {
 		require.Equal(t, location, *foundEvent.Location)
 		require.Equal(t, videoURL, *foundEvent.VideoURL)
 		require.Equal(t, creatorTelegramID, *foundEvent.CreatedBy)
+		require.False(t, foundEvent.IsSubscribed) // viewer is not subscribed
+		require.NotNil(t, foundEvent.ParticipantsCount)
+		require.Equal(t, 0, *foundEvent.ParticipantsCount) // no participants yet
+		require.NotNil(t, foundEvent.DJs)
 
 		// CREATE another event
 		startsAt2 := time.Now().Add(24 * time.Hour)
@@ -98,7 +114,7 @@ func TestEventsRepository_CRUD(t *testing.T) {
 		require.NotZero(t, eventID2)
 
 		// LIST events after creating second one
-		eventsAfterSecond, err := repo.ListEvents(ctx)
+		eventsAfterSecond, err := repo.ListEvents(ctx, viewerTelegramID, 10, 0)
 		require.NoError(t, err)
 		require.GreaterOrEqual(t, len(eventsAfterSecond), 2) // Should have at least our 2 events
 
@@ -107,7 +123,7 @@ func TestEventsRepository_CRUD(t *testing.T) {
 		require.NoError(t, err)
 
 		// LIST after delete
-		eventsAfterDelete, err := repo.ListEvents(ctx)
+		eventsAfterDelete, err := repo.ListEvents(ctx, viewerTelegramID, 10, 0)
 		require.NoError(t, err)
 
 		// Verify first event is deleted
@@ -234,6 +250,8 @@ func TestEventsRepository_ListEvents(t *testing.T) {
 	err := repo.WithRollback(ctx, func(ctx context.Context) {
 		// Create user first
 		creatorID := int64(456)
+		viewerID := int64(789)
+
 		user := &models.User{
 			TelegramID: creatorID,
 			Username:   "listuser",
@@ -243,8 +261,17 @@ func TestEventsRepository_ListEvents(t *testing.T) {
 		_, err := userRepo.Create(ctx, user)
 		require.NoError(t, err)
 
+		viewer := &models.User{
+			TelegramID: viewerID,
+			Username:   "viewer",
+			FirstName:  "Viewer",
+		}
+
+		_, err = userRepo.Create(ctx, viewer)
+		require.NoError(t, err)
+
 		// Get initial count
-		initialEvents, err := repo.ListEvents(ctx)
+		initialEvents, err := repo.ListEvents(ctx, viewerID, 10, 0)
 		require.NoError(t, err)
 		initialCount := len(initialEvents)
 
@@ -258,20 +285,23 @@ func TestEventsRepository_ListEvents(t *testing.T) {
 		require.NoError(t, err)
 
 		// List events after creation
-		events, err := repo.ListEvents(ctx)
+		events, err := repo.ListEvents(ctx, viewerID, 10, 0)
 		require.NoError(t, err)
 		require.Equal(t, initialCount+1, len(events))
 
 		// Verify our event is in the list
-		var foundEvent bool
+		var foundEvent *models.EventEnriched
 		for _, e := range events {
 			if e.ID == eventID {
-				foundEvent = true
+				foundEvent = &e
 				require.Equal(t, "List Test Event", e.Title)
+				require.False(t, e.IsSubscribed) // viewer is not subscribed
+				require.NotNil(t, e.ParticipantsCount)
+				require.Equal(t, 0, *e.ParticipantsCount)
 				break
 			}
 		}
-		require.True(t, foundEvent, "Created event should be in the list")
+		require.NotNil(t, foundEvent, "Created event should be in the list")
 	})
 	require.NoError(t, err)
 }
@@ -349,7 +379,7 @@ func TestEventsRepository_GetUserEvents(t *testing.T) {
 		require.Empty(t, nonExistentUserEvents)
 
 		// Verify events were created (using ListEvents)
-		allEvents, err := repo.ListEvents(ctx)
+		allEvents, err := repo.ListEvents(ctx, userID, 10, 0)
 		require.NoError(t, err)
 
 		// Verify our events exist in the list
@@ -364,6 +394,251 @@ func TestEventsRepository_GetUserEvents(t *testing.T) {
 			}
 		}
 		require.Len(t, foundIDs, 3, "All created events should be found")
+	})
+	require.NoError(t, err)
+}
+
+func TestEventsRepository_ListEvents_LimitAndOffset(t *testing.T) {
+	pool := base.SetupTestPool(t)
+	repo := eventsrepo.New(pool)
+	userRepo := users.New(pool)
+	ctx := context.Background()
+
+	err := repo.WithRollback(ctx, func(ctx context.Context) {
+		// Create user first
+		creatorID := int64(789)
+		viewerID := int64(987)
+
+		user := &models.User{
+			TelegramID: creatorID,
+			Username:   "paginationuser",
+			FirstName:  "Pagination",
+		}
+
+		_, err := userRepo.Create(ctx, user)
+		require.NoError(t, err)
+
+		viewer := &models.User{
+			TelegramID: viewerID,
+			Username:   "viewer",
+			FirstName:  "Viewer",
+		}
+
+		_, err = userRepo.Create(ctx, viewer)
+		require.NoError(t, err)
+
+		// Create multiple events with different start times to test ordering
+		baseTime := time.Now()
+		eventIDs := make([]int, 5)
+
+		for i := 0; i < 5; i++ {
+			startsAt := baseTime.Add(time.Duration(i) * time.Hour)
+			event := &models.Event{
+				Title:       fmt.Sprintf("Event %d", i+1),
+				Description: fmt.Sprintf("Description for event %d", i+1),
+				StartsAt:    &startsAt,
+				CreatedBy:   &creatorID,
+			}
+
+			eventID, err := repo.CreateEvent(ctx, event)
+			require.NoError(t, err)
+			eventIDs[i] = eventID
+		}
+
+		// Test limit functionality
+		t.Run("Limit", func(t *testing.T) {
+			// Get first 2 events
+			events, err := repo.ListEvents(ctx, viewerID, 2, 0)
+			require.NoError(t, err)
+			require.LessOrEqual(t, len(events), 2)
+
+			// Get first 3 events
+			events3, err := repo.ListEvents(ctx, viewerID, 3, 0)
+			require.NoError(t, err)
+			require.LessOrEqual(t, len(events3), 3)
+			require.GreaterOrEqual(t, len(events3), len(events))
+
+			// Test with limit 0 (should return no events)
+			eventsZero, err := repo.ListEvents(ctx, viewerID, 0, 0)
+			require.NoError(t, err)
+			require.Empty(t, eventsZero)
+
+			// Test with very large limit
+			eventsLarge, err := repo.ListEvents(ctx, viewerID, 1000, 0)
+			require.NoError(t, err)
+			require.GreaterOrEqual(t, len(eventsLarge), 5) // Should contain our 5 events at minimum
+		})
+
+		// Test offset functionality
+		t.Run("Offset", func(t *testing.T) {
+			// Get all events first to understand total count
+			allEvents, err := repo.ListEvents(ctx, viewerID, 1000, 0)
+			require.NoError(t, err)
+			totalCount := len(allEvents)
+
+			if totalCount > 1 {
+				// Test offset 1
+				eventsOffset1, err := repo.ListEvents(ctx, viewerID, 1000, 1)
+				require.NoError(t, err)
+				require.Equal(t, totalCount-1, len(eventsOffset1))
+
+				// Verify first event from offset 1 is different from first event without offset
+				if len(allEvents) > 1 && len(eventsOffset1) > 0 {
+					require.NotEqual(t, allEvents[0].ID, eventsOffset1[0].ID)
+				}
+			}
+
+			if totalCount > 2 {
+				// Test offset 2
+				eventsOffset2, err := repo.ListEvents(ctx, viewerID, 1000, 2)
+				require.NoError(t, err)
+				require.Equal(t, totalCount-2, len(eventsOffset2))
+			}
+
+			// Test offset larger than total count
+			eventsOffsetLarge, err := repo.ListEvents(ctx, viewerID, 1000, totalCount+10)
+			require.NoError(t, err)
+			require.Empty(t, eventsOffsetLarge)
+		})
+
+		// Test limit and offset combined
+		t.Run("LimitAndOffset", func(t *testing.T) {
+			// Get events in pages
+			page1, err := repo.ListEvents(ctx, viewerID, 2, 0)
+			require.NoError(t, err)
+
+			page2, err := repo.ListEvents(ctx, viewerID, 2, 2)
+			require.NoError(t, err)
+
+			page3, err := repo.ListEvents(ctx, viewerID, 2, 4)
+			require.NoError(t, err)
+
+			// Verify no overlap between pages
+			if len(page1) > 0 && len(page2) > 0 {
+				for _, event1 := range page1 {
+					for _, event2 := range page2 {
+						require.NotEqual(t, event1.ID, event2.ID, "Events should not overlap between pages")
+					}
+				}
+			}
+
+			if len(page2) > 0 && len(page3) > 0 {
+				for _, event2 := range page2 {
+					for _, event3 := range page3 {
+						require.NotEqual(t, event2.ID, event3.ID, "Events should not overlap between pages")
+					}
+				}
+			}
+		})
+
+		// Test ordering (events should be ordered by starts_at DESC)
+		t.Run("Ordering", func(t *testing.T) {
+			events, err := repo.ListEvents(ctx, viewerID, 10, 0)
+			require.NoError(t, err)
+			require.GreaterOrEqual(t, len(events), 5) // Should have our 5 test events
+
+			// Verify descending order by starts_at
+			for i := 1; i < len(events); i++ {
+				if events[i-1].StartsAt != nil && events[i].StartsAt != nil {
+					require.True(t,
+						events[i-1].StartsAt.After(*events[i].StartsAt) || events[i-1].StartsAt.Equal(*events[i].StartsAt),
+						"Events should be ordered by starts_at DESC")
+				}
+			}
+		})
+
+		// Test negative values
+		t.Run("NegativeValues", func(t *testing.T) {
+			// Test negative limit (PostgreSQL rejects this)
+			// We need to test this in a separate transaction since it will abort the current one
+			err := repo.WithRollback(ctx, func(ctx context.Context) {
+				_, err := repo.ListEvents(ctx, viewerID, -1, 0)
+				require.Error(t, err)
+				require.Contains(t, err.Error(), "LIMIT must not be negative")
+			})
+			require.NoError(t, err)
+
+			// Test negative offset (PostgreSQL rejects this too)
+			// We need to test this in a separate transaction since it will abort the current one
+			err = repo.WithRollback(ctx, func(ctx context.Context) {
+				_, err := repo.ListEvents(ctx, viewerID, 10, -1)
+				require.Error(t, err)
+				require.Contains(t, err.Error(), "OFFSET must not be negative")
+			})
+			require.NoError(t, err)
+		})
+	})
+	require.NoError(t, err)
+}
+
+func TestEventsRepository_ListEvents_SubscriptionStatus(t *testing.T) {
+	pool := base.SetupTestPool(t)
+	repo := eventsrepo.New(pool)
+	userRepo := users.New(pool)
+	ctx := context.Background()
+
+	err := repo.WithRollback(ctx, func(ctx context.Context) {
+		// Create users
+		creatorID := int64(111)
+		viewerID := int64(222)
+		subscriberID := int64(333)
+
+		creator := &models.User{
+			TelegramID: creatorID,
+			Username:   "creator",
+			FirstName:  "Creator",
+		}
+
+		viewer := &models.User{
+			TelegramID: viewerID,
+			Username:   "viewer",
+			FirstName:  "Viewer",
+		}
+
+		subscriber := &models.User{
+			TelegramID: subscriberID,
+			Username:   "subscriber",
+			FirstName:  "Subscriber",
+		}
+
+		_, err := userRepo.Create(ctx, creator)
+		require.NoError(t, err)
+		_, err = userRepo.Create(ctx, viewer)
+		require.NoError(t, err)
+		_, err = userRepo.Create(ctx, subscriber)
+		require.NoError(t, err)
+
+		// Create an event
+		event := &models.Event{
+			Title:     "Subscription Test Event",
+			CreatedBy: &creatorID,
+		}
+
+		eventID, err := repo.CreateEvent(ctx, event)
+		require.NoError(t, err)
+
+		// Test viewing events as different users
+		// Viewer (not subscribed)
+		viewerEvents, err := repo.ListEvents(ctx, viewerID, 10, 0)
+		require.NoError(t, err)
+
+		var viewerEvent *models.EventEnriched
+		for _, e := range viewerEvents {
+			if e.ID == eventID {
+				viewerEvent = &e
+				break
+			}
+		}
+		require.NotNil(t, viewerEvent)
+		require.False(t, viewerEvent.IsSubscribed)
+		require.NotNil(t, viewerEvent.ParticipantsCount)
+		require.Equal(t, 0, *viewerEvent.ParticipantsCount)
+
+		// TODO: Add subscription functionality tests when subscription repository is available
+		// This would involve:
+		// 1. Creating a subscription for subscriberID to eventID
+		// 2. Verifying that ListEvents(ctx, subscriberID, ...) shows IsSubscribed: true
+		// 3. Verifying that ParticipantsCount increases to 1
 	})
 	require.NoError(t, err)
 }
