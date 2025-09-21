@@ -50,6 +50,7 @@ paths:
                   - access_token
                   - refresh_token
                   - user
+                  - expires_in
                 properties:
                   access_token:
                     type: string
@@ -57,12 +58,12 @@ paths:
                   refresh_token:
                     type: string
                     description: JWT token for refreshing access token
+                  user:
+                    $ref: "#/components/schemas/User"
                   expires_in:
                     type: integer
                     description: Token expiration time in seconds
                     example: 900
-                  user:
-                    $ref: "#/components/schemas/User"
         "400":
           description: Bad request - invalid initData
           content:
@@ -110,6 +111,7 @@ paths:
                 required:
                   - access_token
                   - refresh_token
+                  - expires_in
                 properties:
                   access_token:
                     type: string
@@ -301,6 +303,12 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/DJ"
+      required:
+        - id
+        - title
+        - description
+        - is_subscribed
+        - djs
 
     DJ:
       type: object
@@ -314,6 +322,9 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Social"
+      required:
+        - stage_name
+        - socials
 
     Social:
       type: object
@@ -326,6 +337,9 @@ components:
         icon:
           type: string
           format: uri
+      required:
+        - name
+        - url
 
     User:
       type: object
@@ -348,7 +362,6 @@ components:
         - telegram_id
         - username
         - first_name
-        - avatar_url
         - is_dj
 
     UserProfile:
@@ -360,6 +373,8 @@ components:
               type: array
               items:
                 $ref: "#/components/schemas/Event"
+          required:
+            - subscriptions
 
     Error:
       type: object

@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
@@ -28,7 +29,20 @@ func main() {
 			log.Fatalf("run migrations: %v", err)
 		}
 		log.Println("Migrations applied successfully")
+	case "drop":
+		var response string
+		log.Print("Are you sure you want to drop all migrations? This action cannot be undone. (y/n): ")
+		_, err := fmt.Scanln(&response)
+		if err != nil || response != "y" && response != "Y" {
+			log.Println("Drop migrations cancelled.")
+			return
+		}
 
+		err = migrations.MigrateDrop(cfg.Postgres)
+		if err != nil {
+			log.Fatalf("run migrations: %v", err)
+		}
+		log.Println("Migrations rolled back successfully")
 	case "version":
 		migrator, err := migrations.NewMigrator(cfg.Postgres)
 		if err != nil {

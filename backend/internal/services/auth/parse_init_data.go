@@ -3,10 +3,12 @@ package auth
 import (
 	"fmt"
 
+	"github.com/ksusonic/niti/backend/internal/models"
+	"github.com/ksusonic/niti/backend/internal/utils"
 	initdata "github.com/telegram-mini-apps/init-data-golang"
 )
 
-func (s *Service) ParseInitData(data string) (*initdata.InitData, error) {
+func (s *Service) ParseInitData(data string) (*models.User, error) {
 	if data == "" {
 		return nil, fmt.Errorf("empty initData")
 	}
@@ -20,5 +22,12 @@ func (s *Service) ParseInitData(data string) (*initdata.InitData, error) {
 		return nil, fmt.Errorf("parse initData: %w", err)
 	}
 
-	return &parsed, nil
+	return &models.User{
+		TelegramID: parsed.User.ID,
+		Username:   parsed.User.Username,
+		FirstName:  parsed.User.FirstName,
+		LastName:   utils.NilIfEmpty(parsed.User.LastName),
+		AvatarURL:  utils.NilIfEmpty(parsed.User.PhotoURL),
+		IsDJ:       false,
+	}, nil
 }

@@ -22,6 +22,10 @@ back-test *FLAGS:
 migrate-up:
     cd backend && go run ./cmd/migrator/main.go -command up
 
+# Migration rollback
+migrate-drop:
+    cd backend && go run ./cmd/migrator/main.go -command drop
+
 # Show current migration version
 migrate-version:
     cd backend && go run ./cmd/migrator/main.go -command version

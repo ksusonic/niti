@@ -14,7 +14,6 @@ import (
 	reflect "reflect"
 
 	models "github.com/ksusonic/niti/backend/internal/models"
-	initdata "github.com/telegram-mini-apps/init-data-golang"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -42,32 +41,193 @@ func (m *Mockauth) EXPECT() *MockauthMockRecorder {
 	return m.recorder
 }
 
-// GenerateToken mocks base method.
-func (m *Mockauth) GenerateToken(arg0 context.Context, arg1 int64) (models.JWTAuth, error) {
+// GenerateTokens mocks base method.
+func (m *Mockauth) GenerateTokens(ctx context.Context, userID int64) (models.JWTokens, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GenerateToken", arg0, arg1)
-	ret0, _ := ret[0].(models.JWTAuth)
+	ret := m.ctrl.Call(m, "GenerateTokens", ctx, userID)
+	ret0, _ := ret[0].(models.JWTokens)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GenerateToken indicates an expected call of GenerateToken.
-func (mr *MockauthMockRecorder) GenerateToken(arg0, arg1 any) *gomock.Call {
+// GenerateTokens indicates an expected call of GenerateTokens.
+func (mr *MockauthMockRecorder) GenerateTokens(ctx, userID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateToken", reflect.TypeOf((*Mockauth)(nil).GenerateToken), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateTokens", reflect.TypeOf((*Mockauth)(nil).GenerateTokens), ctx, userID)
 }
 
 // ParseInitData mocks base method.
-func (m *Mockauth) ParseInitData(arg0 string) (*initdata.InitData, error) {
+func (m *Mockauth) ParseInitData(initData string) (*models.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ParseInitData", arg0)
-	ret0, _ := ret[0].(*initdata.InitData)
+	ret := m.ctrl.Call(m, "ParseInitData", initData)
+	ret0, _ := ret[0].(*models.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ParseInitData indicates an expected call of ParseInitData.
-func (mr *MockauthMockRecorder) ParseInitData(arg0 any) *gomock.Call {
+func (mr *MockauthMockRecorder) ParseInitData(initData any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ParseInitData", reflect.TypeOf((*Mockauth)(nil).ParseInitData), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ParseInitData", reflect.TypeOf((*Mockauth)(nil).ParseInitData), initData)
+}
+
+// RollTokens mocks base method.
+func (m *Mockauth) RollTokens(ctx context.Context, refresh *models.RefreshToken) (*models.JWTokens, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RollTokens", ctx, refresh)
+	ret0, _ := ret[0].(*models.JWTokens)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// RollTokens indicates an expected call of RollTokens.
+func (mr *MockauthMockRecorder) RollTokens(ctx, refresh any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RollTokens", reflect.TypeOf((*Mockauth)(nil).RollTokens), ctx, refresh)
+}
+
+// ValidateRefreshToken mocks base method.
+func (m *Mockauth) ValidateRefreshToken(ctx context.Context, refreshTokenStr string) (*models.RefreshToken, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ValidateRefreshToken", ctx, refreshTokenStr)
+	ret0, _ := ret[0].(*models.RefreshToken)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ValidateRefreshToken indicates an expected call of ValidateRefreshToken.
+func (mr *MockauthMockRecorder) ValidateRefreshToken(ctx, refreshTokenStr any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidateRefreshToken", reflect.TypeOf((*Mockauth)(nil).ValidateRefreshToken), ctx, refreshTokenStr)
+}
+
+// MockusersRepo is a mock of usersRepo interface.
+type MockusersRepo struct {
+	ctrl     *gomock.Controller
+	recorder *MockusersRepoMockRecorder
+	isgomock struct{}
+}
+
+// MockusersRepoMockRecorder is the mock recorder for MockusersRepo.
+type MockusersRepoMockRecorder struct {
+	mock *MockusersRepo
+}
+
+// NewMockusersRepo creates a new mock instance.
+func NewMockusersRepo(ctrl *gomock.Controller) *MockusersRepo {
+	mock := &MockusersRepo{ctrl: ctrl}
+	mock.recorder = &MockusersRepoMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockusersRepo) EXPECT() *MockusersRepoMockRecorder {
+	return m.recorder
+}
+
+// Create mocks base method.
+func (m *MockusersRepo) Create(ctx context.Context, in *models.User) (*models.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Create", ctx, in)
+	ret0, _ := ret[0].(*models.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Create indicates an expected call of Create.
+func (mr *MockusersRepoMockRecorder) Create(ctx, in any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockusersRepo)(nil).Create), ctx, in)
+}
+
+// Get mocks base method.
+func (m *MockusersRepo) Get(ctx context.Context, telegramID int64) (*models.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Get", ctx, telegramID)
+	ret0, _ := ret[0].(*models.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Get indicates an expected call of Get.
+func (mr *MockusersRepoMockRecorder) Get(ctx, telegramID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockusersRepo)(nil).Get), ctx, telegramID)
+}
+
+// MocksubscriptionsRepo is a mock of subscriptionsRepo interface.
+type MocksubscriptionsRepo struct {
+	ctrl     *gomock.Controller
+	recorder *MocksubscriptionsRepoMockRecorder
+	isgomock struct{}
+}
+
+// MocksubscriptionsRepoMockRecorder is the mock recorder for MocksubscriptionsRepo.
+type MocksubscriptionsRepoMockRecorder struct {
+	mock *MocksubscriptionsRepo
+}
+
+// NewMocksubscriptionsRepo creates a new mock instance.
+func NewMocksubscriptionsRepo(ctrl *gomock.Controller) *MocksubscriptionsRepo {
+	mock := &MocksubscriptionsRepo{ctrl: ctrl}
+	mock.recorder = &MocksubscriptionsRepoMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MocksubscriptionsRepo) EXPECT() *MocksubscriptionsRepoMockRecorder {
+	return m.recorder
+}
+
+// CreateSubscription mocks base method.
+func (m *MocksubscriptionsRepo) CreateSubscription(ctx context.Context, userID int64, eventID int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateSubscription", ctx, userID, eventID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateSubscription indicates an expected call of CreateSubscription.
+func (mr *MocksubscriptionsRepoMockRecorder) CreateSubscription(ctx, userID, eventID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateSubscription", reflect.TypeOf((*MocksubscriptionsRepo)(nil).CreateSubscription), ctx, userID, eventID)
+}
+
+// MockeventsRepo is a mock of eventsRepo interface.
+type MockeventsRepo struct {
+	ctrl     *gomock.Controller
+	recorder *MockeventsRepoMockRecorder
+	isgomock struct{}
+}
+
+// MockeventsRepoMockRecorder is the mock recorder for MockeventsRepo.
+type MockeventsRepoMockRecorder struct {
+	mock *MockeventsRepo
+}
+
+// NewMockeventsRepo creates a new mock instance.
+func NewMockeventsRepo(ctrl *gomock.Controller) *MockeventsRepo {
+	mock := &MockeventsRepo{ctrl: ctrl}
+	mock.recorder = &MockeventsRepoMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockeventsRepo) EXPECT() *MockeventsRepoMockRecorder {
+	return m.recorder
+}
+
+// GetUserEvents mocks base method.
+func (m *MockeventsRepo) GetUserEvents(ctx context.Context, userID int64) ([]models.EventEnriched, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUserEvents", ctx, userID)
+	ret0, _ := ret[0].([]models.EventEnriched)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUserEvents indicates an expected call of GetUserEvents.
+func (mr *MockeventsRepoMockRecorder) GetUserEvents(ctx, userID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserEvents", reflect.TypeOf((*MockeventsRepo)(nil).GetUserEvents), ctx, userID)
 }
