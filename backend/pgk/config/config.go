@@ -1,7 +1,9 @@
 package config
 
 import (
+	"errors"
 	"fmt"
+	"os"
 
 	"github.com/caarlos0/env/v11"
 	"github.com/joho/godotenv"
@@ -24,7 +26,7 @@ type Config struct {
 
 func LoadConfig() (*Config, error) {
 	err := godotenv.Load()
-	if err != nil {
+	if err != nil && !errors.Is(err, os.ErrNotExist) {
 		return nil, fmt.Errorf("load env: %w", err)
 	}
 
