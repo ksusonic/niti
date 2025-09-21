@@ -13,11 +13,11 @@ type contextKey string
 const txKey contextKey = "tx"
 
 type Repository struct {
-	*pgxpool.Pool
+	pool *pgxpool.Pool
 }
 
 func NewBaseRepository(pool *pgxpool.Pool) *Repository {
-	return &Repository{Pool: pool}
+	return &Repository{pool: pool}
 }
 
 // Exec executes a query using transaction if available in context
@@ -25,7 +25,7 @@ func (r *Repository) Exec(ctx context.Context, sql string, arguments ...interfac
 	if tx, ok := ctx.Value(txKey).(pgx.Tx); ok {
 		return tx.Exec(ctx, sql, arguments...)
 	}
-	return r.Pool.Exec(ctx, sql, arguments...)
+	return r.pool.Exec(ctx, sql, arguments...)
 }
 
 // Query executes a query using transaction if available in context
@@ -33,7 +33,7 @@ func (r *Repository) Query(ctx context.Context, sql string, args ...interface{})
 	if tx, ok := ctx.Value(txKey).(pgx.Tx); ok {
 		return tx.Query(ctx, sql, args...)
 	}
-	return r.Pool.Query(ctx, sql, args...)
+	return r.pool.Query(ctx, sql, args...)
 }
 
 // QueryRow executes a query that returns a single row using transaction if available in context
@@ -41,5 +41,10 @@ func (r *Repository) QueryRow(ctx context.Context, sql string, args ...interface
 	if tx, ok := ctx.Value(txKey).(pgx.Tx); ok {
 		return tx.QueryRow(ctx, sql, args...)
 	}
-	return r.Pool.QueryRow(ctx, sql, args...)
+	return r.pool.QueryRow(ctx, sql, args...)
+}
+
+// Acquire acquires a connection from the pool
+func (r *Repository) Acquire(ctx context.Context) (*pgxpool.Conn, error) {
+	return r.pool.Acquire(ctx)
 }

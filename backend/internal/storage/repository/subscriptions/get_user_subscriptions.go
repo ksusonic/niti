@@ -1,17 +1,24 @@
 package subscriptions
 
-import (
-	"context"
-)
+import "context"
 
-// GetUserSubscriptions returns all event IDs that the user is subscribed to
+const eventsLimit = 30
+
 func (r *Repository) GetUserSubscriptions(ctx context.Context, userID int64) ([]int, error) {
 	rows, err := r.Query(
 		ctx,
-		`SELECT event_id FROM subscriptions
-		WHERE user_id = $1
-		ORDER BY event_id`,
+		`SELECT
+			event_id
+		FROM
+			subscriptions
+		WHERE
+			user_id = $1
+		ORDER BY
+			create_time DESC
+		LIMIT
+			$2`,
 		userID,
+		eventsLimit,
 	)
 	if err != nil {
 		return nil, err

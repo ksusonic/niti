@@ -32,7 +32,7 @@ const createQuery = `
 			is_dj`
 
 func (r *Repository) Create(ctx context.Context, in *models.User) (*models.User, error) {
-	rows, err := r.Pool.Query(
+	rows, err := r.Query(
 		ctx,
 		createQuery,
 		in.TelegramID,

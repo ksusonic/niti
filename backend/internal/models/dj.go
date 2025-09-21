@@ -1,13 +1,15 @@
 package models
 
 type DJ struct {
-	StageName string
-	AvatarURL string
-	Socials   []Social
+	ID         int      `json:"id"`
+	TelegramID *int64   `json:"user_id"`
+	StageName  string   `json:"stage_name"`
+	AvatarURL  *string  `json:"avatar_url"`
+	Socials    []Social `json:"socials"`
 }
 
 type Social struct {
-	Name string
-	URL  string
-	Icon string
+	Name string `json:"name"`
+	URL  string `json:"url"`
+	Icon string `json:"icon"`
 }

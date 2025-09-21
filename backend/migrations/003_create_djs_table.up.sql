@@ -8,4 +8,5 @@ CREATE TABLE djs (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE UNIQUE INDEX idx_djs_user ON djs(user_id);
 CREATE INDEX idx_djs_stage_name ON djs(stage_name);

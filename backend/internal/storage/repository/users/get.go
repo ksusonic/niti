@@ -8,7 +8,7 @@ import (
 )
 
 func (r *Repository) Get(ctx context.Context, telegramID int64) (*models.User, error) {
-	row := r.Pool.QueryRow(
+	row := r.QueryRow(
 		ctx, `
 		SELECT
 			telegram_id,
