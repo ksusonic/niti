@@ -16,8 +16,9 @@ import (
 
 func TestGetProfile(t *testing.T) {
 	type fields struct {
-		auth      func(ctrl *gomock.Controller) *mocks.Mockauth
-		usersRepo func(ctrl *gomock.Controller) *mocks.MockusersRepo
+		auth       func(ctrl *gomock.Controller) *mocks.Mockauth
+		usersRepo  func(ctrl *gomock.Controller) *mocks.MockusersRepo
+		eventsRepo func(ctrl *gomock.Controller) *mocks.MockeventsRepo
 	}
 
 	tests := []struct {
@@ -39,6 +40,13 @@ func TestGetProfile(t *testing.T) {
 						Return(nil, models.ErrNotFound)
 					return mock
 				},
+				eventsRepo: func(ctrl *gomock.Controller) *mocks.MockeventsRepo {
+					mock := mocks.NewMockeventsRepo(ctrl)
+					mock.EXPECT().
+						GetUserEvents(gomock.Any(), int64(123)).
+						Return(nil, models.ErrNotFound)
+					return mock
+				},
 			},
 			setupCtx: func() context.Context {
 				ginCtx := &gin.Context{}
@@ -57,6 +65,13 @@ func TestGetProfile(t *testing.T) {
 					mock := mocks.NewMockusersRepo(ctrl)
 					mock.EXPECT().
 						Get(gomock.Any(), int64(456)).
+						Return(nil, assert.AnError)
+					return mock
+				},
+				eventsRepo: func(ctrl *gomock.Controller) *mocks.MockeventsRepo {
+					mock := mocks.NewMockeventsRepo(ctrl)
+					mock.EXPECT().
+						GetUserEvents(gomock.Any(), int64(456)).
 						Return(nil, assert.AnError)
 					return mock
 				},
@@ -89,6 +104,13 @@ func TestGetProfile(t *testing.T) {
 						Return(user, nil)
 					return mock
 				},
+				eventsRepo: func(ctrl *gomock.Controller) *mocks.MockeventsRepo {
+					mock := mocks.NewMockeventsRepo(ctrl)
+					mock.EXPECT().
+						GetUserEvents(gomock.Any(), int64(789)).
+						Return([]models.EventEnriched{}, nil)
+					return mock
+				},
 			},
 			setupCtx: func() context.Context {
 				ginCtx := &gin.Context{}
@@ -103,7 +125,7 @@ func TestGetProfile(t *testing.T) {
 				LastName:      nil,
 				AvatarUrl:     nil,
 				IsDj:          false,
-				Subscriptions: nil,
+				Subscriptions: []genapi.Event{},
 			},
 			expectedErr: assert.NoError,
 		},
@@ -128,6 +150,13 @@ func TestGetProfile(t *testing.T) {
 						Return(user, nil)
 					return mock
 				},
+				eventsRepo: func(ctrl *gomock.Controller) *mocks.MockeventsRepo {
+					mock := mocks.NewMockeventsRepo(ctrl)
+					mock.EXPECT().
+						GetUserEvents(gomock.Any(), int64(999)).
+						Return([]models.EventEnriched{}, nil)
+					return mock
+				},
 			},
 			setupCtx: func() context.Context {
 				ginCtx := &gin.Context{}
@@ -142,7 +171,7 @@ func TestGetProfile(t *testing.T) {
 				LastName:      func() *string { s := "User"; return &s }(),
 				AvatarUrl:     func() *string { s := "https://example.com/avatar.jpg"; return &s }(),
 				IsDj:          true,
-				Subscriptions: nil,
+				Subscriptions: []genapi.Event{},
 			},
 			expectedErr: assert.NoError,
 		},
@@ -165,6 +194,13 @@ func TestGetProfile(t *testing.T) {
 						Return(user, nil)
 					return mock
 				},
+				eventsRepo: func(ctrl *gomock.Controller) *mocks.MockeventsRepo {
+					mock := mocks.NewMockeventsRepo(ctrl)
+					mock.EXPECT().
+						GetUserEvents(gomock.Any(), int64(555)).
+						Return([]models.EventEnriched{}, nil)
+					return mock
+				},
 			},
 			setupCtx: func() context.Context {
 				ginCtx := &gin.Context{}
@@ -179,7 +215,7 @@ func TestGetProfile(t *testing.T) {
 				LastName:      nil,
 				AvatarUrl:     nil,
 				IsDj:          true,
-				Subscriptions: nil,
+				Subscriptions: []genapi.Event{},
 			},
 			expectedErr: assert.NoError,
 		},
@@ -196,6 +232,7 @@ func TestGetProfile(t *testing.T) {
 				tt.fields.auth(ctrl),
 				tt.fields.usersRepo(ctrl),
 				nil,
+				tt.fields.eventsRepo(ctrl),
 				zap.NewNop(),
 			)
 
@@ -214,6 +251,7 @@ func TestGetProfile_PanicOnMissingUserID(t *testing.T) {
 		mocks.NewMockauth(ctrl),
 		mocks.NewMockusersRepo(ctrl),
 		nil,
+		mocks.NewMockeventsRepo(ctrl),
 		zap.NewNop(),
 	)
 

@@ -2,7 +2,7 @@ package subscriptions
 
 import "context"
 
-func (r *Repository) DeleteSubscription(ctx context.Context, userID int64, eventID int) error {
+func (r *Repository) DeleteSubscription(ctx context.Context, userID int, eventID int) error {
 	_, err := r.Exec(
 		ctx,
 		`DELETE FROM subscriptions

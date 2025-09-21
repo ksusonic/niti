@@ -16,7 +16,7 @@ type Event struct {
 type EventEnriched struct {
 	Event
 
-	ParticipantsCount int
+	ParticipantsCount *int
 	IsSubscribed      bool
 	DJs               []DJ
 }

@@ -21,9 +21,9 @@ const (
 
 // DJ defines model for DJ.
 type DJ struct {
-	AvatarUrl *string   `json:"avatar_url,omitempty"`
-	Socials   *[]Social `json:"socials,omitempty"`
-	StageName *string   `json:"stage_name,omitempty"`
+	AvatarUrl *string  `json:"avatar_url,omitempty"`
+	Socials   []Social `json:"socials"`
+	StageName string   `json:"stage_name"`
 }
 
 // Error defines model for Error.
@@ -33,22 +33,22 @@ type Error struct {
 
 // Event defines model for Event.
 type Event struct {
-	Description       *string    `json:"description,omitempty"`
-	Djs               *[]DJ      `json:"djs,omitempty"`
-	Id                *int       `json:"id,omitempty"`
-	IsSubscribed      *bool      `json:"is_subscribed,omitempty"`
+	Description       string     `json:"description"`
+	Djs               []DJ       `json:"djs"`
+	Id                int        `json:"id"`
+	IsSubscribed      bool       `json:"is_subscribed"`
 	Location          *string    `json:"location,omitempty"`
 	ParticipantsCount *int       `json:"participants_count,omitempty"`
 	StartsAt          *time.Time `json:"starts_at,omitempty"`
-	Title             *string    `json:"title,omitempty"`
+	Title             string     `json:"title"`
 	VideoUrl          *string    `json:"video_url,omitempty"`
 }
 
 // Social defines model for Social.
 type Social struct {
 	Icon *string `json:"icon,omitempty"`
-	Name *string `json:"name,omitempty"`
-	Url  *string `json:"url,omitempty"`
+	Name string  `json:"name"`
+	Url  string  `json:"url"`
 }
 
 // User defines model for User.
@@ -63,13 +63,13 @@ type User struct {
 
 // UserProfile defines model for UserProfile.
 type UserProfile struct {
-	AvatarUrl     *string  `json:"avatar_url,omitempty"`
-	FirstName     string   `json:"first_name"`
-	IsDj          bool     `json:"is_dj"`
-	LastName      *string  `json:"last_name,omitempty"`
-	Subscriptions *[]Event `json:"subscriptions,omitempty"`
-	TelegramId    int64    `json:"telegram_id"`
-	Username      string   `json:"username"`
+	AvatarUrl     *string `json:"avatar_url,omitempty"`
+	FirstName     string  `json:"first_name"`
+	IsDj          bool    `json:"is_dj"`
+	LastName      *string `json:"last_name,omitempty"`
+	Subscriptions []Event `json:"subscriptions"`
+	TelegramId    int64   `json:"telegram_id"`
+	Username      string  `json:"username"`
 }
 
 // AuthRefreshTokenJSONBody defines parameters for AuthRefreshToken.

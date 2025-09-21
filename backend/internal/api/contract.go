@@ -23,3 +23,10 @@ type usersRepo interface {
 type subscriptionsRepo interface {
 	CreateSubscription(ctx context.Context, userID int64, eventID int) error
 }
+
+type eventsRepo interface {
+	GetUserEvents(
+		ctx context.Context,
+		userID int64,
+	) ([]models.EventEnriched, error)
+}

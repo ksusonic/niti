@@ -12,6 +12,7 @@ type API struct {
 	auth              auth
 	usersRepo         usersRepo
 	subscriptionsRepo subscriptionsRepo
+	eventsRepo        eventsRepo
 	logger            *zap.Logger
 }
 
@@ -19,12 +20,14 @@ func NewAPI(
 	auth auth,
 	usersRepo usersRepo,
 	subscriptionsRepo subscriptionsRepo,
+	eventsRepo eventsRepo,
 	logger *zap.Logger,
 ) *API {
 	return &API{
 		auth:              auth,
 		usersRepo:         usersRepo,
 		subscriptionsRepo: subscriptionsRepo,
+		eventsRepo:        eventsRepo,
 		logger:            logger,
 	}
 }

@@ -303,6 +303,12 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/DJ"
+      required:
+        - id
+        - title
+        - description
+        - is_subscribed
+        - djs
 
     DJ:
       type: object
@@ -316,6 +322,9 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Social"
+      required:
+        - stage_name
+        - socials
 
     Social:
       type: object
@@ -328,6 +337,9 @@ components:
         icon:
           type: string
           format: uri
+      required:
+        - name
+        - url
 
     User:
       type: object
@@ -361,6 +373,8 @@ components:
               type: array
               items:
                 $ref: "#/components/schemas/Event"
+          required:
+            - subscriptions
 
     Error:
       type: object

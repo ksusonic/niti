@@ -6,7 +6,7 @@ import (
 
 // GetSubscriptionsByEventIDs returns a slice of event IDs that the user is subscribed to
 // from the provided list of event IDs
-func (r *Repository) GetSubscriptionsByEventIDs(ctx context.Context, userID int64, eventIDs []int) ([]int, error) {
+func (r *Repository) GetSubscriptionsByEventIDs(ctx context.Context, userID int, eventIDs []int) ([]int, error) {
 	if len(eventIDs) == 0 {
 		return []int{}, nil
 	}

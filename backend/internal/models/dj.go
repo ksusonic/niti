@@ -9,7 +9,7 @@ type DJ struct {
 }
 
 type Social struct {
-	Name string `json:"name"`
-	URL  string `json:"url"`
-	Icon string `json:"icon"`
+	Name string  `json:"name"`
+	URL  string  `json:"url"`
+	Icon *string `json:"icon"`
 }

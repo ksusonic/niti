@@ -10,6 +10,7 @@ import (
 	"github.com/ksusonic/niti/backend/internal/storage/repository/base"
 	"github.com/ksusonic/niti/backend/internal/storage/repository/djs"
 	"github.com/ksusonic/niti/backend/internal/storage/repository/users"
+	"github.com/ksusonic/niti/backend/internal/utils"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 )
@@ -27,12 +28,11 @@ func TestDJsRepository(t *testing.T) {
 		{
 			Name: "Instagram",
 			URL:  "https://instagram.com/testdj",
-			Icon: "instagram",
+			Icon: utils.Ptr("instagram"),
 		},
 		{
 			Name: "SoundCloud",
 			URL:  "https://soundcloud.com/testdj",
-			Icon: "soundcloud",
 		},
 	}
 
@@ -53,7 +53,8 @@ func TestDJsRepository(t *testing.T) {
 		require.Len(t, created.Socials, 2)
 		require.Equal(t, "Instagram", created.Socials[0].Name)
 		require.Equal(t, "https://instagram.com/testdj", created.Socials[0].URL)
-		require.Equal(t, "instagram", created.Socials[0].Icon)
+		require.NotNil(t, created.Socials[0].Icon)
+		require.Equal(t, "instagram", *created.Socials[0].Icon)
 
 		userRepo := users.New(pool)
 		_, err = userRepo.Create(ctx, &models.User{
@@ -78,6 +79,7 @@ func TestDJsRepository(t *testing.T) {
 		require.Equal(t, avatarURL, *got.AvatarURL)
 		require.Len(t, got.Socials, 2)
 		require.Equal(t, "SoundCloud", got.Socials[1].Name)
+		require.Nil(t, created.Socials[1].Icon)
 	})
 	require.NoError(t, err)
 }

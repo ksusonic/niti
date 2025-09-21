@@ -208,6 +208,7 @@ func TestAuthTelegramInitData(t *testing.T) {
 				tt.fields.auth(ctrl),
 				tt.fields.usersRepo(ctrl),
 				nil,
+				nil,
 				zap.NewNop(),
 			)
 

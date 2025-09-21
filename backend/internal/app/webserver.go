@@ -17,6 +17,7 @@ func (a *App) WebServer() int {
 		a.AuthService(),
 		a.UsersRepo(),
 		a.SubscriptionsRepo(),
+		nil,
 		a.log,
 	)
 
