@@ -22,6 +22,7 @@ require (
 	go.uber.org/mock v0.6.0
 	go.uber.org/zap v1.27.0
 	golang.org/x/sync v0.17.0
+	gopkg.in/telebot.v4 v4.0.0-beta.5
 )
 
 require (

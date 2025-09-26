@@ -10,6 +10,6 @@ type AuthConfig struct {
 	RefreshTTL    time.Duration `env:"REFRESH_TTL_HOURS" envDefault:"168h"`
 
 	// Telegram
-	TelegramToken     string        `env:"TELEGRAM_BOT_TOKEN"`
-	TelegramExpiresIn time.Duration `env:"TELEGRAM_EXPIRES_IN_SECONDS" envDefault:"86400s"`
+	TelegramToken  string        `env:"TELEGRAM_BOT_TOKEN"`
+	TokenExpiresIn time.Duration `env:"TOKEN_EXPIRES_IN" envDefault:"86400s"`
 }

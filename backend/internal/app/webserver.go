@@ -1,7 +1,9 @@
 package app
 
 import (
+	"context"
 	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/ksusonic/niti/backend/internal/api"
@@ -9,7 +11,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func (a *App) WebServer() int {
+func (a *App) WebServer(ctx context.Context) {
 	buildStart := time.Now()
 	a.log.Debug("building server deps")
 
@@ -30,11 +32,22 @@ func (a *App) WebServer() int {
 		a.log,
 	)
 
-	err := engine.Run(fmt.Sprintf(":%d", a.config.ServerPort))
-	if err != nil {
-		a.log.Error("web serve", zap.Error(err))
-		return 1
+	srv := &http.Server{
+		Addr:    fmt.Sprintf(":%d", a.config.ServerPort),
+		Handler: engine.Handler(),
 	}
 
-	return 0
+	go func() {
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			a.log.Fatal("listen", zap.Error(err))
+		}
+	}()
+
+	<-ctx.Done()
+
+	a.log.Info("shutting down")
+
+	if err := srv.Shutdown(ctx); err != nil {
+		a.log.Error("shutdown", zap.Error(err))
+	}
 }

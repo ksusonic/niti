@@ -28,8 +28,10 @@ func New() *App {
 		panic(fmt.Errorf("load config: %v", err))
 	}
 
-	log := logger.New(cfg.Logger)
-	defer func() { _ = log.Sync() }()
+	log, err := logger.New(cfg.Logger)
+	if err != nil {
+		panic(fmt.Errorf("create logger: %v", err))
+	}
 
 	return &App{
 		config: cfg,
@@ -38,21 +40,9 @@ func New() *App {
 }
 
 func (a *App) Close(ctx context.Context) {
+	defer func() { _ = a.log.Sync() }()
+
 	for _, closeFunc := range a.closer {
 		closeFunc(ctx)
 	}
-}
-
-func (a *App) postgresPool(ctx context.Context) *storage.Storage {
-	if a.storage == nil {
-		db, err := storage.New(ctx, a.config.Postgres, a.log)
-		if err != nil {
-			a.log.Fatal("unable to initialize storage", zap.Error(err))
-		}
-
-		a.storage = db
-		a.closer = append(a.closer, db.Close)
-	}
-
-	return a.storage
 }
