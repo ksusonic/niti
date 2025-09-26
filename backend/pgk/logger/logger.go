@@ -14,7 +14,7 @@ const (
 	JSONFormat   logFormat = "json"
 )
 
-func New(config config.LoggerConfig) *zap.Logger {
+func New(config config.LoggerConfig) (*zap.Logger, error) {
 	var zapConfig zap.Config
 
 	switch logFormat(config.LogFormat) {
@@ -28,7 +28,7 @@ func New(config config.LoggerConfig) *zap.Logger {
 
 	level, err := zap.ParseAtomicLevel(config.LogLevel)
 	if err != nil {
-		panic(fmt.Errorf("parse log level: %w", err))
+		return nil, fmt.Errorf("parse log level: %w", err)
 	}
 
 	zapConfig.Level = level
@@ -37,8 +37,8 @@ func New(config config.LoggerConfig) *zap.Logger {
 
 	zapLogger, err := zapConfig.Build()
 	if err != nil {
-		panic(fmt.Errorf("build zap config: %w", err))
+		return nil, fmt.Errorf("build zap config: %w", err)
 	}
 
-	return zapLogger
+	return zapLogger, nil
 }

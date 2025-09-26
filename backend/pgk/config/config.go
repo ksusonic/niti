@@ -1,18 +1,18 @@
 package config
 
 import (
-	"errors"
 	"fmt"
-	"os"
 
 	"github.com/caarlos0/env/v11"
-	"github.com/joho/godotenv"
 )
 
 type Config struct {
 	// Webserver
 	ServerPort     int      `env:"PORT" envDefault:"8080"`
 	TrustedProxies []string `env:"TRUSTED_PROXIES" envDefault:"127.0.0.1"`
+
+	// Telegram
+	Telegram TelegramConfig
 
 	// Logger
 	Logger LoggerConfig
@@ -25,16 +25,11 @@ type Config struct {
 }
 
 func LoadConfig() (*Config, error) {
-	err := godotenv.Load()
-	if err != nil && !errors.Is(err, os.ErrNotExist) {
-		return nil, fmt.Errorf("load env: %w", err)
-	}
-
-	cfg := &Config{}
-	err = env.Parse(cfg)
+	var cfg Config
+	err := env.Parse(&cfg)
 	if err != nil {
 		return nil, fmt.Errorf("parse env config: %w", err)
 	}
 
-	return cfg, nil
+	return &cfg, nil
 }

@@ -16,8 +16,10 @@ func main() {
 	app := app.New()
 	defer app.Close(context.Background())
 
+	bot := app.BotService()
+
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
-	app.WebServer(ctx)
+	bot.Start(ctx)
 }
