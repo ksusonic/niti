@@ -28,12 +28,12 @@ func (a *App) WebServer(ctx context.Context) {
 	engine := server.NewGinServer(
 		impl,
 		a.AuthService(),
-		a.config,
+		a.config.Webserver,
 		a.log,
 	)
 
 	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%d", a.config.ServerPort),
+		Addr:    fmt.Sprintf(":%d", a.config.Webserver.Port),
 		Handler: engine.Handler(),
 	}
 

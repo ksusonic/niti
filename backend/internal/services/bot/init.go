@@ -23,7 +23,6 @@ func initBot(
 	if err != nil {
 		return nil, fmt.Errorf("tele.NewBot: %w", err)
 	}
-
 	log.Info("setting menu button")
 
 	err = b.SetMenuButton(nil, &tele.MenuButton{
