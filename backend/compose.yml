@@ -20,20 +20,20 @@ services:
       retries: 10
 
   migrations:
-    build: .
-    entrypoint: ["./migrator"]
-    command: ["-command=up"]
+    image: migrate/migrate
+    restart: "no"
     depends_on:
-      postgres:
-        condition: service_healthy
+      - postgres
+    command:
+      [
+        "-path",
+        "/migrations",
+        "-database",
+        "postgres://devuser@postgres:5432/niti-dev?sslmode=disable",
+        "up",
+      ]
     volumes:
       - ./migrations:/migrations
-    environment:
-      POSTGRES_MIGRATIONS_PATH: file:///migrations
-      POSTGRES_DSN: postgresql://devuser@postgres:5432/niti-dev?sslmode=disable
-    env_file:
-      - .env
-    restart: "no"
 
 volumes:
   postgres_data:
