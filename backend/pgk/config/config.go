@@ -8,8 +8,7 @@ import (
 
 type Config struct {
 	// Webserver
-	ServerPort     int      `env:"PORT" envDefault:"8080"`
-	TrustedProxies []string `env:"TRUSTED_PROXIES" envDefault:"127.0.0.1"`
+	Webserver WebserverConfig
 
 	// Telegram
 	Telegram TelegramConfig

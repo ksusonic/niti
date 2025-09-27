@@ -14,7 +14,7 @@ import (
 func NewGinServer(
 	strictServer genapi.StrictServerInterface,
 	authDeps authmw.AuthDeps,
-	cfg *config.Config,
+	cfg config.WebserverConfig,
 	log *zap.Logger,
 ) *gin.Engine {
 	h := genapi.NewStrictHandler(strictServer, nil)
