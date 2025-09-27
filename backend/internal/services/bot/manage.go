@@ -7,6 +7,8 @@ import (
 	tele "gopkg.in/telebot.v4"
 )
 
+const appTitle = "NITI APP"
+
 func (s *Service) Manage(ctx context.Context) error {
 	s.log.Info("starting bot manage")
 
