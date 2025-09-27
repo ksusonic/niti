@@ -11,8 +11,8 @@ import (
 )
 
 type App struct {
-	config *config.Config
-	log    *zap.Logger
+	Config *config.Config
+	Log    *zap.Logger
 
 	// lazy-init
 	storage      *storage.Storage
@@ -34,13 +34,13 @@ func New() *App {
 	}
 
 	return &App{
-		config: cfg,
-		log:    log,
+		Config: cfg,
+		Log:    log,
 	}
 }
 
 func (a *App) Close(ctx context.Context) {
-	defer func() { _ = a.log.Sync() }()
+	defer func() { _ = a.Log.Sync() }()
 
 	for _, closeFunc := range a.closer {
 		closeFunc(ctx)

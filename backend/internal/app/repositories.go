@@ -18,9 +18,9 @@ type repositories struct {
 
 func (a *App) postgresPool(ctx context.Context) *storage.Storage {
 	if a.storage == nil {
-		db, err := storage.New(ctx, a.config.Postgres, a.log)
+		db, err := storage.New(ctx, a.Config.Postgres, a.Log)
 		if err != nil {
-			a.log.Fatal("unable to initialize storage", zap.Error(err))
+			a.Log.Fatal("unable to initialize storage", zap.Error(err))
 		}
 
 		a.storage = db

@@ -1,3 +1,6 @@
+devenv:
+    docker-compose up -d
+
 generate:
     go mod tidy && go generate ./...
 

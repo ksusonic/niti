@@ -12,7 +12,7 @@ COPY . .
 
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o server ./cmd/server
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o bot ./cmd/bot
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o migrator ./cmd/migrator
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o bot_manage ./cmd/bot/manage
 
 #####
 
@@ -25,7 +25,7 @@ WORKDIR /root/
 
 COPY --from=builder /app/server .
 COPY --from=builder /app/bot .
-COPY --from=builder /app/migrator .
+COPY --from=builder /app/bot_manage .
 
 # Change ownership to non-root user
 RUN chown -R appuser:appuser /root
