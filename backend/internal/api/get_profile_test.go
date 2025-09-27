@@ -8,7 +8,7 @@ import (
 	"github.com/ksusonic/niti/backend/internal/api"
 	"github.com/ksusonic/niti/backend/internal/api/mocks"
 	"github.com/ksusonic/niti/backend/internal/models"
-	"github.com/ksusonic/niti/backend/pgk/genapi"
+	"github.com/ksusonic/niti/backend/pgk/publicapi"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 	"go.uber.org/zap"
@@ -25,8 +25,8 @@ func TestGetProfile(t *testing.T) {
 		name        string
 		fields      fields
 		setupCtx    func() context.Context
-		request     genapi.GetProfileRequestObject
-		expected    genapi.GetProfileResponseObject
+		request     publicapi.GetProfileRequestObject
+		expected    publicapi.GetProfileResponseObject
 		expectedErr assert.ErrorAssertionFunc
 	}{
 		{
@@ -53,8 +53,8 @@ func TestGetProfile(t *testing.T) {
 				ginCtx.Set(models.ContextKeyTGUserID, int64(123))
 				return ginCtx
 			},
-			request:     genapi.GetProfileRequestObject{},
-			expected:    genapi.GetProfile404JSONResponse{Message: "profile not found"},
+			request:     publicapi.GetProfileRequestObject{},
+			expected:    publicapi.GetProfile404JSONResponse{Message: "profile not found"},
 			expectedErr: assert.NoError,
 		},
 		{
@@ -81,7 +81,7 @@ func TestGetProfile(t *testing.T) {
 				ginCtx.Set(models.ContextKeyTGUserID, int64(456))
 				return ginCtx
 			},
-			request:     genapi.GetProfileRequestObject{},
+			request:     publicapi.GetProfileRequestObject{},
 			expected:    nil,
 			expectedErr: assert.Error,
 		},
@@ -117,15 +117,15 @@ func TestGetProfile(t *testing.T) {
 				ginCtx.Set(models.ContextKeyTGUserID, int64(789))
 				return ginCtx
 			},
-			request: genapi.GetProfileRequestObject{},
-			expected: genapi.GetProfile200JSONResponse{
+			request: publicapi.GetProfileRequestObject{},
+			expected: publicapi.GetProfile200JSONResponse{
 				TelegramId:    789,
 				Username:      "testuser",
 				FirstName:     "Test",
 				LastName:      nil,
 				AvatarUrl:     nil,
 				IsDj:          false,
-				Subscriptions: []genapi.Event{},
+				Subscriptions: []publicapi.Event{},
 			},
 			expectedErr: assert.NoError,
 		},
@@ -163,15 +163,15 @@ func TestGetProfile(t *testing.T) {
 				ginCtx.Set(models.ContextKeyTGUserID, int64(999))
 				return ginCtx
 			},
-			request: genapi.GetProfileRequestObject{},
-			expected: genapi.GetProfile200JSONResponse{
+			request: publicapi.GetProfileRequestObject{},
+			expected: publicapi.GetProfile200JSONResponse{
 				TelegramId:    999,
 				Username:      "fulltestuser",
 				FirstName:     "Full",
 				LastName:      func() *string { s := "User"; return &s }(),
 				AvatarUrl:     func() *string { s := "https://example.com/avatar.jpg"; return &s }(),
 				IsDj:          true,
-				Subscriptions: []genapi.Event{},
+				Subscriptions: []publicapi.Event{},
 			},
 			expectedErr: assert.NoError,
 		},
@@ -207,15 +207,15 @@ func TestGetProfile(t *testing.T) {
 				ginCtx.Set(models.ContextKeyTGUserID, int64(555))
 				return ginCtx
 			},
-			request: genapi.GetProfileRequestObject{},
-			expected: genapi.GetProfile200JSONResponse{
+			request: publicapi.GetProfileRequestObject{},
+			expected: publicapi.GetProfile200JSONResponse{
 				TelegramId:    555,
 				Username:      "djuser",
 				FirstName:     "DJ",
 				LastName:      nil,
 				AvatarUrl:     nil,
 				IsDj:          true,
-				Subscriptions: []genapi.Event{},
+				Subscriptions: []publicapi.Event{},
 			},
 			expectedErr: assert.NoError,
 		},
@@ -259,6 +259,6 @@ func TestGetProfile_PanicOnMissingUserID(t *testing.T) {
 	ctx := &gin.Context{}
 
 	assert.Panics(t, func() {
-		_, _ = srv.GetProfile(ctx, genapi.GetProfileRequestObject{})
+		_, _ = srv.GetProfile(ctx, publicapi.GetProfileRequestObject{})
 	})
 }

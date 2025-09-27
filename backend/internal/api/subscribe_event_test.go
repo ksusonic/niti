@@ -8,7 +8,7 @@ import (
 	"github.com/ksusonic/niti/backend/internal/api"
 	"github.com/ksusonic/niti/backend/internal/api/mocks"
 	"github.com/ksusonic/niti/backend/internal/models"
-	"github.com/ksusonic/niti/backend/pgk/genapi"
+	"github.com/ksusonic/niti/backend/pgk/publicapi"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 	"go.uber.org/zap"
@@ -26,8 +26,8 @@ func TestSubscribeEvent(t *testing.T) {
 		name        string
 		fields      fields
 		setupCtx    func() context.Context
-		request     genapi.SubscribeEventRequestObject
-		expected    genapi.SubscribeEventResponseObject
+		request     publicapi.SubscribeEventRequestObject
+		expected    publicapi.SubscribeEventResponseObject
 		expectedErr assert.ErrorAssertionFunc
 	}{
 		{
@@ -49,10 +49,10 @@ func TestSubscribeEvent(t *testing.T) {
 				ginCtx.Set(models.ContextKeyTGUserID, int64(123))
 				return ginCtx
 			},
-			request: genapi.SubscribeEventRequestObject{
+			request: publicapi.SubscribeEventRequestObject{
 				Id: 456,
 			},
-			expected:    genapi.SubscribeEvent200JSONResponse{},
+			expected:    publicapi.SubscribeEvent200JSONResponse{},
 			expectedErr: assert.NoError,
 		},
 		{
@@ -74,10 +74,10 @@ func TestSubscribeEvent(t *testing.T) {
 				ginCtx.Set(models.ContextKeyTGUserID, int64(789))
 				return ginCtx
 			},
-			request: genapi.SubscribeEventRequestObject{
+			request: publicapi.SubscribeEventRequestObject{
 				Id: 101,
 			},
-			expected: genapi.SubscribeEvent500JSONResponse{
+			expected: publicapi.SubscribeEvent500JSONResponse{
 				Message: assert.AnError.Error(),
 			},
 			expectedErr: assert.NoError,
@@ -101,10 +101,10 @@ func TestSubscribeEvent(t *testing.T) {
 				ginCtx.Set(models.ContextKeyTGUserID, int64(555))
 				return ginCtx
 			},
-			request: genapi.SubscribeEventRequestObject{
+			request: publicapi.SubscribeEventRequestObject{
 				Id: 999,
 			},
-			expected:    genapi.SubscribeEvent200JSONResponse{},
+			expected:    publicapi.SubscribeEvent200JSONResponse{},
 			expectedErr: assert.NoError,
 		},
 		{
@@ -126,10 +126,10 @@ func TestSubscribeEvent(t *testing.T) {
 				ginCtx.Set(models.ContextKeyTGUserID, int64(111))
 				return ginCtx
 			},
-			request: genapi.SubscribeEventRequestObject{
+			request: publicapi.SubscribeEventRequestObject{
 				Id: 0,
 			},
-			expected:    genapi.SubscribeEvent200JSONResponse{},
+			expected:    publicapi.SubscribeEvent200JSONResponse{},
 			expectedErr: assert.NoError,
 		},
 	}
@@ -172,6 +172,6 @@ func TestSubscribeEvent_PanicOnMissingUserID(t *testing.T) {
 	ctx := &gin.Context{}
 
 	assert.Panics(t, func() {
-		_, _ = srv.SubscribeEvent(ctx, genapi.SubscribeEventRequestObject{Id: 123})
+		_, _ = srv.SubscribeEvent(ctx, publicapi.SubscribeEventRequestObject{Id: 123})
 	})
 }

@@ -1,0 +1,32 @@
+generate:
+    go mod tidy && go generate ./...
+
+lint:
+    golangci-lint run --fix
+
+run:
+    go run ./cmd/server/main.go
+
+test *FLAGS:
+    go test {{ if FLAGS =~ "--integration" { "-tags integration" } else { "" } }} ./...
+
+migrate-up:
+    docker run --rm -v ./migrations:/migrations --network host  migrate/migrate \
+        -path=/migrations/ \
+        -database postgres://devuser@localhost:5432/niti-dev?sslmode=disable up
+
+migrate-down:
+    docker run --rm -v ./migrations:/migrations --network host  migrate/migrate \
+        -path=/migrations/ \
+        -database postgres://devuser@localhost:5432/niti-dev?sslmode=disable down
+
+migrate-version:
+    docker run --rm -v ./migrations:/migrations --network host  migrate/migrate \
+        -path=/migrations/ \
+        -database postgres://devuser@localhost:5432/niti-dev?sslmode=disable version
+
+migrate-create name:
+    docker run --rm -v ./migrations:/migrations --network host  migrate/migrate \
+        -path=/migrations/ \
+        -database postgres://devuser@localhost:5432/niti-dev?sslmode=disable \
+        create -ext sql -digits 3 -dir migrations -seq {{name}}
