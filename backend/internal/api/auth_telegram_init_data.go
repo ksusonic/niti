@@ -5,20 +5,20 @@ import (
 	"fmt"
 
 	"github.com/ksusonic/niti/backend/internal/models"
-	"github.com/ksusonic/niti/backend/pgk/genapi"
+	"github.com/ksusonic/niti/backend/pgk/publicapi"
 	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
 )
 
-func (a *API) AuthTelegramInitData(ctx context.Context, request genapi.AuthTelegramInitDataRequestObject) (genapi.AuthTelegramInitDataResponseObject, error) {
+func (a *API) AuthTelegramInitData(ctx context.Context, request publicapi.AuthTelegramInitDataRequestObject) (publicapi.AuthTelegramInitDataResponseObject, error) {
 	if request.Body == nil || request.Body.InitData == nil || *request.Body.InitData == "" {
-		return genapi.AuthTelegramInitData400JSONResponse{Message: "invalid request"}, nil
+		return publicapi.AuthTelegramInitData400JSONResponse{Message: "invalid request"}, nil
 	}
 
 	userData, err := a.auth.ParseInitData(*request.Body.InitData)
 	if err != nil {
 		a.logger.Debug("validate request", zap.Error(err), zap.String("init_data", *request.Body.InitData))
-		return genapi.AuthTelegramInitData400JSONResponse{Message: "invalid token"}, nil
+		return publicapi.AuthTelegramInitData400JSONResponse{Message: "invalid token"}, nil
 	}
 
 	var (
@@ -49,13 +49,13 @@ func (a *API) AuthTelegramInitData(ctx context.Context, request genapi.AuthTeleg
 	if err := eg.Wait(); err != nil {
 		a.logger.Error("process user save and gen token", zap.Error(err), zap.Any("user_data", *userData))
 
-		return genapi.AuthTelegramInitData500JSONResponse{Message: "internal server error"}, nil
+		return publicapi.AuthTelegramInitData500JSONResponse{Message: "internal server error"}, nil
 	}
 
-	return genapi.AuthTelegramInitData200JSONResponse{
+	return publicapi.AuthTelegramInitData200JSONResponse{
 		AccessToken:  tokens.AccessToken,
 		RefreshToken: tokens.RefreshToken,
-		User: genapi.User{
+		User: publicapi.User{
 			TelegramId: user.TelegramID,
 			FirstName:  user.FirstName,
 			LastName:   user.LastName,

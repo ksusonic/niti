@@ -1,5 +1,5 @@
 # yaml-language-server: $schema=../../../configuration-schema.json
-package: genapi
+package: publicapi
 output: generated.go
 generate:
   models: true

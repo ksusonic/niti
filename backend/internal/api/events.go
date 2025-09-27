@@ -5,12 +5,12 @@ import (
 
 	"github.com/ksusonic/niti/backend/internal/models"
 	"github.com/ksusonic/niti/backend/internal/utils"
-	"github.com/ksusonic/niti/backend/pgk/genapi"
+	"github.com/ksusonic/niti/backend/pgk/publicapi"
 	"go.uber.org/zap"
 )
 
 // under auth middleware
-func (a *API) Events(ctx context.Context, request genapi.EventsRequestObject) (genapi.EventsResponseObject, error) {
+func (a *API) Events(ctx context.Context, request publicapi.EventsRequestObject) (publicapi.EventsResponseObject, error) {
 	tgUserID := models.MustTGUserID(ctx)
 
 	limit := utils.Deref(request.Params.Limit)
@@ -29,8 +29,8 @@ func (a *API) Events(ctx context.Context, request genapi.EventsRequestObject) (g
 		return nil, err
 	}
 
-	return genapi.Events200JSONResponse(utils.Map(events, func(e models.EventEnriched) genapi.Event {
-		return genapi.Event{
+	return publicapi.Events200JSONResponse(utils.Map(events, func(e models.EventEnriched) publicapi.Event {
+		return publicapi.Event{
 			Id:                e.ID,
 			Title:             e.Title,
 			Description:       e.Description,
@@ -39,12 +39,12 @@ func (a *API) Events(ctx context.Context, request genapi.EventsRequestObject) (g
 			StartsAt:          e.StartsAt,
 			IsSubscribed:      e.IsSubscribed,
 			ParticipantsCount: e.ParticipantsCount,
-			Djs: utils.Map(e.DJs, func(dj models.DJ) genapi.DJ {
-				return genapi.DJ{
+			Djs: utils.Map(e.DJs, func(dj models.DJ) publicapi.DJ {
+				return publicapi.DJ{
 					StageName: dj.StageName,
 					AvatarUrl: dj.AvatarURL,
-					Socials: utils.Map(dj.Socials, func(social models.Social) genapi.Social {
-						return genapi.Social{
+					Socials: utils.Map(dj.Socials, func(social models.Social) publicapi.Social {
+						return publicapi.Social{
 							Name: social.Name,
 							Url:  social.URL,
 							Icon: social.Icon,

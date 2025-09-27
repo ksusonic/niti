@@ -1,12 +1,12 @@
 package api
 
 import (
-	"github.com/ksusonic/niti/backend/pgk/genapi"
+	"github.com/ksusonic/niti/backend/pgk/publicapi"
 	"go.uber.org/zap"
 )
 
 // compile-time implementation check
-var _ genapi.StrictServerInterface = (*API)(nil)
+var _ publicapi.StrictServerInterface = (*API)(nil)
 
 type API struct {
 	auth              auth

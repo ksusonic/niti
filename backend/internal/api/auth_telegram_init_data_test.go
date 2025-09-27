@@ -8,7 +8,7 @@ import (
 	"github.com/ksusonic/niti/backend/internal/api/mocks"
 	"github.com/ksusonic/niti/backend/internal/models"
 	"github.com/ksusonic/niti/backend/internal/utils"
-	"github.com/ksusonic/niti/backend/pgk/genapi"
+	"github.com/ksusonic/niti/backend/pgk/publicapi"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 	"go.uber.org/zap"
@@ -25,38 +25,38 @@ func TestAuthTelegramInitData(t *testing.T) {
 	tests := []struct {
 		name        string
 		fields      fields
-		request     genapi.AuthTelegramInitDataRequestObject
-		expected    genapi.AuthTelegramInitDataResponseObject
+		request     publicapi.AuthTelegramInitDataRequestObject
+		expected    publicapi.AuthTelegramInitDataResponseObject
 		expectedErr assert.ErrorAssertionFunc
 	}{
 		{
 			name: "nil body",
-			request: genapi.AuthTelegramInitDataRequestObject{
+			request: publicapi.AuthTelegramInitDataRequestObject{
 				Body: nil,
 			},
 			fields: fields{
 				auth:      mocks.NewMockauth,
 				usersRepo: mocks.NewMockusersRepo,
 			},
-			expected:    genapi.AuthTelegramInitData400JSONResponse{Message: "invalid request"},
+			expected:    publicapi.AuthTelegramInitData400JSONResponse{Message: "invalid request"},
 			expectedErr: assert.NoError,
 		},
 		{
 			name: "empty init data",
-			request: genapi.AuthTelegramInitDataRequestObject{
-				Body: &genapi.AuthTelegramInitDataJSONRequestBody{InitData: utils.Ptr("")},
+			request: publicapi.AuthTelegramInitDataRequestObject{
+				Body: &publicapi.AuthTelegramInitDataJSONRequestBody{InitData: utils.Ptr("")},
 			},
 			fields: fields{
 				auth:      mocks.NewMockauth,
 				usersRepo: mocks.NewMockusersRepo,
 			},
-			expected:    genapi.AuthTelegramInitData400JSONResponse{Message: "invalid request"},
+			expected:    publicapi.AuthTelegramInitData400JSONResponse{Message: "invalid request"},
 			expectedErr: assert.NoError,
 		},
 		{
 			name: "parse error",
-			request: genapi.AuthTelegramInitDataRequestObject{
-				Body: &genapi.AuthTelegramInitDataJSONRequestBody{InitData: utils.Ptr("bad_data")},
+			request: publicapi.AuthTelegramInitDataRequestObject{
+				Body: &publicapi.AuthTelegramInitDataJSONRequestBody{InitData: utils.Ptr("bad_data")},
 			},
 			fields: fields{
 				auth: func(ctrl *gomock.Controller) *mocks.Mockauth {
@@ -69,13 +69,13 @@ func TestAuthTelegramInitData(t *testing.T) {
 				},
 				usersRepo: mocks.NewMockusersRepo,
 			},
-			expected:    genapi.AuthTelegramInitData400JSONResponse{Message: "invalid token"},
+			expected:    publicapi.AuthTelegramInitData400JSONResponse{Message: "invalid token"},
 			expectedErr: assert.NoError,
 		},
 		{
 			name: "generate token error",
-			request: genapi.AuthTelegramInitDataRequestObject{
-				Body: &genapi.AuthTelegramInitDataJSONRequestBody{InitData: utils.Ptr("good_data")},
+			request: publicapi.AuthTelegramInitDataRequestObject{
+				Body: &publicapi.AuthTelegramInitDataJSONRequestBody{InitData: utils.Ptr("good_data")},
 			},
 			fields: fields{
 				auth: func(ctrl *gomock.Controller) *mocks.Mockauth {
@@ -99,13 +99,13 @@ func TestAuthTelegramInitData(t *testing.T) {
 					return mock
 				},
 			},
-			expected:    genapi.AuthTelegramInitData500JSONResponse{Message: "internal server error"},
+			expected:    publicapi.AuthTelegramInitData500JSONResponse{Message: "internal server error"},
 			expectedErr: assert.NoError,
 		},
 		{
 			name: "create user error",
-			request: genapi.AuthTelegramInitDataRequestObject{
-				Body: &genapi.AuthTelegramInitDataJSONRequestBody{InitData: utils.Ptr("good_data")},
+			request: publicapi.AuthTelegramInitDataRequestObject{
+				Body: &publicapi.AuthTelegramInitDataJSONRequestBody{InitData: utils.Ptr("good_data")},
 			},
 			fields: fields{
 				auth: func(ctrl *gomock.Controller) *mocks.Mockauth {
@@ -129,13 +129,13 @@ func TestAuthTelegramInitData(t *testing.T) {
 					return mock
 				},
 			},
-			expected:    genapi.AuthTelegramInitData500JSONResponse{Message: "internal server error"},
+			expected:    publicapi.AuthTelegramInitData500JSONResponse{Message: "internal server error"},
 			expectedErr: assert.NoError,
 		},
 		{
 			name: "success",
-			request: genapi.AuthTelegramInitDataRequestObject{
-				Body: &genapi.AuthTelegramInitDataJSONRequestBody{InitData: utils.Ptr("valid_data")},
+			request: publicapi.AuthTelegramInitDataRequestObject{
+				Body: &publicapi.AuthTelegramInitDataJSONRequestBody{InitData: utils.Ptr("valid_data")},
 			},
 			fields: fields{
 				auth: func(ctrl *gomock.Controller) *mocks.Mockauth {
@@ -183,10 +183,10 @@ func TestAuthTelegramInitData(t *testing.T) {
 					return mock
 				},
 			},
-			expected: genapi.AuthTelegramInitData200JSONResponse{
+			expected: publicapi.AuthTelegramInitData200JSONResponse{
 				AccessToken:  "access_token_123",
 				RefreshToken: "refresh_token_456",
-				User: genapi.User{
+				User: publicapi.User{
 					TelegramId: 456,
 					FirstName:  "Jane",
 					LastName:   utils.Ptr("Doe"),
