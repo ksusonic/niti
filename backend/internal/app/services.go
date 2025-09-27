@@ -13,9 +13,9 @@ type services struct {
 func (a *App) AuthService() *auth.Service {
 	if a.services.authService == nil {
 		a.services.authService = auth.NewService(
-			a.config.AuthConfig,
+			a.Config.AuthConfig,
 			a.RefreshTokenRepo(),
-			a.log,
+			a.Log,
 		)
 	}
 
@@ -25,8 +25,8 @@ func (a *App) AuthService() *auth.Service {
 func (a *App) BotService() *bot.Service {
 	if a.services.botService == nil {
 		a.services.botService = bot.NewService(
-			a.config.Telegram,
-			a.log,
+			a.Config.Telegram,
+			a.Log,
 		)
 	}
 

@@ -25,16 +25,5 @@ func initBot(
 	}
 	log.Info("setting menu button")
 
-	err = b.SetMenuButton(nil, &tele.MenuButton{
-		Type: tele.MenuButtonWebApp,
-		Text: appTitle,
-		WebApp: &tele.WebApp{
-			URL: cfg.WebAppUrl,
-		},
-	})
-	if err != nil {
-		return nil, fmt.Errorf("bot set menu button: %w", err)
-	}
-
 	return b, nil
 }
