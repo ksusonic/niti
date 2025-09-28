@@ -1,7 +1,7 @@
 package private
 
 import (
-	"github.com/ksusonic/niti/backend/pgk/privateapi"
+	"github.com/ksusonic/niti/backend/pkg/privateapi"
 	"go.uber.org/zap"
 )
 

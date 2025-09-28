@@ -1,7 +1,7 @@
 package public
 
 import (
-	"github.com/ksusonic/niti/backend/pgk/publicapi"
+	"github.com/ksusonic/niti/backend/pkg/publicapi"
 	"go.uber.org/zap"
 )
 

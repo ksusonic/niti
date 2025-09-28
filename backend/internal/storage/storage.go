@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/ksusonic/niti/backend/pgk/config"
+	"github.com/ksusonic/niti/backend/pkg/config"
 	"go.uber.org/zap"
 )
 

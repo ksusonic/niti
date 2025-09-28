@@ -7,10 +7,12 @@ on:
     paths:
       - "api/**"
       - "backend/pgk/publicapi/**"
+      - "backend/pgk/privateapi/**"
   pull_request:
     paths:
       - "api/**"
       - "backend/pgk/publicapi/**"
+      - "backend/pgk/privateapi/**"
 
 jobs:
   validate-openapi:
@@ -34,12 +36,12 @@ jobs:
         run: go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
 
       - name: Run go generate
-        working-directory: backend/pgk/publicapi
-        run: go generate .
+        working-directory: backend/pgk
+        run: go generate ./...
 
       - name: Check for changes
         run: |
           if ! git diff --exit-code; then
-            echo "Generated code is not up to date. Please run 'go generate' in backend/pgk/publicapi and commit the changes."
+            echo "Generated code is not up to date. Please run 'go generate' in backend/pgk/publicapi and backend/pgk/privateapi. Commit the changes."
             exit 1
           fi

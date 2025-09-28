@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ksusonic/niti/backend/internal/models"
-	"github.com/ksusonic/niti/backend/pgk/publicapi"
+	"github.com/ksusonic/niti/backend/pkg/publicapi"
 	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
 )

@@ -3,7 +3,7 @@ package public
 import (
 	"context"
 
-	"github.com/ksusonic/niti/backend/pgk/publicapi"
+	"github.com/ksusonic/niti/backend/pkg/publicapi"
 )
 
 func (a *API) Healthcheck(_ context.Context, _ publicapi.HealthcheckRequestObject) (publicapi.HealthcheckResponseObject, error) {

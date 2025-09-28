@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"github.com/ksusonic/niti/backend/internal/storage"
-	"github.com/ksusonic/niti/backend/pgk/config"
-	"github.com/ksusonic/niti/backend/pgk/logger"
+	"github.com/ksusonic/niti/backend/pkg/config"
+	"github.com/ksusonic/niti/backend/pkg/logger"
 	"go.uber.org/zap"
 )
 

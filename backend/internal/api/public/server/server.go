@@ -7,9 +7,9 @@ import (
 	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
 	"github.com/ksusonic/niti/backend/internal/api/public/server/middleware/auth"
-	"github.com/ksusonic/niti/backend/pgk/config"
-	"github.com/ksusonic/niti/backend/pgk/privateapi"
-	"github.com/ksusonic/niti/backend/pgk/publicapi"
+	"github.com/ksusonic/niti/backend/pkg/config"
+	"github.com/ksusonic/niti/backend/pkg/privateapi"
+	"github.com/ksusonic/niti/backend/pkg/publicapi"
 	"go.uber.org/zap"
 )
 

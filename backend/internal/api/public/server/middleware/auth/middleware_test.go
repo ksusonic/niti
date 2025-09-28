@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	auth2 "github.com/ksusonic/niti/backend/internal/api/public/server/middleware/auth"
 	"github.com/ksusonic/niti/backend/internal/api/public/server/middleware/auth/mocks"
-	"github.com/ksusonic/niti/backend/pgk/publicapi"
+	"github.com/ksusonic/niti/backend/pkg/publicapi"
 	"go.uber.org/mock/gomock"
 )
 

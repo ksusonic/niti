@@ -14,7 +14,7 @@ import (
 	"github.com/ksusonic/niti/backend/internal/models"
 	"github.com/ksusonic/niti/backend/internal/storage/repository/users"
 	"github.com/ksusonic/niti/backend/internal/utils"
-	"github.com/ksusonic/niti/backend/pgk/config"
+	"github.com/ksusonic/niti/backend/pkg/config"
 	"github.com/stretchr/testify/require"
 )
 

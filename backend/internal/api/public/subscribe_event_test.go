@@ -8,7 +8,7 @@ import (
 	"github.com/ksusonic/niti/backend/internal/api/public"
 	"github.com/ksusonic/niti/backend/internal/api/public/mocks"
 	"github.com/ksusonic/niti/backend/internal/models"
-	"github.com/ksusonic/niti/backend/pgk/publicapi"
+	"github.com/ksusonic/niti/backend/pkg/publicapi"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 	"go.uber.org/zap"
