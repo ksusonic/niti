@@ -1,4 +1,4 @@
-package public_test
+package api_test
 
 import (
 	"context"
@@ -6,10 +6,10 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/ksusonic/niti/backend/internal/api/public"
-	"github.com/ksusonic/niti/backend/internal/api/public/mocks"
+	"github.com/ksusonic/niti/backend/internal/api"
+	"github.com/ksusonic/niti/backend/internal/api/mocks"
 	"github.com/ksusonic/niti/backend/internal/models"
-	"github.com/ksusonic/niti/backend/pkg/publicapi"
+	"github.com/ksusonic/niti/backend/pkg/openapi"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 	"go.uber.org/zap"
@@ -27,8 +27,8 @@ func TestEvents(t *testing.T) {
 		name        string
 		fields      fields
 		setupCtx    func() context.Context
-		request     publicapi.EventsRequestObject
-		expected    publicapi.EventsResponseObject
+		request     openapi.EventsRequestObject
+		expected    openapi.EventsResponseObject
 		expectedErr assert.ErrorAssertionFunc
 	}{
 		{
@@ -50,10 +50,10 @@ func TestEvents(t *testing.T) {
 				ginCtx.Set(models.ContextKeyTGUserID, int64(123))
 				return ginCtx
 			},
-			request: publicapi.EventsRequestObject{
-				Params: publicapi.EventsParams{},
+			request: openapi.EventsRequestObject{
+				Params: openapi.EventsParams{},
 			},
-			expected:    publicapi.Events200JSONResponse{},
+			expected:    openapi.Events200JSONResponse{},
 			expectedErr: assert.NoError,
 		},
 		{
@@ -75,13 +75,13 @@ func TestEvents(t *testing.T) {
 				ginCtx.Set(models.ContextKeyTGUserID, int64(456))
 				return ginCtx
 			},
-			request: publicapi.EventsRequestObject{
-				Params: publicapi.EventsParams{
+			request: openapi.EventsRequestObject{
+				Params: openapi.EventsParams{
 					Limit:  func() *int { l := 10; return &l }(),
 					Offset: func() *int { o := 20; return &o }(),
 				},
 			},
-			expected:    publicapi.Events200JSONResponse{},
+			expected:    openapi.Events200JSONResponse{},
 			expectedErr: assert.NoError,
 		},
 		{
@@ -103,12 +103,12 @@ func TestEvents(t *testing.T) {
 				ginCtx.Set(models.ContextKeyTGUserID, int64(789))
 				return ginCtx
 			},
-			request: publicapi.EventsRequestObject{
-				Params: publicapi.EventsParams{
+			request: openapi.EventsRequestObject{
+				Params: openapi.EventsParams{
 					Limit: func() *int { l := 0; return &l }(),
 				},
 			},
-			expected:    publicapi.Events200JSONResponse{},
+			expected:    openapi.Events200JSONResponse{},
 			expectedErr: assert.NoError,
 		},
 		{
@@ -167,10 +167,10 @@ func TestEvents(t *testing.T) {
 				ginCtx.Set(models.ContextKeyTGUserID, int64(999))
 				return ginCtx
 			},
-			request: publicapi.EventsRequestObject{
-				Params: publicapi.EventsParams{},
+			request: openapi.EventsRequestObject{
+				Params: openapi.EventsParams{},
 			},
-			expected: publicapi.Events200JSONResponse{
+			expected: openapi.Events200JSONResponse{
 				{
 					Id:                1,
 					Title:             "Test Event",
@@ -180,11 +180,11 @@ func TestEvents(t *testing.T) {
 					StartsAt:          func() *time.Time { t := time.Date(2024, 1, 15, 20, 0, 0, 0, time.UTC); return &t }(),
 					IsSubscribed:      true,
 					ParticipantsCount: func() *int { c := 42; return &c }(),
-					Djs: []publicapi.DJ{
+					Djs: []openapi.DJ{
 						{
 							StageName: "DJ Test",
 							AvatarUrl: func() *string { s := "https://example.com/avatar.jpg"; return &s }(),
-							Socials: []publicapi.Social{
+							Socials: []openapi.Social{
 								{
 									Name: "Instagram",
 									Url:  "https://instagram.com/djtest",
@@ -243,10 +243,10 @@ func TestEvents(t *testing.T) {
 				ginCtx.Set(models.ContextKeyTGUserID, int64(555))
 				return ginCtx
 			},
-			request: publicapi.EventsRequestObject{
-				Params: publicapi.EventsParams{},
+			request: openapi.EventsRequestObject{
+				Params: openapi.EventsParams{},
 			},
-			expected: publicapi.Events200JSONResponse{
+			expected: openapi.Events200JSONResponse{
 				{
 					Id:                1,
 					Title:             "First Event",
@@ -256,7 +256,7 @@ func TestEvents(t *testing.T) {
 					StartsAt:          func() *time.Time { t := time.Date(2024, 1, 15, 20, 0, 0, 0, time.UTC); return &t }(),
 					IsSubscribed:      true,
 					ParticipantsCount: nil,
-					Djs:               []publicapi.DJ{},
+					Djs:               []openapi.DJ{},
 				},
 				{
 					Id:                2,
@@ -267,7 +267,7 @@ func TestEvents(t *testing.T) {
 					StartsAt:          func() *time.Time { t := time.Date(2024, 1, 20, 22, 0, 0, 0, time.UTC); return &t }(),
 					IsSubscribed:      false,
 					ParticipantsCount: nil,
-					Djs:               []publicapi.DJ{},
+					Djs:               []openapi.DJ{},
 				},
 			},
 			expectedErr: assert.NoError,
@@ -291,8 +291,8 @@ func TestEvents(t *testing.T) {
 				ginCtx.Set(models.ContextKeyTGUserID, int64(777))
 				return ginCtx
 			},
-			request: publicapi.EventsRequestObject{
-				Params: publicapi.EventsParams{},
+			request: openapi.EventsRequestObject{
+				Params: openapi.EventsParams{},
 			},
 			expected:    nil,
 			expectedErr: assert.Error,
@@ -316,13 +316,13 @@ func TestEvents(t *testing.T) {
 				ginCtx.Set(models.ContextKeyTGUserID, int64(888))
 				return ginCtx
 			},
-			request: publicapi.EventsRequestObject{
-				Params: publicapi.EventsParams{
+			request: openapi.EventsRequestObject{
+				Params: openapi.EventsParams{
 					Limit:  func() *int { l := 100; return &l }(),
 					Offset: func() *int { o := 50; return &o }(),
 				},
 			},
-			expected:    publicapi.Events200JSONResponse{},
+			expected:    openapi.Events200JSONResponse{},
 			expectedErr: assert.NoError,
 		},
 		{
@@ -389,10 +389,10 @@ func TestEvents(t *testing.T) {
 				ginCtx.Set(models.ContextKeyTGUserID, int64(333))
 				return ginCtx
 			},
-			request: publicapi.EventsRequestObject{
-				Params: publicapi.EventsParams{},
+			request: openapi.EventsRequestObject{
+				Params: openapi.EventsParams{},
 			},
-			expected: publicapi.Events200JSONResponse{
+			expected: openapi.Events200JSONResponse{
 				{
 					Id:                5,
 					Title:             "Multi DJ Event",
@@ -402,11 +402,11 @@ func TestEvents(t *testing.T) {
 					StartsAt:          func() *time.Time { t := time.Date(2024, 2, 10, 21, 0, 0, 0, time.UTC); return &t }(),
 					IsSubscribed:      false,
 					ParticipantsCount: nil,
-					Djs: []publicapi.DJ{
+					Djs: []openapi.DJ{
 						{
 							StageName: "DJ Alpha",
 							AvatarUrl: func() *string { s := "https://example.com/dj1.jpg"; return &s }(),
-							Socials: []publicapi.Social{
+							Socials: []openapi.Social{
 								{
 									Name: "SoundCloud",
 									Url:  "https://soundcloud.com/djalpha",
@@ -417,7 +417,7 @@ func TestEvents(t *testing.T) {
 						{
 							StageName: "DJ Beta",
 							AvatarUrl: func() *string { s := "https://example.com/dj2.jpg"; return &s }(),
-							Socials: []publicapi.Social{
+							Socials: []openapi.Social{
 								{
 									Name: "Spotify",
 									Url:  "https://spotify.com/djbeta",
@@ -439,7 +439,7 @@ func TestEvents(t *testing.T) {
 
 			ctx := tt.setupCtx()
 
-			srv := public.NewAPI(
+			srv := api.NewAPI(
 				tt.fields.auth(ctrl),
 				tt.fields.usersRepo(ctrl),
 				tt.fields.subscriptionsRepo(ctrl),
@@ -458,7 +458,7 @@ func TestEvents_PanicOnMissingUserID(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	srv := public.NewAPI(
+	srv := api.NewAPI(
 		mocks.NewMockauth(ctrl),
 		mocks.NewMockusersRepo(ctrl),
 		mocks.NewMocksubscriptionsRepo(ctrl),
@@ -470,6 +470,6 @@ func TestEvents_PanicOnMissingUserID(t *testing.T) {
 	ctx := &gin.Context{}
 
 	assert.Panics(t, func() {
-		_, _ = srv.Events(ctx, publicapi.EventsRequestObject{})
+		_, _ = srv.Events(ctx, openapi.EventsRequestObject{})
 	})
 }

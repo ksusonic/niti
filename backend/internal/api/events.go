@@ -1,15 +1,15 @@
-package public
+package api
 
 import (
 	"context"
 
 	"github.com/ksusonic/niti/backend/internal/models"
 	"github.com/ksusonic/niti/backend/internal/utils"
-	"github.com/ksusonic/niti/backend/pkg/publicapi"
+	"github.com/ksusonic/niti/backend/pkg/openapi"
 	"go.uber.org/zap"
 )
 
-func (a *API) Events(ctx context.Context, request publicapi.EventsRequestObject) (publicapi.EventsResponseObject, error) {
+func (a *API) Events(ctx context.Context, request openapi.EventsRequestObject) (openapi.EventsResponseObject, error) {
 	tgUserID := models.MustTGUserID(ctx)
 
 	limit := utils.Deref(request.Params.Limit)
@@ -28,8 +28,8 @@ func (a *API) Events(ctx context.Context, request publicapi.EventsRequestObject)
 		return nil, err
 	}
 
-	return publicapi.Events200JSONResponse(utils.Map(events, func(e models.EventEnriched) publicapi.Event {
-		return publicapi.Event{
+	return openapi.Events200JSONResponse(utils.Map(events, func(e models.EventEnriched) openapi.Event {
+		return openapi.Event{
 			Id:                e.ID,
 			Title:             e.Title,
 			Description:       e.Description,
@@ -38,12 +38,12 @@ func (a *API) Events(ctx context.Context, request publicapi.EventsRequestObject)
 			StartsAt:          e.StartsAt,
 			IsSubscribed:      e.IsSubscribed,
 			ParticipantsCount: e.ParticipantsCount,
-			Djs: utils.Map(e.DJs, func(dj models.DJ) publicapi.DJ {
-				return publicapi.DJ{
+			Djs: utils.Map(e.DJs, func(dj models.DJ) openapi.DJ {
+				return openapi.DJ{
 					StageName: dj.StageName,
 					AvatarUrl: dj.AvatarURL,
-					Socials: utils.Map(dj.Socials, func(social models.Social) publicapi.Social {
-						return publicapi.Social{
+					Socials: utils.Map(dj.Socials, func(social models.Social) openapi.Social {
+						return openapi.Social{
 							Name: social.Name,
 							Url:  social.URL,
 							Icon: social.Icon,

@@ -7,9 +7,9 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	auth2 "github.com/ksusonic/niti/backend/internal/api/public/server/middleware/auth"
-	"github.com/ksusonic/niti/backend/internal/api/public/server/middleware/auth/mocks"
-	"github.com/ksusonic/niti/backend/pkg/publicapi"
+	auth2 "github.com/ksusonic/niti/backend/internal/api/middleware/auth"
+	"github.com/ksusonic/niti/backend/internal/api/middleware/auth/mocks"
+	"github.com/ksusonic/niti/backend/pkg/openapi"
 	"go.uber.org/mock/gomock"
 )
 
@@ -43,7 +43,7 @@ func TestAuthMw_MissingAuthHeader(t *testing.T) {
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
 	c.Request = httptest.NewRequest("GET", "/", nil)
-	c.Set(publicapi.BearerAuthScopes, []string{})
+	c.Set(openapi.BearerAuthScopes, []string{})
 
 	middleware := auth2.Mw(authDeps)
 	middleware(c)
@@ -81,7 +81,7 @@ func TestAuthMw_InvalidAuthHeader(t *testing.T) {
 			c, _ := gin.CreateTestContext(w)
 			c.Request = httptest.NewRequest("GET", "/", nil)
 			c.Request.Header.Set("Authorization", tt.header)
-			c.Set(publicapi.BearerAuthScopes, []string{})
+			c.Set(openapi.BearerAuthScopes, []string{})
 
 			middleware := auth2.Mw(authDeps)
 			middleware(c)
@@ -109,7 +109,7 @@ func TestAuthMw_InvalidToken(t *testing.T) {
 	c, _ := gin.CreateTestContext(w)
 	c.Request = httptest.NewRequest("GET", "/", nil)
 	c.Request.Header.Set("Authorization", "Bearer invalid-token")
-	c.Set(publicapi.BearerAuthScopes, []string{})
+	c.Set(openapi.BearerAuthScopes, []string{})
 
 	middleware := auth2.Mw(authDeps)
 	middleware(c)
@@ -136,7 +136,7 @@ func TestAuthMw_ValidToken(t *testing.T) {
 	c, _ := gin.CreateTestContext(w)
 	c.Request = httptest.NewRequest("GET", "/", nil)
 	c.Request.Header.Set("Authorization", "Bearer valid-token")
-	c.Set(publicapi.BearerAuthScopes, []string{})
+	c.Set(openapi.BearerAuthScopes, []string{})
 
 	middleware := auth2.Mw(authDeps)
 	middleware(c)

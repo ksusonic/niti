@@ -1,4 +1,4 @@
-package public_test
+package api_test
 
 import (
 	"context"
@@ -6,10 +6,10 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/ksusonic/niti/backend/internal/api/public"
-	"github.com/ksusonic/niti/backend/internal/api/public/mocks"
+	"github.com/ksusonic/niti/backend/internal/api"
+	"github.com/ksusonic/niti/backend/internal/api/mocks"
 	"github.com/ksusonic/niti/backend/internal/models"
-	"github.com/ksusonic/niti/backend/pkg/publicapi"
+	"github.com/ksusonic/niti/backend/pkg/openapi"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 	"go.uber.org/zap"
@@ -26,38 +26,38 @@ func TestAuthRefreshToken(t *testing.T) {
 	tests := []struct {
 		name        string
 		fields      fields
-		request     publicapi.AuthRefreshTokenRequestObject
-		expected    publicapi.AuthRefreshTokenResponseObject
+		request     openapi.AuthRefreshTokenRequestObject
+		expected    openapi.AuthRefreshTokenResponseObject
 		expectedErr assert.ErrorAssertionFunc
 	}{
 		{
 			name: "nil body",
-			request: publicapi.AuthRefreshTokenRequestObject{
+			request: openapi.AuthRefreshTokenRequestObject{
 				Body: nil,
 			},
 			fields: fields{
 				auth:      mocks.NewMockauth,
 				usersRepo: mocks.NewMockusersRepo,
 			},
-			expected:    publicapi.AuthRefreshToken400JSONResponse{Message: "invalid request"},
+			expected:    openapi.AuthRefreshToken400JSONResponse{Message: "invalid request"},
 			expectedErr: assert.NoError,
 		},
 		{
 			name: "empty refresh token",
-			request: publicapi.AuthRefreshTokenRequestObject{
-				Body: &publicapi.AuthRefreshTokenJSONRequestBody{RefreshToken: ""},
+			request: openapi.AuthRefreshTokenRequestObject{
+				Body: &openapi.AuthRefreshTokenJSONRequestBody{RefreshToken: ""},
 			},
 			fields: fields{
 				auth:      mocks.NewMockauth,
 				usersRepo: mocks.NewMockusersRepo,
 			},
-			expected:    publicapi.AuthRefreshToken400JSONResponse{Message: "invalid request"},
+			expected:    openapi.AuthRefreshToken400JSONResponse{Message: "invalid request"},
 			expectedErr: assert.NoError,
 		},
 		{
 			name: "validate refresh token error",
-			request: publicapi.AuthRefreshTokenRequestObject{
-				Body: &publicapi.AuthRefreshTokenJSONRequestBody{RefreshToken: "invalid_token"},
+			request: openapi.AuthRefreshTokenRequestObject{
+				Body: &openapi.AuthRefreshTokenJSONRequestBody{RefreshToken: "invalid_token"},
 			},
 			fields: fields{
 				auth: func(ctrl *gomock.Controller) *mocks.Mockauth {
@@ -69,13 +69,13 @@ func TestAuthRefreshToken(t *testing.T) {
 				},
 				usersRepo: mocks.NewMockusersRepo,
 			},
-			expected:    publicapi.AuthRefreshToken400JSONResponse{Message: assert.AnError.Error()},
+			expected:    openapi.AuthRefreshToken400JSONResponse{Message: assert.AnError.Error()},
 			expectedErr: assert.NoError,
 		},
 		{
 			name: "roll tokens error",
-			request: publicapi.AuthRefreshTokenRequestObject{
-				Body: &publicapi.AuthRefreshTokenJSONRequestBody{RefreshToken: "valid_token"},
+			request: openapi.AuthRefreshTokenRequestObject{
+				Body: &openapi.AuthRefreshTokenJSONRequestBody{RefreshToken: "valid_token"},
 			},
 			fields: fields{
 				auth: func(ctrl *gomock.Controller) *mocks.Mockauth {
@@ -101,13 +101,13 @@ func TestAuthRefreshToken(t *testing.T) {
 				},
 				usersRepo: mocks.NewMockusersRepo,
 			},
-			expected:    publicapi.AuthRefreshToken400JSONResponse{Message: assert.AnError.Error()},
+			expected:    openapi.AuthRefreshToken400JSONResponse{Message: assert.AnError.Error()},
 			expectedErr: assert.NoError,
 		},
 		{
 			name: "success",
-			request: publicapi.AuthRefreshTokenRequestObject{
-				Body: &publicapi.AuthRefreshTokenJSONRequestBody{RefreshToken: "valid_refresh_token"},
+			request: openapi.AuthRefreshTokenRequestObject{
+				Body: &openapi.AuthRefreshTokenJSONRequestBody{RefreshToken: "valid_refresh_token"},
 			},
 			fields: fields{
 				auth: func(ctrl *gomock.Controller) *mocks.Mockauth {
@@ -140,7 +140,7 @@ func TestAuthRefreshToken(t *testing.T) {
 				},
 				usersRepo: mocks.NewMockusersRepo,
 			},
-			expected: publicapi.AuthRefreshToken200JSONResponse{
+			expected: openapi.AuthRefreshToken200JSONResponse{
 				AccessToken:  "new_access_token",
 				RefreshToken: "new_refresh_token",
 				ExpiresIn:    1800, // 30 minutes in seconds
@@ -154,7 +154,7 @@ func TestAuthRefreshToken(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			srv := public.NewAPI(
+			srv := api.NewAPI(
 				tt.fields.auth(ctrl),
 				tt.fields.usersRepo(ctrl),
 				nil,
