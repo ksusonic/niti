@@ -18,7 +18,7 @@ func TestAuthMw_NoAuthRequired(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	authDeps := mocks.NewMockAuthDeps(ctrl)
+	authDeps := mocks.NewMockDeps(ctrl)
 	// No expectations - ValidateAccessToken should not be called
 
 	w := httptest.NewRecorder()
@@ -38,7 +38,7 @@ func TestAuthMw_MissingAuthHeader(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	authDeps := mocks.NewMockAuthDeps(ctrl)
+	authDeps := mocks.NewMockDeps(ctrl)
 
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
@@ -75,7 +75,7 @@ func TestAuthMw_InvalidAuthHeader(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			authDeps := mocks.NewMockAuthDeps(ctrl)
+			authDeps := mocks.NewMockDeps(ctrl)
 
 			w := httptest.NewRecorder()
 			c, _ := gin.CreateTestContext(w)
@@ -102,7 +102,7 @@ func TestAuthMw_InvalidToken(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	authDeps := mocks.NewMockAuthDeps(ctrl)
+	authDeps := mocks.NewMockDeps(ctrl)
 	authDeps.EXPECT().ValidateAccessToken("invalid-token").Return(int64(0), errors.New("invalid token"))
 
 	w := httptest.NewRecorder()
@@ -129,7 +129,7 @@ func TestAuthMw_ValidToken(t *testing.T) {
 	defer ctrl.Finish()
 
 	expectedUserID := int64(123)
-	authDeps := mocks.NewMockAuthDeps(ctrl)
+	authDeps := mocks.NewMockDeps(ctrl)
 	authDeps.EXPECT().ValidateAccessToken("valid-token").Return(expectedUserID, nil)
 
 	w := httptest.NewRecorder()

@@ -15,32 +15,32 @@ import (
 	gomock "go.uber.org/mock/gomock"
 )
 
-// MockAuthDeps is a mock of AuthDeps interface.
-type MockAuthDeps struct {
+// MockDeps is a mock of Deps interface.
+type MockDeps struct {
 	ctrl     *gomock.Controller
-	recorder *MockAuthDepsMockRecorder
+	recorder *MockDepsMockRecorder
 	isgomock struct{}
 }
 
-// MockAuthDepsMockRecorder is the mock recorder for MockAuthDeps.
-type MockAuthDepsMockRecorder struct {
-	mock *MockAuthDeps
+// MockDepsMockRecorder is the mock recorder for MockDeps.
+type MockDepsMockRecorder struct {
+	mock *MockDeps
 }
 
-// NewMockAuthDeps creates a new mock instance.
-func NewMockAuthDeps(ctrl *gomock.Controller) *MockAuthDeps {
-	mock := &MockAuthDeps{ctrl: ctrl}
-	mock.recorder = &MockAuthDepsMockRecorder{mock}
+// NewMockDeps creates a new mock instance.
+func NewMockDeps(ctrl *gomock.Controller) *MockDeps {
+	mock := &MockDeps{ctrl: ctrl}
+	mock.recorder = &MockDepsMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockAuthDeps) EXPECT() *MockAuthDepsMockRecorder {
+func (m *MockDeps) EXPECT() *MockDepsMockRecorder {
 	return m.recorder
 }
 
 // ValidateAccessToken mocks base method.
-func (m *MockAuthDeps) ValidateAccessToken(tokenStr string) (int64, error) {
+func (m *MockDeps) ValidateAccessToken(tokenStr string) (int64, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ValidateAccessToken", tokenStr)
 	ret0, _ := ret[0].(int64)
@@ -49,7 +49,7 @@ func (m *MockAuthDeps) ValidateAccessToken(tokenStr string) (int64, error) {
 }
 
 // ValidateAccessToken indicates an expected call of ValidateAccessToken.
-func (mr *MockAuthDepsMockRecorder) ValidateAccessToken(tokenStr any) *gomock.Call {
+func (mr *MockDepsMockRecorder) ValidateAccessToken(tokenStr any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidateAccessToken", reflect.TypeOf((*MockAuthDeps)(nil).ValidateAccessToken), tokenStr)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidateAccessToken", reflect.TypeOf((*MockDeps)(nil).ValidateAccessToken), tokenStr)
 }
