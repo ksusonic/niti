@@ -1,0 +1,9 @@
+package: privateapi
+output: generated.go
+generate:
+  models: true
+  gin-server: true
+  strict-server: true
+  client: true
+output-options:
+  skip-prune: true

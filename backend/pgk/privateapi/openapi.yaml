@@ -1,0 +1,76 @@
+openapi: 3.0.3
+info:
+  title: Niti Private API
+  version: 1.0.0
+  description: Private API for bot-to-webservice communication
+
+paths:
+  /users/{telegram_id}:
+    get:
+      description: Get user information by Telegram ID
+      operationId: getUserByTelegramId
+      tags:
+        - Users
+      parameters:
+        - name: telegram_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: User information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        telegram_id:
+          type: integer
+          format: int64
+        username:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        avatar_url:
+          type: string
+          format: uri
+        is_dj:
+          type: boolean
+      required:
+        - telegram_id
+        - username
+        - first_name
+        - is_dj
+
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: string
+        details:
+          type: object
+      required:
+        - message
