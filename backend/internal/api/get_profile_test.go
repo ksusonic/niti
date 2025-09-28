@@ -1,14 +1,14 @@
-package public_test
+package api_test
 
 import (
 	"context"
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/ksusonic/niti/backend/internal/api/public"
-	"github.com/ksusonic/niti/backend/internal/api/public/mocks"
+	"github.com/ksusonic/niti/backend/internal/api"
+	"github.com/ksusonic/niti/backend/internal/api/mocks"
 	"github.com/ksusonic/niti/backend/internal/models"
-	"github.com/ksusonic/niti/backend/pkg/publicapi"
+	"github.com/ksusonic/niti/backend/pkg/openapi"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 	"go.uber.org/zap"
@@ -25,8 +25,8 @@ func TestGetProfile(t *testing.T) {
 		name        string
 		fields      fields
 		setupCtx    func() context.Context
-		request     publicapi.GetProfileRequestObject
-		expected    publicapi.GetProfileResponseObject
+		request     openapi.GetProfileRequestObject
+		expected    openapi.GetProfileResponseObject
 		expectedErr assert.ErrorAssertionFunc
 	}{
 		{
@@ -53,8 +53,8 @@ func TestGetProfile(t *testing.T) {
 				ginCtx.Set(models.ContextKeyTGUserID, int64(123))
 				return ginCtx
 			},
-			request:     publicapi.GetProfileRequestObject{},
-			expected:    publicapi.GetProfile404JSONResponse{Message: "profile not found"},
+			request:     openapi.GetProfileRequestObject{},
+			expected:    openapi.GetProfile404JSONResponse{Message: "profile not found"},
 			expectedErr: assert.NoError,
 		},
 		{
@@ -81,7 +81,7 @@ func TestGetProfile(t *testing.T) {
 				ginCtx.Set(models.ContextKeyTGUserID, int64(456))
 				return ginCtx
 			},
-			request:     publicapi.GetProfileRequestObject{},
+			request:     openapi.GetProfileRequestObject{},
 			expected:    nil,
 			expectedErr: assert.Error,
 		},
@@ -117,15 +117,15 @@ func TestGetProfile(t *testing.T) {
 				ginCtx.Set(models.ContextKeyTGUserID, int64(789))
 				return ginCtx
 			},
-			request: publicapi.GetProfileRequestObject{},
-			expected: publicapi.GetProfile200JSONResponse{
+			request: openapi.GetProfileRequestObject{},
+			expected: openapi.GetProfile200JSONResponse{
 				TelegramId:    789,
 				Username:      "testuser",
 				FirstName:     "Test",
 				LastName:      nil,
 				AvatarUrl:     nil,
 				IsDj:          false,
-				Subscriptions: []publicapi.Event{},
+				Subscriptions: []openapi.Event{},
 			},
 			expectedErr: assert.NoError,
 		},
@@ -163,15 +163,15 @@ func TestGetProfile(t *testing.T) {
 				ginCtx.Set(models.ContextKeyTGUserID, int64(999))
 				return ginCtx
 			},
-			request: publicapi.GetProfileRequestObject{},
-			expected: publicapi.GetProfile200JSONResponse{
+			request: openapi.GetProfileRequestObject{},
+			expected: openapi.GetProfile200JSONResponse{
 				TelegramId:    999,
 				Username:      "fulltestuser",
 				FirstName:     "Full",
 				LastName:      func() *string { s := "User"; return &s }(),
 				AvatarUrl:     func() *string { s := "https://example.com/avatar.jpg"; return &s }(),
 				IsDj:          true,
-				Subscriptions: []publicapi.Event{},
+				Subscriptions: []openapi.Event{},
 			},
 			expectedErr: assert.NoError,
 		},
@@ -207,15 +207,15 @@ func TestGetProfile(t *testing.T) {
 				ginCtx.Set(models.ContextKeyTGUserID, int64(555))
 				return ginCtx
 			},
-			request: publicapi.GetProfileRequestObject{},
-			expected: publicapi.GetProfile200JSONResponse{
+			request: openapi.GetProfileRequestObject{},
+			expected: openapi.GetProfile200JSONResponse{
 				TelegramId:    555,
 				Username:      "djuser",
 				FirstName:     "DJ",
 				LastName:      nil,
 				AvatarUrl:     nil,
 				IsDj:          true,
-				Subscriptions: []publicapi.Event{},
+				Subscriptions: []openapi.Event{},
 			},
 			expectedErr: assert.NoError,
 		},
@@ -228,7 +228,7 @@ func TestGetProfile(t *testing.T) {
 
 			ctx := tt.setupCtx()
 
-			srv := public.NewAPI(
+			srv := api.NewAPI(
 				tt.fields.auth(ctrl),
 				tt.fields.usersRepo(ctrl),
 				nil,
@@ -247,7 +247,7 @@ func TestGetProfile_PanicOnMissingUserID(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	srv := public.NewAPI(
+	srv := api.NewAPI(
 		mocks.NewMockauth(ctrl),
 		mocks.NewMockusersRepo(ctrl),
 		nil,
@@ -259,6 +259,6 @@ func TestGetProfile_PanicOnMissingUserID(t *testing.T) {
 	ctx := &gin.Context{}
 
 	assert.Panics(t, func() {
-		_, _ = srv.GetProfile(ctx, publicapi.GetProfileRequestObject{})
+		_, _ = srv.GetProfile(ctx, openapi.GetProfileRequestObject{})
 	})
 }

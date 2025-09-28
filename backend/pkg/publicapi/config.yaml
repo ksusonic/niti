@@ -1,8 +1,0 @@
-package: publicapi
-output: generated.go
-generate:
-  models: true
-  gin-server: true
-  strict-server: true
-output-options:
-  skip-prune: true
