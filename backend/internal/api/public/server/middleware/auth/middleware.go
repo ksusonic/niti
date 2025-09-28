@@ -8,7 +8,7 @@ import (
 	"github.com/ksusonic/niti/backend/pgk/publicapi"
 )
 
-func AuthMw(auth AuthDeps) publicapi.MiddlewareFunc {
+func Mw(auth Deps) publicapi.MiddlewareFunc {
 	return func(c *gin.Context) {
 		// check only auth-enabled endpoints
 		if _, ok := c.Get(publicapi.BearerAuthScopes); ok {

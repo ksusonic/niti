@@ -9,7 +9,6 @@ import (
 	"go.uber.org/zap"
 )
 
-// under auth middleware
 func (a *API) Events(ctx context.Context, request publicapi.EventsRequestObject) (publicapi.EventsResponseObject, error) {
 	tgUserID := models.MustTGUserID(ctx)
 

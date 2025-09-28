@@ -9,7 +9,7 @@ import (
 
 const appTitle = "NITI APP"
 
-func (s *Service) Manage(ctx context.Context) error {
+func (s *Service) Manage(_ context.Context) error {
 	s.log.Info("starting bot manage")
 
 	err := s.bot.SetMenuButton(nil, &tele.MenuButton{

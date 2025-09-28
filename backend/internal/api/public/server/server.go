@@ -16,7 +16,7 @@ import (
 func NewGinServer(
 	publicStrictServer publicapi.StrictServerInterface,
 	privateStrictServer privateapi.StrictServerInterface,
-	authDeps auth.AuthDeps,
+	authDeps auth.Deps,
 	cfg config.WebserverConfig,
 	log *zap.Logger,
 ) *gin.Engine {
@@ -34,7 +34,7 @@ func NewGinServer(
 		publicapi.GinServerOptions{
 			BaseURL: "",
 			Middlewares: []publicapi.MiddlewareFunc{
-				auth.AuthMw(authDeps),
+				auth.Mw(authDeps),
 			},
 			ErrorHandler: func(c *gin.Context, err error, statusCode int) {
 				log.Error("unhandled error", zap.Error(err), zap.String("path", c.Request.URL.Path))

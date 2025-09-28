@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -22,7 +23,7 @@ func (r *Repository) GetValid(ctx context.Context, jti uuid.UUID) (*models.Refre
 
 	var token models.RefreshToken
 	err := row.Scan(&token.JTI, &token.UserID, &token.ExpiresAt, &token.Revoked, &token.CreatedAt)
-	if err == pgx.ErrNoRows {
+	if errors.Is(err, pgx.ErrNoRows) {
 		return nil, models.ErrNotFound
 	}
 

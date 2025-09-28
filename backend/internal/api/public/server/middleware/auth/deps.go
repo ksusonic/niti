@@ -2,6 +2,6 @@
 
 package auth
 
-type AuthDeps interface {
+type Deps interface {
 	ValidateAccessToken(tokenStr string) (int64, error)
 }

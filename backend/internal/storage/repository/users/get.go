@@ -2,6 +2,7 @@ package users
 
 import (
 	"context"
+	"errors"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/ksusonic/niti/backend/internal/models"
@@ -33,7 +34,7 @@ func (r *Repository) Get(ctx context.Context, telegramID int64) (*models.User, e
 		&user.AvatarURL,
 		&user.IsDJ,
 	)
-	if err == pgx.ErrNoRows {
+	if errors.Is(err, pgx.ErrNoRows) {
 		return nil, models.ErrNotFound
 	}
 	if err != nil {

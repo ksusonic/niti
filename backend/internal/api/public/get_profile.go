@@ -11,8 +11,7 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-// under auth middleware
-func (a *API) GetProfile(ctx context.Context, request publicapi.GetProfileRequestObject) (publicapi.GetProfileResponseObject, error) {
+func (a *API) GetProfile(ctx context.Context, _ publicapi.GetProfileRequestObject) (publicapi.GetProfileResponseObject, error) {
 	tgUserID := models.MustTGUserID(ctx)
 
 	eg, gCtx := errgroup.WithContext(ctx)

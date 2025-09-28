@@ -64,10 +64,10 @@ services:
     volumes:
       - redpanda:/var/lib/redpanda/data
     ports:
-      - 18081:18081
-      - 18082:18082
-      - 19092:19092
-      - 19644:9644
+      - "18081:18081"
+      - "18082:18082"
+      - "19092:19092"
+      - "19644:9644"
   console:
     container_name: redpanda-console
     image: docker.redpanda.com/redpandadata/console:v2.7.2
@@ -86,7 +86,7 @@ services:
             enabled: true
             urls: ["http://redpanda:9644"]
     ports:
-      - 8080:8080
+      - "8080:8080"
     depends_on:
       - redpanda
 

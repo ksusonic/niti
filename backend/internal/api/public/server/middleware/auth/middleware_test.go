@@ -25,7 +25,7 @@ func TestAuthMw_NoAuthRequired(t *testing.T) {
 	c, _ := gin.CreateTestContext(w)
 	c.Request = httptest.NewRequest("GET", "/", nil)
 
-	middleware := auth2.AuthMw(authDeps)
+	middleware := auth2.Mw(authDeps)
 	middleware(c)
 
 	if c.IsAborted() {
@@ -45,7 +45,7 @@ func TestAuthMw_MissingAuthHeader(t *testing.T) {
 	c.Request = httptest.NewRequest("GET", "/", nil)
 	c.Set(publicapi.BearerAuthScopes, []string{})
 
-	middleware := auth2.AuthMw(authDeps)
+	middleware := auth2.Mw(authDeps)
 	middleware(c)
 
 	if !c.IsAborted() {
@@ -83,7 +83,7 @@ func TestAuthMw_InvalidAuthHeader(t *testing.T) {
 			c.Request.Header.Set("Authorization", tt.header)
 			c.Set(publicapi.BearerAuthScopes, []string{})
 
-			middleware := auth2.AuthMw(authDeps)
+			middleware := auth2.Mw(authDeps)
 			middleware(c)
 
 			if !c.IsAborted() {
@@ -111,7 +111,7 @@ func TestAuthMw_InvalidToken(t *testing.T) {
 	c.Request.Header.Set("Authorization", "Bearer invalid-token")
 	c.Set(publicapi.BearerAuthScopes, []string{})
 
-	middleware := auth2.AuthMw(authDeps)
+	middleware := auth2.Mw(authDeps)
 	middleware(c)
 
 	if !c.IsAborted() {
@@ -138,7 +138,7 @@ func TestAuthMw_ValidToken(t *testing.T) {
 	c.Request.Header.Set("Authorization", "Bearer valid-token")
 	c.Set(publicapi.BearerAuthScopes, []string{})
 
-	middleware := auth2.AuthMw(authDeps)
+	middleware := auth2.Mw(authDeps)
 	middleware(c)
 
 	if c.IsAborted() {
