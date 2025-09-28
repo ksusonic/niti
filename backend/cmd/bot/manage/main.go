@@ -11,13 +11,13 @@ import (
 func main() {
 	_ = godotenv.Overload()
 
-	app := app.New()
-	defer app.Close(context.Background())
+	a := app.New()
+	defer a.Close(context.Background())
 
-	bot := app.BotService()
+	bot := a.BotService()
 
 	err := bot.Manage(context.Background())
 	if err != nil {
-		app.Log.Fatal("manage bot", zap.Error(err))
+		a.Log.Fatal("manage bot", zap.Error(err))
 	}
 }

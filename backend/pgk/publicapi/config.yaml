@@ -1,9 +1,0 @@
-# yaml-language-server: $schema=../../../configuration-schema.json
-package: publicapi
-output: generated.go
-generate:
-  models: true
-  gin-server: true
-  strict-server: true
-output-options:
-  skip-prune: true

@@ -7,7 +7,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
-	"github.com/ksusonic/niti/backend/pgk/config"
+	"github.com/ksusonic/niti/backend/pkg/config"
 	"github.com/stretchr/testify/require"
 )
 
@@ -17,14 +17,14 @@ func SetupTestPool(t *testing.T) *pgxpool.Pool {
 	var cfg config.PostgresConfig
 	require.NoError(t, env.Parse(&cfg))
 
-	config, err := pgxpool.ParseConfig(cfg.DSN)
+	parseConfig, err := pgxpool.ParseConfig(cfg.DSN)
 	require.NoError(t, err)
 
 	// Disable prepared statement caching to avoid conflicts in tests
-	config.ConnConfig.DefaultQueryExecMode = pgx.QueryExecModeExec
-	config.MaxConns = 3
+	parseConfig.ConnConfig.DefaultQueryExecMode = pgx.QueryExecModeExec
+	parseConfig.MaxConns = 3
 
-	pool, err := pgxpool.NewWithConfig(t.Context(), config)
+	pool, err := pgxpool.NewWithConfig(t.Context(), parseConfig)
 	require.NoError(t, err)
 
 	t.Cleanup(func() {

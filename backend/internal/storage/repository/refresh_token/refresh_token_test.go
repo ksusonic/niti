@@ -14,7 +14,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/ksusonic/niti/backend/internal/models"
 	repository "github.com/ksusonic/niti/backend/internal/storage/repository/refresh_token"
-	"github.com/ksusonic/niti/backend/pgk/config"
+	"github.com/ksusonic/niti/backend/pkg/config"
 	"github.com/stretchr/testify/require"
 )
 

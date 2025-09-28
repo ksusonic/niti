@@ -68,7 +68,6 @@ Makefile
 # Test files and coverage
 coverage.txt
 coverage.out
-*.test
 
 # Temporary files
 tmp/

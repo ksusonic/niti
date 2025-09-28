@@ -11,7 +11,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
 	"github.com/ksusonic/niti/backend/internal/storage/repository/base"
-	"github.com/ksusonic/niti/backend/pgk/config"
+	"github.com/ksusonic/niti/backend/pkg/config"
 	"github.com/stretchr/testify/require"
 )
 

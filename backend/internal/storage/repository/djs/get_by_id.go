@@ -3,6 +3,7 @@ package djs
 import (
 	"context"
 	"encoding/json"
+	"errors"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/ksusonic/niti/backend/internal/models"
@@ -33,7 +34,7 @@ func (r *Repository) GetByID(ctx context.Context, telegramUserID int) (*models.D
 		&socialsBytes,
 	)
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, models.ErrNotFound
 		}
 

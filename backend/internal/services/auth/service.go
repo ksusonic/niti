@@ -1,7 +1,7 @@
 package auth
 
 import (
-	"github.com/ksusonic/niti/backend/pgk/config"
+	"github.com/ksusonic/niti/backend/pkg/config"
 	"go.uber.org/zap"
 )
 
