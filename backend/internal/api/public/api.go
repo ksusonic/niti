@@ -1,4 +1,4 @@
-package api
+package public
 
 import (
 	"github.com/ksusonic/niti/backend/pgk/publicapi"

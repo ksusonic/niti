@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/ksusonic/niti/backend/internal/api/server/middleware/auth"
+	"github.com/ksusonic/niti/backend/internal/api/public/server/middleware/auth"
 )
 
 func TestSetUserIDInContext(t *testing.T) {

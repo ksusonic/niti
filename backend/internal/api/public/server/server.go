@@ -5,7 +5,7 @@ import (
 
 	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
-	authmw "github.com/ksusonic/niti/backend/internal/api/server/middleware/auth"
+	"github.com/ksusonic/niti/backend/internal/api/public/server/middleware/auth"
 	"github.com/ksusonic/niti/backend/pgk/config"
 	"github.com/ksusonic/niti/backend/pgk/publicapi"
 	"go.uber.org/zap"
@@ -13,7 +13,7 @@ import (
 
 func NewGinServer(
 	strictServer publicapi.StrictServerInterface,
-	authDeps authmw.AuthDeps,
+	authDeps auth.AuthDeps,
 	cfg config.WebserverConfig,
 	log *zap.Logger,
 ) *gin.Engine {
@@ -30,7 +30,7 @@ func NewGinServer(
 	publicapi.RegisterHandlersWithOptions(r, h, publicapi.GinServerOptions{
 		BaseURL: "",
 		Middlewares: []publicapi.MiddlewareFunc{
-			authmw.AuthMw(authDeps),
+			auth.AuthMw(authDeps),
 		},
 		ErrorHandler: func(c *gin.Context, err error, statusCode int) {
 			log.Error("unhandled error", zap.Error(err), zap.String("path", c.Request.URL.Path))

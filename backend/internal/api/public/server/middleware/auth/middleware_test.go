@@ -7,8 +7,8 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/ksusonic/niti/backend/internal/api/server/middleware/auth"
-	"github.com/ksusonic/niti/backend/internal/api/server/middleware/auth/mocks"
+	auth2 "github.com/ksusonic/niti/backend/internal/api/public/server/middleware/auth"
+	"github.com/ksusonic/niti/backend/internal/api/public/server/middleware/auth/mocks"
 	"github.com/ksusonic/niti/backend/pgk/publicapi"
 	"go.uber.org/mock/gomock"
 )
@@ -25,7 +25,7 @@ func TestAuthMw_NoAuthRequired(t *testing.T) {
 	c, _ := gin.CreateTestContext(w)
 	c.Request = httptest.NewRequest("GET", "/", nil)
 
-	middleware := auth.AuthMw(authDeps)
+	middleware := auth2.AuthMw(authDeps)
 	middleware(c)
 
 	if c.IsAborted() {
@@ -45,7 +45,7 @@ func TestAuthMw_MissingAuthHeader(t *testing.T) {
 	c.Request = httptest.NewRequest("GET", "/", nil)
 	c.Set(publicapi.BearerAuthScopes, []string{})
 
-	middleware := auth.AuthMw(authDeps)
+	middleware := auth2.AuthMw(authDeps)
 	middleware(c)
 
 	if !c.IsAborted() {
@@ -83,7 +83,7 @@ func TestAuthMw_InvalidAuthHeader(t *testing.T) {
 			c.Request.Header.Set("Authorization", tt.header)
 			c.Set(publicapi.BearerAuthScopes, []string{})
 
-			middleware := auth.AuthMw(authDeps)
+			middleware := auth2.AuthMw(authDeps)
 			middleware(c)
 
 			if !c.IsAborted() {
@@ -111,7 +111,7 @@ func TestAuthMw_InvalidToken(t *testing.T) {
 	c.Request.Header.Set("Authorization", "Bearer invalid-token")
 	c.Set(publicapi.BearerAuthScopes, []string{})
 
-	middleware := auth.AuthMw(authDeps)
+	middleware := auth2.AuthMw(authDeps)
 	middleware(c)
 
 	if !c.IsAborted() {
@@ -138,14 +138,14 @@ func TestAuthMw_ValidToken(t *testing.T) {
 	c.Request.Header.Set("Authorization", "Bearer valid-token")
 	c.Set(publicapi.BearerAuthScopes, []string{})
 
-	middleware := auth.AuthMw(authDeps)
+	middleware := auth2.AuthMw(authDeps)
 	middleware(c)
 
 	if c.IsAborted() {
 		t.Error("middleware should not abort with valid token")
 	}
 
-	userID := auth.UserIDFromContext(c)
+	userID := auth2.UserIDFromContext(c)
 	if userID != expectedUserID {
 		t.Errorf("expected user ID %d, got %d", expectedUserID, userID)
 	}

@@ -1,4 +1,3 @@
-# yaml-language-server: $schema=../../../configuration-schema.json
 package: publicapi
 output: generated.go
 generate:

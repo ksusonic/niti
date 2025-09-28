@@ -1,12 +1,12 @@
-package api_test
+package public_test
 
 import (
 	"context"
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/ksusonic/niti/backend/internal/api"
-	"github.com/ksusonic/niti/backend/internal/api/mocks"
+	"github.com/ksusonic/niti/backend/internal/api/public"
+	"github.com/ksusonic/niti/backend/internal/api/public/mocks"
 	"github.com/ksusonic/niti/backend/internal/models"
 	"github.com/ksusonic/niti/backend/pgk/publicapi"
 	"github.com/stretchr/testify/assert"
@@ -141,7 +141,7 @@ func TestSubscribeEvent(t *testing.T) {
 
 			ctx := tt.setupCtx()
 
-			srv := api.NewAPI(
+			srv := public.NewAPI(
 				tt.fields.auth(ctrl),
 				tt.fields.usersRepo(ctrl),
 				tt.fields.subscriptionsRepo(ctrl),
@@ -160,7 +160,7 @@ func TestSubscribeEvent_PanicOnMissingUserID(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	srv := api.NewAPI(
+	srv := public.NewAPI(
 		mocks.NewMockauth(ctrl),
 		mocks.NewMockusersRepo(ctrl),
 		mocks.NewMocksubscriptionsRepo(ctrl),

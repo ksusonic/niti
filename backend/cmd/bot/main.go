@@ -13,10 +13,10 @@ import (
 func main() {
 	_ = godotenv.Overload()
 
-	app := app.New()
-	defer app.Close(context.Background())
+	a := app.New()
+	defer a.Close(context.Background())
 
-	bot := app.BotService()
+	bot := a.BotService()
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()

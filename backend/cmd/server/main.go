@@ -13,11 +13,11 @@ import (
 func main() {
 	_ = godotenv.Overload()
 
-	app := app.New()
-	defer app.Close(context.Background())
+	a := app.New()
+	defer a.Close(context.Background())
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
-	app.WebServer(ctx)
+	a.WebServer(ctx)
 }

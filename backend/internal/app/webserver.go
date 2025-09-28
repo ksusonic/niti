@@ -2,12 +2,13 @@ package app
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
 
-	"github.com/ksusonic/niti/backend/internal/api"
-	"github.com/ksusonic/niti/backend/internal/api/server"
+	"github.com/ksusonic/niti/backend/internal/api/public"
+	"github.com/ksusonic/niti/backend/internal/api/public/server"
 	"go.uber.org/zap"
 )
 
@@ -15,7 +16,7 @@ func (a *App) WebServer(ctx context.Context) {
 	buildStart := time.Now()
 	a.Log.Debug("building server deps")
 
-	impl := api.NewAPI(
+	impl := public.NewAPI(
 		a.AuthService(),
 		a.UsersRepo(),
 		a.SubscriptionsRepo(),
@@ -38,7 +39,7 @@ func (a *App) WebServer(ctx context.Context) {
 	}
 
 	go func() {
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		if err := srv.ListenAndServe(); err != nil && errors.Is(err, http.ErrServerClosed) {
 			a.Log.Fatal("listen", zap.Error(err))
 		}
 	}()
