@@ -26,7 +26,7 @@ export class TelegramEnvErrorBoundary extends Component<
     return null;
   }
 
-  componentDidCatch(error: Error, errorInfo: any) {
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     if (isLaunchParamsRetrieveError(error)) {
       console.error('LaunchParamsRetrieveError caught in error boundary:', {
         error: error.message,

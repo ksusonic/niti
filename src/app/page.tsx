@@ -1,6 +1,6 @@
 'use client';
 
-import { Section, Cell, Image, List } from '@telegram-apps/telegram-ui';
+import { Section, Cell, List } from '@telegram-apps/telegram-ui';
 
 import { Link } from '@/components/Link/Link';
 import { Page } from '@/components/Page';
