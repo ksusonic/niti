@@ -12,13 +12,13 @@ export async function POST(req: Request) {
   await connectDB();
   const { eventId, userId } = await req.json();
 
-  const event = await Event.findById(eventId);
-  if (!event) return NextResponse.json({ error: "Event not found" }, { status: 404 });
+  const event = await Event.findByIdAndUpdate(
+    eventId,
+    { $addToSet: { participants: userId } },
+    { new: true }
+  );
 
-  if (!event.participants.includes(userId)) {
-    event.participants.push(userId);
-    await event.save();
-  }
+  if (!event) return NextResponse.json({ error: "Event not found" }, { status: 404 });
 
   return NextResponse.json({ success: true, participants: event.participants });
 }
