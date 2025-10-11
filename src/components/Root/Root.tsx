@@ -7,7 +7,6 @@ import {
   useLaunchParams,
   useSignal,
 } from '@telegram-apps/sdk-react';
-import { TonConnectUIProvider } from '@tonconnect/ui-react';
 import { AppRoot } from '@telegram-apps/telegram-ui';
 
 import { ErrorBoundary } from '@/components/ErrorBoundary';
@@ -15,7 +14,11 @@ import { ErrorPage } from '@/components/ErrorPage';
 import { EnvUnsupported } from '@/components/EnvUnsupported';
 import { TelegramEnvErrorBoundary } from '@/components/TelegramEnvErrorBoundary';
 import { useDidMount } from '@/hooks/useDidMount';
-import { getIsEnvUnsupported } from '@/instrumentation-client';
+import {
+  getIsEnvUnsupported,
+  addEnvUnsupportedListener,
+  removeEnvUnsupportedListener
+} from '@/lib';
 
 import './styles.css';
 
@@ -28,16 +31,14 @@ function RootInner({ children }: PropsWithChildren) {
   }, [initDataUser]);
 
   return (
-    <TonConnectUIProvider manifestUrl="/tonconnect-manifest.json">
-      <AppRoot
-        appearance={isDark ? 'dark' : 'light'}
-        platform={
-          ['macos', 'ios'].includes(lp.tgWebAppPlatform) ? 'ios' : 'base'
-        }
-      >
-        {children}
-      </AppRoot>
-    </TonConnectUIProvider>
+    <AppRoot
+      appearance={isDark ? 'dark' : 'light'}
+      platform={
+        ['macos', 'ios'].includes(lp.tgWebAppPlatform) ? 'ios' : 'base'
+      }
+    >
+      {children}
+    </AppRoot>
   );
 }
 
@@ -59,12 +60,10 @@ export function Root(props: PropsWithChildren) {
       setEnvUnsupported(true);
     };
 
-    if (typeof window !== 'undefined') {
-      window.addEventListener('telegram-env-unsupported', handleEnvUnsupported);
-      return () => {
-        window.removeEventListener('telegram-env-unsupported', handleEnvUnsupported);
-      };
-    }
+    addEnvUnsupportedListener(handleEnvUnsupported);
+    return () => {
+      removeEnvUnsupportedListener(handleEnvUnsupported);
+    };
   }, []);
 
   if (!didMount) {

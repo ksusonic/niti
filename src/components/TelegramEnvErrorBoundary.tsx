@@ -1,5 +1,6 @@
 import { Component, type ReactNode, type PropsWithChildren } from 'react';
 import { EnvUnsupported } from '@/components/EnvUnsupported';
+import { isLaunchParamsRetrieveError } from '@telegram-apps/sdk-react';
 
 interface TelegramEnvErrorBoundaryState {
   hasLaunchParamsError: boolean;
@@ -16,7 +17,8 @@ export class TelegramEnvErrorBoundary extends Component<
 
   static getDerivedStateFromError(error: Error): TelegramEnvErrorBoundaryState | null {
     // Check if this is a LaunchParamsRetrieveError
-    if (error.name === 'LaunchParamsRetrieveError') {
+    if (isLaunchParamsRetrieveError(error)) {
+      console.warn('TelegramEnvErrorBoundary caught LaunchParamsRetrieveError:', error.message);
       return { hasLaunchParamsError: true };
     }
     
@@ -25,9 +27,12 @@ export class TelegramEnvErrorBoundary extends Component<
   }
 
   componentDidCatch(error: Error, errorInfo: any) {
-    if (error.name === 'LaunchParamsRetrieveError') {
-      console.log('LaunchParamsRetrieveError caught:', error);
-      console.log('Error info:', errorInfo);
+    if (isLaunchParamsRetrieveError(error)) {
+      console.error('LaunchParamsRetrieveError caught in error boundary:', {
+        error: error.message,
+        stack: error.stack,
+        componentStack: errorInfo.componentStack
+      });
     }
   }
 

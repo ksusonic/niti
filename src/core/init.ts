@@ -20,20 +20,12 @@ import {
  */
 export async function init(options: {
   debug: boolean;
-  eruda: boolean;
   mockForMacOS: boolean;
 }): Promise<void> {
   try {
     // Set @telegram-apps/sdk-react debug mode and initialize it.
     setDebug(options.debug);
     initSDK();
-
-    // Add Eruda if needed.
-    options.eruda &&
-      void import('eruda').then(({ default: eruda }) => {
-        eruda.init();
-        eruda.position({ x: window.innerWidth - 50, y: 0 });
-      });
 
     // Telegram for macOS has a ton of bugs, including cases, when the client doesn't
     // even response to the "web_app_request_theme" method. It also generates an incorrect
@@ -67,24 +59,47 @@ export async function init(options: {
       });
     }
 
-    const isTelegramEnv = await isTMA('complete').catch(() => false);
+    const isTelegramEnv = await isTMA('complete').catch((error) => {
+      console.warn('Failed to detect Telegram environment in init:', error);
+      return false;
+    });
     
     if (isTelegramEnv) {
-      mountBackButton.ifAvailable();
-      restoreInitData();
-
-      if (mountMiniAppSync.isAvailable()) {
-        mountMiniAppSync();
-        bindThemeParamsCssVars();
+      try {
+        mountBackButton.ifAvailable();
+      } catch (error) {
+        console.warn('Failed to mount back button:', error);
       }
 
-      if (mountViewport.isAvailable()) {
-        mountViewport().then(() => {
-          bindViewportCssVars();
-        });
+      try {
+        restoreInitData();
+      } catch (error) {
+        console.warn('Failed to restore init data:', error);
+      }
+
+      try {
+        if (mountMiniAppSync.isAvailable()) {
+          mountMiniAppSync();
+          bindThemeParamsCssVars();
+        }
+      } catch (error) {
+        console.warn('Failed to mount mini app or bind theme params:', error);
+      }
+
+      try {
+        if (mountViewport.isAvailable()) {
+          mountViewport().then(() => {
+            bindViewportCssVars();
+          }).catch((error) => {
+            console.warn('Failed to bind viewport CSS vars:', error);
+          });
+        }
+      } catch (error) {
+        console.warn('Failed to mount viewport:', error);
       }
     }
   } catch (e) {
+    console.error('Critical error during Telegram SDK initialization:', e);
     throw e;
   }
 }

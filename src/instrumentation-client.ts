@@ -1,23 +1,17 @@
 // This file is normally used for setting up analytics and other
 // services that require one-time initialization on the client.
 
-import { retrieveLaunchParams, isTMA } from '@telegram-apps/sdk-react';
+import { retrieveLaunchParams, isTMA, isLaunchParamsRetrieveError } from '@telegram-apps/sdk-react';
 import { init } from './core/init';
 import { mockEnv } from './mockEnv';
-
-let isEnvUnsupported = false;
-
-export function getIsEnvUnsupported(): boolean {
-  return isEnvUnsupported;
-}
+import { setEnvUnsupported } from './lib';
 
 if (typeof window !== 'undefined') {
   mockEnv().then(() => {
     // After mocking, check if we're in Telegram environment
     isTMA('complete').then((isTelegramEnv) => {
       if (!isTelegramEnv) {
-        isEnvUnsupported = true;
-        window.dispatchEvent(new CustomEvent('telegram-env-unsupported'));
+        setEnvUnsupported();
         return;
       }
 
@@ -29,25 +23,27 @@ if (typeof window !== 'undefined') {
         // Configure all application dependencies.
         init({
           debug,
-          eruda: debug && ['ios', 'android'].includes(platform),
           mockForMacOS: platform === 'macos',
         });
+        console.log('Telegram SDK initialized successfully');
       } catch (e) {
-        if (e && typeof e === 'object' && 'name' in e && e.name === 'LaunchParamsRetrieveError') {
-          isEnvUnsupported = true;
-          window.dispatchEvent(new CustomEvent('telegram-env-unsupported'));
+        if (isLaunchParamsRetrieveError(e)) {
+          console.warn('LaunchParamsRetrieveError: App running outside Telegram environment');
+          setEnvUnsupported();
+        } else {
+          console.error('Unexpected error during launch params retrieval:', e);
         }
       }
-    }).catch(() => {
-      isEnvUnsupported = true;
-      window.dispatchEvent(new CustomEvent('telegram-env-unsupported'));
+    }).catch((error) => {
+      console.warn('isTMA check failed after mocking:', error);
+      setEnvUnsupported();
     });
-  }).catch(() => {
+  }).catch((mockError) => {
+    console.warn('Mock environment setup failed:', mockError);
     // If mocking fails, try to check if we're in real Telegram environment
     isTMA('complete').then((isTelegramEnv) => {
       if (!isTelegramEnv) {
-        isEnvUnsupported = true;
-        window.dispatchEvent(new CustomEvent('telegram-env-unsupported'));
+        setEnvUnsupported();
         return;
       }
 
@@ -58,16 +54,16 @@ if (typeof window !== 'undefined') {
 
         init({
           debug,
-          eruda: debug && ['ios', 'android'].includes(platform),
           mockForMacOS: platform === 'macos',
         });
+        console.log('Telegram SDK initialized successfully (fallback path)');
       } catch (e) {
-        isEnvUnsupported = true;
-        window.dispatchEvent(new CustomEvent('telegram-env-unsupported'));
+        console.error('Failed to initialize after mock failure:', e);
+        setEnvUnsupported();
       }
-    }).catch(() => {
-      isEnvUnsupported = true;
-      window.dispatchEvent(new CustomEvent('telegram-env-unsupported'));
+    }).catch((error) => {
+      console.warn('Final isTMA check failed:', error);
+      setEnvUnsupported();
     });
   });
 }
