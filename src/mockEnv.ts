@@ -3,6 +3,11 @@ import { mockTelegramEnv, isTMA, emitEvent } from '@telegram-apps/sdk-react';
 // It is important, to mock the environment only for development purposes. When building the
 // application, the code inside will be tree-shaken, so you will not see it in your final bundle.
 export async function mockEnv(): Promise<void> {
+  if (process.env.NEXT_PUBLIC_DISABLE_MOCKS === 'true') {
+    console.info('Mocks are disabled via NEXT_PUBLIC_DISABLE_MOCKS environment variable.');
+    return;
+  }
+
   return process.env.NODE_ENV !== 'development'
   ? undefined
   : isTMA('complete').then((isTma) => {

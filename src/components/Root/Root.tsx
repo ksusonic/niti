@@ -1,6 +1,6 @@
 'use client';
 
-import { type PropsWithChildren, useEffect } from 'react';
+import { type PropsWithChildren, useEffect, useState } from 'react';
 import {
   initData,
   miniApp,
@@ -12,13 +12,15 @@ import { AppRoot } from '@telegram-apps/telegram-ui';
 
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { ErrorPage } from '@/components/ErrorPage';
+import { EnvUnsupported } from '@/components/EnvUnsupported';
+import { TelegramEnvErrorBoundary } from '@/components/TelegramEnvErrorBoundary';
 import { useDidMount } from '@/hooks/useDidMount';
+import { getIsEnvUnsupported } from '@/instrumentation-client';
 
 import './styles.css';
 
 function RootInner({ children }: PropsWithChildren) {
   const lp = useLaunchParams();
-
   const isDark = useSignal(miniApp.isDark);
   const initDataUser = useSignal(initData.user);
 
@@ -44,12 +46,40 @@ export function Root(props: PropsWithChildren) {
   // the Server Side Rendering. That's why we are showing loader on the server
   // side.
   const didMount = useDidMount();
+  const [envUnsupported, setEnvUnsupported] = useState(false);
 
-  return didMount ? (
+  useEffect(() => {
+    // Check initial state
+    if (getIsEnvUnsupported()) {
+      setEnvUnsupported(true);
+    }
+
+    // Listen for the custom event
+    const handleEnvUnsupported = () => {
+      setEnvUnsupported(true);
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('telegram-env-unsupported', handleEnvUnsupported);
+      return () => {
+        window.removeEventListener('telegram-env-unsupported', handleEnvUnsupported);
+      };
+    }
+  }, []);
+
+  if (!didMount) {
+    return <div className="root__loading">Loading</div>;
+  }
+
+  if (envUnsupported) {
+    return <EnvUnsupported />;
+  }
+
+  return (
     <ErrorBoundary fallback={ErrorPage}>
-      <RootInner {...props} />
+      <TelegramEnvErrorBoundary>
+        <RootInner {...props} />
+      </TelegramEnvErrorBoundary>
     </ErrorBoundary>
-  ) : (
-    <div className="root__loading">Loading</div>
   );
 }
