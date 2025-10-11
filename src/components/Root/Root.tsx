@@ -2,7 +2,6 @@
 
 import { type PropsWithChildren, useEffect, useState } from 'react';
 import {
-  initData,
   miniApp,
   useLaunchParams,
   useSignal,
