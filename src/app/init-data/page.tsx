@@ -1,7 +1,7 @@
-/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import { useMemo } from 'react';
+import Image from 'next/image';
 import {
   initDataRaw as _initDataRaw,
   initDataState as _initDataState,
@@ -72,10 +72,13 @@ export default function InitDataPage() {
           header="Oops"
           description="Application was launched with missing init data"
         >
-          <img
+          <Image
             alt="Telegram sticker"
             src="https://xelene.me/telegram.gif"
-            style={{ display: 'block', width: '144px', height: '144px' }}
+            width={144}
+            height={144}
+            unoptimized
+            style={{ display: 'block' }}
           />
         </Placeholder>
       </Page>
