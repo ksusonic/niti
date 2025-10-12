@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { MapPin, Users, ExternalLink } from 'lucide-react';
 import { Avatar, Badge, Button, IconButton } from '@/components/ui';
 import type { Event } from '@/types/events';
+import { sanitizeVideoUrl } from '@/lib/video-url-validator';
 
 interface EventCardProps {
   event: Event;
@@ -9,6 +10,8 @@ interface EventCardProps {
 }
 
 export function EventCard({ event, onToggleSubscription }: EventCardProps) {
+  const safeVideoUrl = sanitizeVideoUrl(event.videoUrl);
+  
   return (
     <motion.article
       initial={{ opacity: 0, y: 20 }}
@@ -20,10 +23,10 @@ export function EventCard({ event, onToggleSubscription }: EventCardProps) {
     >
       {/* Video/Image Background */}
       <div className="relative h-64 overflow-hidden">
-        {event.videoUrl ? (
+        {safeVideoUrl ? (
           <>
             <iframe
-              src={event.videoUrl}
+              src={safeVideoUrl}
               className="absolute inset-0 w-full h-full object-cover pointer-events-none"
               allow="autoplay; fullscreen"
               title={`${event.title} video`}

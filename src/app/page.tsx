@@ -196,41 +196,46 @@ export default function Home() {
   const [profile, setProfile] = useState(mockProfile);
 
   const handleToggleSubscription = (eventId: string) => {
-    setEvents(prev => prev.map(event => 
-      event.id === eventId 
-        ? { 
-            ...event, 
+    setEvents(prevEvents => {
+      const updatedEvents = prevEvents.map(event =>
+        event.id === eventId
+          ? {
+            ...event,
             isSubscribed: !event.isSubscribed,
-            participantCount: event.isSubscribed 
-              ? event.participantCount - 1 
+            participantCount: event.isSubscribed
+              ? event.participantCount - 1
               : event.participantCount + 1
           }
-        : event
-    ));
-
-    // Update profile subscribed events
-    const event = events.find(e => e.id === eventId);
-    if (event) {
-      if (event.isSubscribed) {
-        // Remove from subscribed events
-        setProfile(prev => ({
-          ...prev,
-          subscribedEvents: prev.subscribedEvents.filter(e => e.id !== eventId)
-        }));
-      } else {
-        // Add to subscribed events
-        setProfile(prev => ({
-          ...prev,
-          subscribedEvents: [...prev.subscribedEvents, {
-            id: event.id,
-            title: event.title,
-            date: event.date,
-            location: event.location,
-            imageUrl: event.imageUrl
-          }]
-        }));
+          : event
+      );
+      // Find the updated event after toggling
+      const updatedEvent = updatedEvents.find(e => e.id === eventId);
+      if (updatedEvent) {
+        if (updatedEvent.isSubscribed) {
+          // Add to subscribed events
+          setProfile(prev => ({
+            ...prev,
+            subscribedEvents: [
+              ...prev.subscribedEvents,
+              {
+                id: updatedEvent.id,
+                title: updatedEvent.title,
+                date: updatedEvent.date,
+                location: updatedEvent.location,
+                imageUrl: updatedEvent.imageUrl
+              }
+            ]
+          }));
+        } else {
+          // Remove from subscribed events
+          setProfile(prev => ({
+            ...prev,
+            subscribedEvents: prev.subscribedEvents.filter(e => e.id !== eventId)
+          }));
+        }
       }
-    }
+      return updatedEvents;
+    });
   };
 
   const handleUpdateProfile = (updates: Partial<typeof profile>) => {
@@ -252,23 +257,23 @@ export default function Home() {
           transition={{ duration: 0.3 }}
         >
           {activeTab === 'events' ? (
-            <EventFeed 
-              events={events} 
-              onToggleSubscription={handleToggleSubscription} 
+            <EventFeed
+              events={events}
+              onToggleSubscription={handleToggleSubscription}
             />
           ) : (
-            <ProfilePage 
-              profile={profile} 
-              onUpdateProfile={handleUpdateProfile} 
+            <ProfilePage
+              profile={profile}
+              onUpdateProfile={handleUpdateProfile}
             />
           )}
         </motion.div>
       </AnimatePresence>
 
       <div className="fixed bottom-0 left-0 right-0 z-50">
-        <BottomNavigation 
-          activeTab={activeTab} 
-          onTabChange={handleTabChange} 
+        <BottomNavigation
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
         />
       </div>
     </div>
