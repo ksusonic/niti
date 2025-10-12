@@ -1,53 +1,7 @@
 import { motion } from 'framer-motion';
 import { MapPin, Users, ExternalLink } from 'lucide-react';
-import { useState } from 'react';
-import Image from 'next/image';
+import { Avatar, Badge, Button, IconButton } from '@/components/ui';
 import type { Event } from '@/types/events';
-
-function Avatar({ src, alt, className = '' }: { src: string; alt: string; className?: string }) {
-  const [error, setError] = useState(false);
-  const fallback = alt.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-  
-  if (!src || error) {
-    return (
-      <div className={`flex items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white font-semibold ${className}`}>
-        {fallback}
-      </div>
-    );
-  }
-  
-  return (
-    <Image 
-      src={src} 
-      alt={alt} 
-      width={40}
-      height={40}
-      onError={() => setError(true)} 
-      className={`rounded-full object-cover ${className}`}
-    />
-  );
-}
-
-function Badge({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${className}`}>{children}</span>;
-}
-
-function Button({ 
-  children, 
-  onClick, 
-  className = '',
-  ...props 
-}: React.ButtonHTMLAttributes<HTMLButtonElement>) {
-  return (
-    <button
-      onClick={onClick}
-      className={`inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
-      {...props}
-    >
-      {children}
-    </button>
-  );
-}
 
 interface EventCardProps {
   event: Event;
@@ -61,7 +15,7 @@ export function EventCard({ event, onToggleSubscription }: EventCardProps) {
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -5 }}
       transition={{ duration: 0.3 }}
-      className="relative bg-[#1a1a1a] backdrop-blur-sm rounded-xl overflow-hidden border border-gray-800/30 shadow-lg"
+      className="relative bg-card backdrop-blur-sm rounded-xl overflow-hidden border border-gray-800/30 shadow-lg"
       aria-label={`Event: ${event.title}`}
     >
       {/* Video/Image Background */}
@@ -78,7 +32,7 @@ export function EventCard({ event, onToggleSubscription }: EventCardProps) {
           </>
         ) : (
           <>
-            <div 
+            <div
               className="absolute inset-0 bg-cover bg-center blur-sm scale-110 opacity-30"
               style={{ backgroundImage: `url(${event.imageUrl})` }}
               role="img"
@@ -90,7 +44,7 @@ export function EventCard({ event, onToggleSubscription }: EventCardProps) {
 
         {/* Event Date/Time Badge */}
         <div className="absolute top-4 left-4 z-20">
-          <Badge className="bg-blue-500 text-white backdrop-blur-md shadow-lg">
+          <Badge variant="primary">
             <time dateTime={event.date}>
               {event.date} • {event.time}
             </time>
@@ -107,12 +61,14 @@ export function EventCard({ event, onToggleSubscription }: EventCardProps) {
         </header>
       </div>
 
-        {/* Content */}
+      {/* Content */}
       <div className="p-6 space-y-4">
         {/* Event Description */}
-        <p className="text-gray-400 text-sm leading-relaxed">{event.description}</p>        {/* DJ Lineup */}
+        <p className="text-muted-foreground text-sm leading-relaxed">{event.description}</p>
+
+        {/* DJ Lineup */}
         <section className="space-y-3" aria-labelledby="lineup-heading">
-          <h4 id="lineup-heading" className="text-sm font-medium text-gray-400">
+          <h4 id="lineup-heading" className="text-sm font-medium text-muted-foreground">
             Lineup
           </h4>
           <ul className="space-y-2" role="list">
@@ -120,60 +76,54 @@ export function EventCard({ event, onToggleSubscription }: EventCardProps) {
               <motion.li
                 key={dj.id}
                 whileHover={{ x: 3 }}
-                className="flex items-center justify-between bg-[#2a2a2a]/50 rounded-lg p-3 border border-gray-800/50"
+                className="flex items-center justify-between bg-secondary/50 rounded-lg p-3 border border-gray-800/50"
               >
                 <div className="flex items-center gap-3 flex-1">
                   <Avatar
                     src={dj.avatar}
                     alt={dj.name}
-                    className="h-10 w-10 border border-blue-500/20"
+                    className="border border-blue-500/20"
                   />
                   <div className="flex-1 min-w-0">
                     <span className="font-medium block truncate text-white">{dj.name}</span>
                     <time className="text-xs text-gray-500">{dj.time}</time>
                   </div>
                 </div>
-                
+
                 {/* Social Links */}
                 <nav className="flex items-center gap-1.5" aria-label={`${dj.name} social links`}>
                   {dj.social.instagram && (
-                    <motion.a
+                    <IconButton
                       href={dj.social.instagram}
                       target="_blank"
                       rel="noopener noreferrer"
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="p-1.5 rounded-full bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      variant="blue"
                       aria-label={`${dj.name} on Instagram`}
                     >
                       <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
-                    </motion.a>
+                    </IconButton>
                   )}
                   {dj.social.soundcloud && (
-                    <motion.a
+                    <IconButton
                       href={dj.social.soundcloud}
                       target="_blank"
                       rel="noopener noreferrer"
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="p-1.5 rounded-full bg-orange-500/20 text-orange-400 hover:bg-orange-500/30 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      variant="orange"
                       aria-label={`${dj.name} on SoundCloud`}
                     >
                       <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
-                    </motion.a>
+                    </IconButton>
                   )}
                   {dj.social.spotify && (
-                    <motion.a
+                    <IconButton
                       href={dj.social.spotify}
                       target="_blank"
                       rel="noopener noreferrer"
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="p-1.5 rounded-full bg-green-500/20 text-green-400 hover:bg-green-500/30 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500"
+                      variant="green"
                       aria-label={`${dj.name} on Spotify`}
                     >
                       <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
-                    </motion.a>
+                    </IconButton>
                   )}
                 </nav>
               </motion.li>
@@ -189,23 +139,14 @@ export function EventCard({ event, onToggleSubscription }: EventCardProps) {
               <strong className="font-medium text-white">{event.participantCount}</strong> going
             </span>
           </div>
-          
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+
+          <Button
+            onClick={() => onToggleSubscription(event.id)}
+            variant={event.isSubscribed ? 'secondary' : 'primary'}
+            aria-pressed={event.isSubscribed}
           >
-            <Button
-              onClick={() => onToggleSubscription(event.id)}
-              className={
-                event.isSubscribed
-                  ? 'bg-white text-gray-900 hover:bg-gray-100'
-                  : 'bg-blue-500 text-white hover:bg-blue-600'
-              }
-              aria-pressed={event.isSubscribed}
-            >
-              {event.isSubscribed ? 'Joined' : 'Join Event'}
-            </Button>
-          </motion.div>
+            {event.isSubscribed ? 'Joined' : 'Join Event'}
+          </Button>
         </footer>
       </div>
     </motion.article>

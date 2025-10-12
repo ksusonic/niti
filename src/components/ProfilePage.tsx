@@ -1,57 +1,8 @@
 import { motion } from 'framer-motion';
 import { Settings, Music, Bell, MapPin, Calendar, Instagram, Music2 } from 'lucide-react';
-import { useState } from 'react';
 import Image from 'next/image';
+import { Avatar, Badge, Card, IconButton, Switch } from '@/components/ui';
 import type { UserProfile } from '@/types/events';
-
-function Avatar({ src, alt, className = '' }: { src: string; alt: string; className?: string }) {
-  const [error, setError] = useState(false);
-  const fallback = alt.charAt(0).toUpperCase();
-  
-  if (!src || error) {
-    return (
-      <div className={`flex items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white font-bold ${className}`}>
-        {fallback}
-      </div>
-    );
-  }
-  
-  return (
-    <Image 
-      src={src} 
-      alt={alt} 
-      width={80}
-      height={80}
-      onError={() => setError(true)} 
-      className={`rounded-full object-cover ${className}`}
-    />
-  );
-}
-
-function Badge({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${className}`}>{children}</span>;
-}
-
-function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return <section className={`bg-[#1a1a1a] backdrop-blur-sm rounded-xl border border-gray-800/30 shadow-lg ${className}`}>{children}</section>;
-}
-
-function Switch({ checked, onCheckedChange, label }: { checked: boolean; onCheckedChange: (checked: boolean) => void; label?: string }) {
-  return (
-    <label className="relative inline-flex items-center cursor-pointer">
-      <input
-        type="checkbox"
-        checked={checked}
-        onChange={(e) => onCheckedChange(e.target.checked)}
-        className="sr-only peer"
-      />
-      <div className="w-11 h-6 bg-gray-700 peer-checked:bg-blue-500 rounded-full transition-colors peer-focus:ring-2 peer-focus:ring-blue-500 peer-focus:ring-offset-2 peer-focus:ring-offset-black">
-        <div className="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform peer-checked:translate-x-5" />
-      </div>
-      {label && <span className="ml-3 text-sm font-medium">{label}</span>}
-    </label>
-  );
-}
 
 interface ProfilePageProps {
   profile: UserProfile;
@@ -63,25 +14,23 @@ export function ProfilePage({ profile, onUpdateProfile }: ProfilePageProps) {
     onUpdateProfile({
       settings: {
         ...profile.settings,
-        notifications: !profile.settings.notifications
-      }
+        notifications: !profile.settings.notifications,
+      },
     });
   };
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <motion.header 
+      <motion.header
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         className="sticky top-0 z-50 bg-black/95 backdrop-blur-lg border-b border-gray-800/50 px-4 py-4"
       >
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-white">
-            Profile
-          </h1>
-          <button 
-            className="p-2 hover:bg-[#2a2a2a] rounded-lg transition-colors"
+          <h1 className="text-2xl font-bold text-foreground">Profile</h1>
+          <button
+            className="p-2 hover:bg-secondary rounded-lg transition-colors"
             aria-label="Settings"
           >
             <Settings className="h-6 w-6 text-gray-500" />
@@ -101,21 +50,22 @@ export function ProfilePage({ profile, onUpdateProfile }: ProfilePageProps) {
               <Avatar
                 src={profile.avatar}
                 alt={profile.username}
-                className="h-20 w-20 border-2 border-blue-500/30"
+                size="lg"
+                className="border-2 border-blue-500/30"
               />
-              
+
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <h2 className="text-xl font-bold text-white">{profile.username}</h2>
+                  <h2 className="text-xl font-bold text-foreground">{profile.username}</h2>
                   {profile.isDJ && (
-                    <Badge className="bg-blue-500/20 text-blue-400 border border-blue-500/30">
-                      <Music className="h-3 w-3 mr-1" />
+                    <Badge variant="primary" className="bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                      <Music className="h-3 w-3" />
                       DJ
                     </Badge>
                   )}
                 </div>
                 {profile.bio && (
-                  <p className="text-gray-500 text-sm mt-1">{profile.bio}</p>
+                  <p className="text-muted-foreground text-sm mt-1">{profile.bio}</p>
                 )}
               </div>
             </div>
@@ -124,43 +74,37 @@ export function ProfilePage({ profile, onUpdateProfile }: ProfilePageProps) {
             {profile.socialLinks && (
               <nav className="flex items-center gap-3 mt-4" aria-label="Social media links">
                 {profile.socialLinks.instagram && (
-                  <motion.a
+                  <IconButton
                     href={profile.socialLinks.instagram}
                     target="_blank"
                     rel="noopener noreferrer"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="p-2 rounded-full bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    variant="blue"
                     aria-label="Instagram"
                   >
                     <Instagram className="h-4 w-4" />
-                  </motion.a>
+                  </IconButton>
                 )}
                 {profile.socialLinks.soundcloud && (
-                  <motion.a
+                  <IconButton
                     href={profile.socialLinks.soundcloud}
                     target="_blank"
                     rel="noopener noreferrer"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="p-2 rounded-full bg-orange-500/20 text-orange-400 hover:bg-orange-500/30 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    variant="orange"
                     aria-label="SoundCloud"
                   >
                     <Music2 className="h-4 w-4" />
-                  </motion.a>
+                  </IconButton>
                 )}
                 {profile.socialLinks.spotify && (
-                  <motion.a
+                  <IconButton
                     href={profile.socialLinks.spotify}
                     target="_blank"
                     rel="noopener noreferrer"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="p-2 rounded-full bg-green-500/20 text-green-400 hover:bg-green-500/30 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500"
+                    variant="green"
                     aria-label="Spotify"
                   >
                     <Music className="h-4 w-4" />
-                  </motion.a>
+                  </IconButton>
                 )}
               </nav>
             )}
@@ -175,12 +119,12 @@ export function ProfilePage({ profile, onUpdateProfile }: ProfilePageProps) {
             transition={{ duration: 0.5, delay: 0.1 }}
           >
             <Card className="p-6">
-              <h3 className="text-lg font-semibold text-gray-400 mb-4">Upcoming Sets</h3>
+              <h3 className="text-lg font-semibold text-muted-foreground mb-4">Upcoming Sets</h3>
               <ul className="space-y-3" role="list">
                 {profile.upcomingSets.map((set) => (
-                  <li key={set.id} className="p-3 bg-[#2a2a2a]/50 rounded-lg border border-gray-800/50">
-                    <p className="font-medium text-white">{set.event}</p>
-                    <div className="flex items-center gap-4 text-sm text-gray-500 mt-1">
+                  <li key={set.id} className="p-3 bg-secondary/50 rounded-lg border border-gray-800/50">
+                    <p className="font-medium text-foreground">{set.event}</p>
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
                       <time className="flex items-center gap-1">
                         <Calendar className="h-3 w-3" aria-hidden="true" />
                         <span>{set.date}</span>
@@ -204,14 +148,14 @@ export function ProfilePage({ profile, onUpdateProfile }: ProfilePageProps) {
           transition={{ duration: 0.5, delay: 0.2 }}
         >
           <Card className="p-6">
-            <h3 className="text-lg font-semibold text-gray-400 mb-4">Settings</h3>
+            <h3 className="text-lg font-semibold text-muted-foreground mb-4">Settings</h3>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Bell className="h-5 w-5 text-blue-500" aria-hidden="true" />
                   <div>
-                    <p className="font-medium text-white">Push Notifications</p>
-                    <p className="text-sm text-gray-500">Get notified about new events</p>
+                    <p className="font-medium text-foreground">Push Notifications</p>
+                    <p className="text-sm text-muted-foreground">Get notified about new events</p>
                   </div>
                 </div>
                 <Switch
@@ -230,13 +174,13 @@ export function ProfilePage({ profile, onUpdateProfile }: ProfilePageProps) {
           transition={{ duration: 0.5, delay: 0.3 }}
         >
           <Card className="p-6">
-            <h3 className="text-lg font-semibold text-gray-400 mb-4">My Events</h3>
+            <h3 className="text-lg font-semibold text-muted-foreground mb-4">My Events</h3>
             <ul className="space-y-3" role="list">
               {profile.subscribedEvents.map((event) => (
                 <motion.li
                   key={event.id}
                   whileHover={{ x: 5 }}
-                  className="flex items-center gap-3 p-3 bg-[#2a2a2a]/50 rounded-lg border border-gray-800/50 hover:bg-[#2a2a2a]/70 transition-colors"
+                  className="flex items-center gap-3 p-3 bg-secondary/50 rounded-lg border border-gray-800/50 hover:bg-secondary/70 transition-colors"
                 >
                   <Image
                     src={event.imageUrl}
@@ -246,8 +190,8 @@ export function ProfilePage({ profile, onUpdateProfile }: ProfilePageProps) {
                     className="w-12 h-12 rounded-lg object-cover border border-blue-500/20"
                   />
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-white truncate">{event.title}</p>
-                    <div className="flex items-center gap-4 text-sm text-gray-500">
+                    <p className="font-medium text-foreground truncate">{event.title}</p>
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
                       <time>{event.date}</time>
                       <address className="not-italic truncate">{event.location}</address>
                     </div>

@@ -9,9 +9,9 @@ interface EventFeedProps {
 
 export function EventFeed({ events, onToggleSubscription }: EventFeedProps) {
   return (
-    <main className="min-h-screen bg-black">
+    <main className="min-h-screen bg-background">
       {/* Header */}
-      <motion.header 
+      <motion.header
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         className="sticky top-0 z-50 bg-black/95 backdrop-blur-lg border-b border-gray-800/50 px-4 py-4"
@@ -19,10 +19,8 @@ export function EventFeed({ events, onToggleSubscription }: EventFeedProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div>
-              <h1 className="text-2xl font-bold text-white">
-                Events
-              </h1>
-              <p className="text-sm text-gray-500">Discover amazing DJ events</p>
+              <h1 className="text-2xl font-bold text-foreground">Events</h1>
+              <p className="text-sm text-muted-foreground">Discover amazing DJ events</p>
             </div>
           </div>
         </div>
@@ -37,10 +35,7 @@ export function EventFeed({ events, onToggleSubscription }: EventFeedProps) {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: index * 0.1 }}
           >
-            <EventCard 
-              event={event} 
-              onToggleSubscription={onToggleSubscription}
-            />
+            <EventCard event={event} onToggleSubscription={onToggleSubscription} />
           </motion.div>
         ))}
       </div>

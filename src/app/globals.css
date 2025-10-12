@@ -1,28 +1,12 @@
 @import "tailwindcss";
 
 @theme {
-  /* Base font size */
-  --font-size: 16px;
-
-  /* Font weights */
-  --font-weight-normal: 400;
-  --font-weight-medium: 500;
-
-  /* Border radius scale */
-  --radius-sm: 0.5rem;  /* 8px */
-  --radius-md: 0.625rem; /* 10px */
-  --radius-lg: 0.75rem;  /* 12px - base */
-  --radius-xl: 1rem;     /* 16px */
-
-  /* Color palette - following Tailwind v4 naming convention */
+  /* Colors - Dark theme optimized for Telegram */
   --color-background: #000000;
   --color-foreground: #ffffff;
   
   --color-card: #1a1a1a;
   --color-card-foreground: #ffffff;
-  
-  --color-popover: #1a1a1a;
-  --color-popover-foreground: #ffffff;
   
   --color-primary: #3b82f6;
   --color-primary-foreground: #ffffff;
@@ -33,53 +17,17 @@
   --color-muted: #2a2a2a;
   --color-muted-foreground: #9ca3af;
   
-  --color-accent: #3b82f6;
-  --color-accent-foreground: #ffffff;
-  
-  --color-destructive: #ef4444;
-  --color-destructive-foreground: #ffffff;
-  
   --color-border: rgb(30 64 175 / 0.2);
-  --color-input: rgb(30 64 175 / 0.1);
-  --color-input-background: #1e1e1e;
-  --color-switch-background: #1e1e1e;
   --color-ring: #1e40af;
-  
-  /* Custom blue shades */
-  --color-deep-blue: #1e40af;
-  --color-light-blue: #3b82f6;
-  
-  /* Chart colors */
-  --color-chart-1: #1e40af;
-  --color-chart-2: #3b82f6;
-  --color-chart-3: #60a5fa;
-  --color-chart-4: #10b981;
-  --color-chart-5: #f59e0b;
-  
-  /* Sidebar colors */
-  --color-sidebar: #0a0a0a;
-  --color-sidebar-foreground: #ffffff;
-  --color-sidebar-primary: #1e40af;
-  --color-sidebar-primary-foreground: #ffffff;
-  --color-sidebar-accent: #1e1e1e;
-  --color-sidebar-accent-foreground: #ffffff;
-  --color-sidebar-border: rgb(30 64 175 / 0.2);
-  --color-sidebar-ring: #1e40af;
 }
 
 /* Base styles */
 @layer base {
   * {
-    @apply border-border outline-ring/50;
-  }
-
-  html {
-    font-size: var(--font-size);
+    @apply border-border;
   }
 
   body {
     @apply bg-background text-foreground;
-    margin: 0;
-    padding: 0;
   }
 }
