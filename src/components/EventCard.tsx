@@ -3,6 +3,8 @@ import { MapPin, Users, ExternalLink } from 'lucide-react';
 import { Avatar, Badge, Button, IconButton } from '@/components/ui';
 import type { Event } from '@/types/events';
 import { sanitizeVideoUrl } from '@/lib/video-url-validator';
+import { useRef } from 'react';
+import confetti from 'canvas-confetti';
 
 interface EventCardProps {
   event: Event;
@@ -11,6 +13,40 @@ interface EventCardProps {
 
 export function EventCard({ event, onToggleSubscription }: EventCardProps) {
   const safeVideoUrl = sanitizeVideoUrl(event.videoUrl);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  const handleSubscribe = () => {
+    if (!event.isSubscribed && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      const x = (rect.left + rect.width / 2) / window.innerWidth;
+      const y = (rect.top + rect.height / 2) / window.innerHeight;
+
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { x, y },
+        colors: ['#FFD700', '#FFA500', '#FF69B4', '#00CED1', '#9370DB'],
+        ticks: 200,
+      });
+
+      confetti({
+        particleCount: 50,
+        angle: 60,
+        spread: 55,
+        origin: { x: x - 0.1, y },
+        colors: ['#FFD700', '#FFA500', '#FF69B4'],
+      });
+
+      confetti({
+        particleCount: 50,
+        angle: 120,
+        spread: 55,
+        origin: { x: x + 0.1, y },
+        colors: ['#00CED1', '#9370DB', '#FF69B4'],
+      });
+    }
+    onToggleSubscription(event.id);
+  };
   
   return (
     <motion.article
@@ -144,7 +180,8 @@ export function EventCard({ event, onToggleSubscription }: EventCardProps) {
           </div>
 
           <Button
-            onClick={() => onToggleSubscription(event.id)}
+            ref={buttonRef}
+            onClick={handleSubscribe}
             variant={event.isSubscribed ? 'secondary' : 'primary'}
             aria-pressed={event.isSubscribed}
           >
