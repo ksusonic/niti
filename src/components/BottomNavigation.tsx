@@ -24,7 +24,7 @@ export function BottomNavigation({ activeTab, onTabChange }: BottomNavigationPro
     <motion.nav
       initial={{ y: 100 }}
       animate={{ y: 0 }}
-      className="fixed bottom-0 left-0 right-0 z-50 bg-gray-800/95 backdrop-blur-lg border-t border-gray-700/50"
+      className="fixed bottom-0 left-0 right-0 z-50 bg-[#1a1a1a]/95 backdrop-blur-lg border-t border-gray-800/50"
       aria-label="Main navigation"
     >
       <div className="flex items-center justify-around px-4 py-3">
@@ -42,11 +42,11 @@ export function BottomNavigation({ activeTab, onTabChange }: BottomNavigationPro
               aria-label={tab.label}
               className={`flex flex-col items-center gap-1 px-6 py-2 rounded-xl transition-all duration-300 ${
                 isActive 
-                  ? 'bg-blue-600/20 text-white' 
-                  : 'text-gray-400 hover:text-white'
+                  ? 'bg-blue-500/20 text-white' 
+                  : 'text-gray-500 hover:text-white'
               }`}
             >
-              <Icon className={`h-6 w-6 ${isActive ? 'text-blue-400' : ''}`} aria-hidden="true" />
+              <Icon className={`h-6 w-6 ${isActive ? 'text-blue-500' : ''}`} aria-hidden="true" />
               <span className={`text-xs font-medium ${isActive ? 'text-white' : ''}`}>
                 {tab.label}
               </span>
@@ -56,7 +56,7 @@ export function BottomNavigation({ activeTab, onTabChange }: BottomNavigationPro
       </div>
       
       {/* Gradient border effect */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/50 to-transparent" aria-hidden="true" />
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/30 to-transparent" aria-hidden="true" />
     </motion.nav>
   );
 }
