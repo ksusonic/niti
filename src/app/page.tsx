@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { EventFeed } from '@/components/EventFeed';
 import { ProfilePage } from '@/components/ProfilePage';
@@ -237,16 +237,19 @@ export default function Home() {
     setProfile(prev => ({ ...prev, ...updates }));
   };
 
+  const handleTabChange = useCallback((tab: 'events' | 'profile') => {
+    setActiveTab(tab);
+  }, []);
+
   return (
-    <div className="min-h-screen bg-background text-foreground dark">
+    <div className="bg-background text-foreground dark pb-24">
       <AnimatePresence mode="wait">
         <motion.div
           key={activeTab}
-          initial={{ opacity: 0, x: activeTab === 'events' ? -20 : 20 }}
+          className="min-h-screen page-transition"
           animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: activeTab === 'events' ? 20 : -20 }}
-          transition={{ duration: 0.3, ease: "easeInOut" }}
-          className="w-full"
+          exit={{ opacity: 0, x: -40 }}
+          transition={{ duration: 0.3 }}
         >
           {activeTab === 'events' ? (
             <EventFeed 
@@ -262,10 +265,12 @@ export default function Home() {
         </motion.div>
       </AnimatePresence>
 
-      <BottomNavigation 
-        activeTab={activeTab} 
-        onTabChange={setActiveTab} 
-      />
+      <div className="fixed bottom-0 left-0 right-0 z-50">
+        <BottomNavigation 
+          activeTab={activeTab} 
+          onTabChange={handleTabChange} 
+        />
+      </div>
     </div>
   );
 }

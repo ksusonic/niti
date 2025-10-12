@@ -1,5 +1,6 @@
-import { motion } from 'framer-motion';
+import { memo } from 'react';
 import { Calendar, User } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/cn';
 
 interface BottomNavigationProps {
@@ -7,69 +8,77 @@ interface BottomNavigationProps {
   onTabChange: (tab: 'events' | 'profile') => void;
 }
 
-export function BottomNavigation({ activeTab, onTabChange }: BottomNavigationProps) {
-  const tabs = [
-    {
-      id: 'events' as const,
-      label: 'Events',
-      icon: Calendar,
-    },
-    {
-      id: 'profile' as const,
-      label: 'Profile',
-      icon: User,
-    },
-  ];
+interface Tab {
+  id: 'events' | 'profile';
+  label: string;
+  icon: LucideIcon;
+}
 
+const tabs: Tab[] = [
+  {
+    id: 'events',
+    label: 'Events',
+    icon: Calendar,
+  },
+  {
+    id: 'profile',
+    label: 'Profile',
+    icon: User,
+  },
+];
+
+const BottomNavigationComponent = ({ activeTab, onTabChange }: BottomNavigationProps) => {
   return (
-    <motion.nav
-      initial={{ y: 100 }}
-      animate={{ y: 0 }}
-      className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-lg border-t border-gray-800/50"
+    <nav
+      className="bg-card/95 backdrop-blur-xl border-t border-border/50 shadow-lg"
       aria-label="Main navigation"
     >
-      <div className="flex items-center justify-around px-4 py-3">
-        {tabs.map((tab) => {
-          const Icon = tab.icon;
-          const isActive = activeTab === tab.id;
+      <div className="relative max-w-md mx-auto">
+        <div className="flex items-center justify-around px-2 py-2 safe-area-inset-bottom">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
 
-          return (
-            <motion.button
-              key={tab.id}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => onTabChange(tab.id)}
-              aria-pressed={isActive}
-              aria-label={tab.label}
-              className={cn(
-                'flex flex-col items-center gap-1 px-6 py-2 rounded-xl transition-all duration-300',
-                isActive
-                  ? 'bg-blue-500/20 text-foreground'
-                  : 'text-muted-foreground hover:text-foreground'
-              )}
-            >
-              <Icon
-                className={cn('h-6 w-6', isActive && 'text-blue-500')}
-                aria-hidden="true"
-              />
-              <span
+            return (
+              <button
+                key={tab.id}
+                onClick={() => onTabChange(tab.id)}
+                aria-pressed={isActive}
+                aria-label={tab.label}
                 className={cn(
-                  'text-xs font-medium',
-                  isActive && 'text-foreground'
+                  'relative flex flex-col items-center gap-1.5 px-8 py-2.5 rounded-2xl transition-all duration-200',
+                  'active:scale-[0.97] touch-manipulation',
+                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50',
+                  isActive
+                    ? 'text-primary bg-primary/10'
+                    : 'text-muted-foreground hover:text-foreground/80'
                 )}
               >
-                {tab.label}
-              </span>
-            </motion.button>
-          );
-        })}
+                <Icon
+                  className={cn(
+                    'relative h-5 w-5 transition-transform duration-200',
+                    isActive && 'scale-110'
+                  )}
+                  strokeWidth={isActive ? 2.5 : 2}
+                  aria-hidden="true"
+                />
+                
+                <span
+                  className={cn(
+                    'relative text-[11px] font-semibold tracking-wide',
+                    isActive && 'text-primary'
+                  )}
+                >
+                  {tab.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </div>
-
-      {/* Gradient border effect */}
-      <div
-        className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/30 to-transparent"
-        aria-hidden="true"
-      />
-    </motion.nav>
+    </nav>
   );
-}
+};
+
+export const BottomNavigation = memo(BottomNavigationComponent);
+

@@ -15,6 +15,12 @@ const sizeClasses = {
   lg: 'h-12 w-12 text-base',
 };
 
+const sizeDimensions = {
+  sm: 32,
+  md: 40,
+  lg: 48,
+};
+
 export function Avatar({ src, alt, className, size = 'md' }: AvatarProps) {
   const [error, setError] = useState(false);
   const fallback = alt
@@ -42,8 +48,8 @@ export function Avatar({ src, alt, className, size = 'md' }: AvatarProps) {
     <Image
       src={src}
       alt={alt}
-      width={40}
-      height={40}
+      width={sizeDimensions[size]}
+      height={sizeDimensions[size]}
       onError={() => setError(true)}
       className={cn('rounded-full object-cover', sizeClasses[size], className)}
     />

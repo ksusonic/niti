@@ -20,13 +20,9 @@ export function ProfilePage({ profile, onUpdateProfile }: ProfilePageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="bg-background">
       {/* Header */}
-      <motion.header
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="sticky top-0 z-50 bg-black/95 backdrop-blur-lg border-b border-gray-800/50 px-4 py-4"
-      >
+      <header className="sticky top-0 z-50 bg-black/95 backdrop-blur-lg border-b border-gray-800/50 px-4 py-4">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold text-foreground">Profile</h1>
           <button
@@ -36,15 +32,11 @@ export function ProfilePage({ profile, onUpdateProfile }: ProfilePageProps) {
             <Settings className="h-6 w-6 text-gray-500" />
           </button>
         </div>
-      </motion.header>
+      </header>
 
-      <div className="p-4 space-y-6 pb-24">
+      <div className="p-4 space-y-6">
         {/* Profile Header */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-        >
+        <div>
           <Card className="p-6">
             <div className="flex items-center gap-4">
               <Avatar
@@ -109,15 +101,11 @@ export function ProfilePage({ profile, onUpdateProfile }: ProfilePageProps) {
               </nav>
             )}
           </Card>
-        </motion.div>
+        </div>
 
         {/* DJ Profile Section */}
         {profile.isDJ && profile.upcomingSets && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-          >
+          <div>
             <Card className="p-6">
               <h3 className="text-lg font-semibold text-muted-foreground mb-4">Upcoming Sets</h3>
               <ul className="space-y-3" role="list">
@@ -138,15 +126,11 @@ export function ProfilePage({ profile, onUpdateProfile }: ProfilePageProps) {
                 ))}
               </ul>
             </Card>
-          </motion.div>
+          </div>
         )}
 
         {/* Settings */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
+        <div>
           <Card className="p-6">
             <h3 className="text-lg font-semibold text-muted-foreground mb-4">Settings</h3>
             <div className="space-y-4">
@@ -165,14 +149,10 @@ export function ProfilePage({ profile, onUpdateProfile }: ProfilePageProps) {
               </div>
             </div>
           </Card>
-        </motion.div>
+        </div>
 
         {/* Subscribed Events */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-        >
+        <div>
           <Card className="p-6">
             <h3 className="text-lg font-semibold text-muted-foreground mb-4">My Events</h3>
             <ul className="space-y-3" role="list">
@@ -200,7 +180,7 @@ export function ProfilePage({ profile, onUpdateProfile }: ProfilePageProps) {
               ))}
             </ul>
           </Card>
-        </motion.div>
+        </div>
       </div>
     </div>
   );
