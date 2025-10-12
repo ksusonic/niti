@@ -6,6 +6,73 @@ import { sanitizeVideoUrl } from '@/lib/video-url-validator';
 import { useRef } from 'react';
 import confetti from 'canvas-confetti';
 
+const CONFETTI_COLORS = {
+  gold: '#FFD700',
+  orange: '#FFA500',
+  pink: '#FF69B4',
+  cyan: '#00CED1',
+  purple: '#9370DB',
+} as const;
+
+const CONFETTI_COLOR_PALETTE = [
+  CONFETTI_COLORS.gold,
+  CONFETTI_COLORS.orange,
+  CONFETTI_COLORS.pink,
+  CONFETTI_COLORS.cyan,
+  CONFETTI_COLORS.purple,
+];
+
+const CONFETTI_WARM_COLORS = [
+  CONFETTI_COLORS.gold,
+  CONFETTI_COLORS.orange,
+  CONFETTI_COLORS.pink,
+];
+
+const CONFETTI_COOL_COLORS = [
+  CONFETTI_COLORS.cyan,
+  CONFETTI_COLORS.purple,
+  CONFETTI_COLORS.pink,
+];
+
+const CONFETTI_CONFIG = {
+  main: {
+    particleCount: 100,
+    spread: 70,
+    ticks: 200,
+  },
+  side: {
+    particleCount: 50,
+    spread: 55,
+  },
+  offset: 0.1,
+} as const;
+
+const triggerConfettiCelebration = (x: number, y: number) => {
+  confetti({
+    particleCount: CONFETTI_CONFIG.main.particleCount,
+    spread: CONFETTI_CONFIG.main.spread,
+    origin: { x, y },
+    colors: CONFETTI_COLOR_PALETTE,
+    ticks: CONFETTI_CONFIG.main.ticks,
+  });
+
+  confetti({
+    particleCount: CONFETTI_CONFIG.side.particleCount,
+    angle: 60,
+    spread: CONFETTI_CONFIG.side.spread,
+    origin: { x: x - CONFETTI_CONFIG.offset, y },
+    colors: CONFETTI_WARM_COLORS,
+  });
+
+  confetti({
+    particleCount: CONFETTI_CONFIG.side.particleCount,
+    angle: 120,
+    spread: CONFETTI_CONFIG.side.spread,
+    origin: { x: x + CONFETTI_CONFIG.offset, y },
+    colors: CONFETTI_COOL_COLORS,
+  });
+};
+
 interface EventCardProps {
   event: Event;
   onToggleSubscription: (eventId: string) => void;
@@ -21,29 +88,7 @@ export function EventCard({ event, onToggleSubscription }: EventCardProps) {
       const x = (rect.left + rect.width / 2) / window.innerWidth;
       const y = (rect.top + rect.height / 2) / window.innerHeight;
 
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { x, y },
-        colors: ['#FFD700', '#FFA500', '#FF69B4', '#00CED1', '#9370DB'],
-        ticks: 200,
-      });
-
-      confetti({
-        particleCount: 50,
-        angle: 60,
-        spread: 55,
-        origin: { x: x - 0.1, y },
-        colors: ['#FFD700', '#FFA500', '#FF69B4'],
-      });
-
-      confetti({
-        particleCount: 50,
-        angle: 120,
-        spread: 55,
-        origin: { x: x + 0.1, y },
-        colors: ['#00CED1', '#9370DB', '#FF69B4'],
-      });
+      triggerConfettiCelebration(x, y);
     }
     onToggleSubscription(event.id);
   };
