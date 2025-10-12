@@ -3,6 +3,75 @@ import { MapPin, Users, ExternalLink } from 'lucide-react';
 import { Avatar, Badge, Button, IconButton } from '@/components/ui';
 import type { Event } from '@/types/events';
 import { sanitizeVideoUrl } from '@/lib/video-url-validator';
+import { useRef } from 'react';
+import confetti from 'canvas-confetti';
+
+const CONFETTI_COLORS = {
+  gold: '#FFD700',
+  orange: '#FFA500',
+  pink: '#FF69B4',
+  cyan: '#00CED1',
+  purple: '#9370DB',
+} as const;
+
+const CONFETTI_COLOR_PALETTE = [
+  CONFETTI_COLORS.gold,
+  CONFETTI_COLORS.orange,
+  CONFETTI_COLORS.pink,
+  CONFETTI_COLORS.cyan,
+  CONFETTI_COLORS.purple,
+];
+
+const CONFETTI_WARM_COLORS = [
+  CONFETTI_COLORS.gold,
+  CONFETTI_COLORS.orange,
+  CONFETTI_COLORS.pink,
+];
+
+const CONFETTI_COOL_COLORS = [
+  CONFETTI_COLORS.cyan,
+  CONFETTI_COLORS.purple,
+  CONFETTI_COLORS.pink,
+];
+
+const CONFETTI_CONFIG = {
+  main: {
+    particleCount: 100,
+    spread: 70,
+    ticks: 200,
+  },
+  side: {
+    particleCount: 50,
+    spread: 55,
+  },
+  offset: 0.1,
+} as const;
+
+const triggerConfettiCelebration = (x: number, y: number) => {
+  confetti({
+    particleCount: CONFETTI_CONFIG.main.particleCount,
+    spread: CONFETTI_CONFIG.main.spread,
+    origin: { x, y },
+    colors: CONFETTI_COLOR_PALETTE,
+    ticks: CONFETTI_CONFIG.main.ticks,
+  });
+
+  confetti({
+    particleCount: CONFETTI_CONFIG.side.particleCount,
+    angle: 60,
+    spread: CONFETTI_CONFIG.side.spread,
+    origin: { x: x - CONFETTI_CONFIG.offset, y },
+    colors: CONFETTI_WARM_COLORS,
+  });
+
+  confetti({
+    particleCount: CONFETTI_CONFIG.side.particleCount,
+    angle: 120,
+    spread: CONFETTI_CONFIG.side.spread,
+    origin: { x: x + CONFETTI_CONFIG.offset, y },
+    colors: CONFETTI_COOL_COLORS,
+  });
+};
 
 interface EventCardProps {
   event: Event;
@@ -11,6 +80,18 @@ interface EventCardProps {
 
 export function EventCard({ event, onToggleSubscription }: EventCardProps) {
   const safeVideoUrl = sanitizeVideoUrl(event.videoUrl);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  const handleSubscribe = () => {
+    if (!event.isSubscribed && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      const x = (rect.left + rect.width / 2) / window.innerWidth;
+      const y = (rect.top + rect.height / 2) / window.innerHeight;
+
+      triggerConfettiCelebration(x, y);
+    }
+    onToggleSubscription(event.id);
+  };
   
   return (
     <motion.article
@@ -144,7 +225,8 @@ export function EventCard({ event, onToggleSubscription }: EventCardProps) {
           </div>
 
           <Button
-            onClick={() => onToggleSubscription(event.id)}
+            ref={buttonRef}
+            onClick={handleSubscribe}
             variant={event.isSubscribed ? 'secondary' : 'primary'}
             aria-pressed={event.isSubscribed}
           >

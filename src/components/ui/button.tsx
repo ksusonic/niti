@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/cn';
+import { forwardRef } from 'react';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
@@ -21,7 +22,7 @@ const sizeClasses = {
   lg: 'px-6 py-3 text-lg',
 };
 
-export function Button({
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button({
   children,
   variant = 'default',
   size = 'md',
@@ -31,7 +32,7 @@ export function Button({
   disabled,
   type,
   ...props
-}: ButtonProps) {
+}, ref) {
   const buttonClasses = cn(
     'inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-all duration-200',
     'focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500',
@@ -44,6 +45,7 @@ export function Button({
   if (animated) {
     return (
       <motion.button
+        ref={ref}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         className={buttonClasses}
@@ -57,8 +59,8 @@ export function Button({
   }
 
   return (
-    <button className={buttonClasses} {...props}>
+    <button ref={ref} className={buttonClasses} {...props}>
       {children}
     </button>
   );
-}
+});
