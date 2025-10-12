@@ -8,6 +8,10 @@ const nextConfig: NextConfig = {
         hostname: 'xelene.me',
         pathname: '/telegram.gif',
       },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com'
+      }
     ],
   },
 };
