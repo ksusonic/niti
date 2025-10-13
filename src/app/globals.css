@@ -1,48 +1,49 @@
 @import "tailwindcss";
 
+/* biome-ignore lint/suspicious/noUnknownAtRules: Tailwind CSS  */
 @theme {
-  /* Colors - Dark theme optimized for Telegram */
-  --color-background: #000000;
-  --color-foreground: #ffffff;
-  
-  --color-card: #1a1a1a;
-  --color-card-foreground: #ffffff;
-  
-  --color-primary: #3b82f6;
-  --color-primary-foreground: #ffffff;
-  
-  --color-secondary: #2a2a2a;
-  --color-secondary-foreground: #ffffff;
-  
-  --color-muted: #2a2a2a;
-  --color-muted-foreground: #9ca3af;
-  
-  --color-border: rgb(30 64 175 / 0.2);
-  --color-ring: #1e40af;
+	/* Colors - Dark theme optimized for Telegram */
+	--color-background: #000000;
+	--color-foreground: #ffffff;
+
+	--color-card: #1a1a1a;
+	--color-card-foreground: #ffffff;
+
+	--color-primary: #3b82f6;
+	--color-primary-foreground: #ffffff;
+
+	--color-secondary: #2a2a2a;
+	--color-secondary-foreground: #ffffff;
+
+	--color-muted: #2a2a2a;
+	--color-muted-foreground: #9ca3af;
+
+	--color-border: rgb(30 64 175 / 0.2);
+	--color-ring: #1e40af;
 }
 
 /* Base styles */
 @layer base {
-  * {
-    @apply border-border;
-  }
-
-  body {
-    @apply bg-background text-foreground;
-  }
+	* {
+		border-color: var(--color-border);
+	}
+	body {
+		/* biome-ignore lint/suspicious/noUnknownAtRules: Tailwind CSS  */
+		@apply bg-black text-white;
+	}
 }
 
 @layer utilities {
-  .page-transition {
-    animation: fadeIn 0.3s ease-in-out;
-  }
+	.page-transition {
+		animation: fadeIn 0.3s ease-in-out;
+	}
 
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
+	@keyframes fadeIn {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
+	}
 }
