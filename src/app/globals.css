@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
-:root {
+/* biome-ignore lint/suspicious/noUnknownAtRules: Tailwind CSS  */
+@theme {
 	/* Colors - Dark theme optimized for Telegram */
 	--color-background: #000000;
 	--color-foreground: #ffffff;
@@ -27,8 +28,8 @@
 		border-color: var(--color-border);
 	}
 	body {
-		background-color: var(--color-background);
-		color: var(--color-foreground);
+		/* biome-ignore lint/suspicious/noUnknownAtRules: Tailwind CSS  */
+		@apply bg-black text-white;
 	}
 }
 
