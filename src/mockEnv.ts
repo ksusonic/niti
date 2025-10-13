@@ -74,7 +74,7 @@ export async function mockEnv(): Promise<void> {
 							[
 								"tgWebAppData",
 								new URLSearchParams([
-									["auth_date", ((new Date().getTime() / 1000) | 0).toString()],
+									["auth_date", ((Date.now() / 1000) | 0).toString()],
 									["hash", "some-hash"],
 									["signature", "some-signature"],
 									["user", JSON.stringify({ id: 1, first_name: "Incognito" })],

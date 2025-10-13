@@ -1,7 +1,7 @@
 import confetti from "canvas-confetti";
 import { motion } from "framer-motion";
 import { ExternalLink, MapPin, Users } from "lucide-react";
-import { useRef } from "react";
+import { useId, useRef } from "react";
 import { Avatar, Badge, Button, IconButton } from "@/components/ui";
 import { sanitizeVideoUrl } from "@/lib/video-url-validator";
 import type { Event } from "@/types/events";
@@ -81,6 +81,7 @@ interface EventCardProps {
 export function EventCard({ event, onToggleSubscription }: EventCardProps) {
 	const safeVideoUrl = sanitizeVideoUrl(event.videoUrl);
 	const buttonRef = useRef<HTMLButtonElement>(null);
+	const lineupHeadingId = useId();
 
 	const handleSubscribe = () => {
 		if (!event.isSubscribed && buttonRef.current) {
@@ -153,14 +154,14 @@ export function EventCard({ event, onToggleSubscription }: EventCardProps) {
 				</p>
 
 				{/* DJ Lineup */}
-				<section className="space-y-3" aria-labelledby="lineup-heading">
+				<section className="space-y-3" aria-labelledby={lineupHeadingId}>
 					<h4
-						id="lineup-heading"
+						id={lineupHeadingId}
 						className="text-sm font-medium text-muted-foreground"
 					>
 						Lineup
 					</h4>
-					<ul className="space-y-2" role="list">
+					<ul className="space-y-2">
 						{event.djLineup.map((dj) => (
 							<motion.li
 								key={dj.id}

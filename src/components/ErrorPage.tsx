@@ -18,7 +18,11 @@ export function ErrorPage({
 			<blockquote>
 				<code>{error.message}</code>
 			</blockquote>
-			{reset && <button onClick={() => reset()}>Try again</button>}
+			{reset && (
+				<button type="button" onClick={() => reset()}>
+					Try again
+				</button>
+			)}
 		</div>
 	);
 }

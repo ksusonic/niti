@@ -34,6 +34,7 @@ export function ProfilePage({ profile, onUpdateProfile }: ProfilePageProps) {
 				<div className="flex items-center justify-between">
 					<h1 className="text-2xl font-bold text-foreground">Profile</h1>
 					<button
+						type="button"
 						className="p-2 hover:bg-secondary rounded-lg transition-colors"
 						aria-label="Settings"
 					>
@@ -128,7 +129,7 @@ export function ProfilePage({ profile, onUpdateProfile }: ProfilePageProps) {
 							<h3 className="text-lg font-semibold text-muted-foreground mb-4">
 								Upcoming Sets
 							</h3>
-							<ul className="space-y-3" role="list">
+							<ul className="space-y-3">
 								{profile.upcomingSets.map((set) => (
 									<li
 										key={set.id}
@@ -186,7 +187,7 @@ export function ProfilePage({ profile, onUpdateProfile }: ProfilePageProps) {
 						<h3 className="text-lg font-semibold text-muted-foreground mb-4">
 							My Events
 						</h3>
-						<ul className="space-y-3" role="list">
+						<ul className="space-y-3">
 							{profile.subscribedEvents.map((event) => (
 								<motion.li
 									key={event.id}

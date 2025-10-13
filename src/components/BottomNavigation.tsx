@@ -44,6 +44,7 @@ const BottomNavigationComponent = ({
 
 						return (
 							<button
+								type="button"
 								key={tab.id}
 								onClick={() => onTabChange(tab.id)}
 								aria-pressed={isActive}
