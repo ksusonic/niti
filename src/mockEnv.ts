@@ -1,15 +1,6 @@
 import { emitEvent, isTMA, mockTelegramEnv } from "@telegram-apps/sdk-react";
 
-// It is important, to mock the environment only for development purposes. When building the
-// application, the code inside will be tree-shaken, so you will not see it in your final bundle.
 export async function mockEnv(): Promise<void> {
-	if (process.env.NEXT_PUBLIC_DISABLE_MOCKS === "true") {
-		console.info(
-			"Mocks are disabled via NEXT_PUBLIC_DISABLE_MOCKS environment variable.",
-		);
-		return;
-	}
-
 	return process.env.NODE_ENV !== "development"
 		? undefined
 		: isTMA("complete").then((isTma) => {
@@ -33,7 +24,6 @@ export async function mockEnv(): Promise<void> {
 
 					mockTelegramEnv({
 						onEvent(e) {
-							// Here you can write your own handlers for all known Telegram Mini Apps methods.
 							if (e[0] === "web_app_request_theme") {
 								return emitEvent("theme_changed", {
 									theme_params: themeParams,
@@ -55,29 +45,14 @@ export async function mockEnv(): Promise<void> {
 							}
 						},
 						launchParams: new URLSearchParams([
-							// Discover more launch parameters:
-							// https://docs.telegram-mini-apps.com/platform/launch-parameters#parameters-list
 							["tgWebAppThemeParams", JSON.stringify(themeParams)],
-							// Your init data goes here. Learn more about it here:
-							// https://docs.telegram-mini-apps.com/platform/init-data#parameters-list
-							//
-							// Note that to make sure, you are using a valid init data, you must pass it exactly as it
-							// is sent from the Telegram application. The reason is in case you will sort its keys
-							// (auth_date, hash, user, etc.) or values your own way, init data validation will more
-							// likely to fail on your server side. So, to make sure you are working with a valid init
-							// data, it is better to take a real one from your application and paste it here. It should
-							// look something like this (a correctly encoded URL search params):
-							// ```
-							// user=%7B%22id%22%3A279058397%2C%22first_name%22%3A%22Vladislav%22%2C%22last_name%22...
-							// ```
-							// But in case you don't really need a valid init data, use this one:
 							[
 								"tgWebAppData",
 								new URLSearchParams([
 									["auth_date", ((Date.now() / 1000) | 0).toString()],
 									["hash", "some-hash"],
 									["signature", "some-signature"],
-									["user", JSON.stringify({ id: 1, first_name: "Incognito" })],
+									["user", JSON.stringify({ id: 1, first_name: "Ksusonic" })],
 								]).toString(),
 							],
 							["tgWebAppVersion", "8.4"],
