@@ -1,7 +1,9 @@
 import { emitEvent, isTMA, mockTelegramEnv } from "@telegram-apps/sdk-react";
 
 export async function mockEnv(): Promise<void> {
-	return process.env.NODE_ENV !== "development"
+	const mocksEnabled = process.env.NEXT_PUBLIC_ENABLE_MOCKS === "true";
+
+	return !mocksEnabled
 		? undefined
 		: isTMA("complete").then((isTma) => {
 				if (!isTma) {

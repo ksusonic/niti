@@ -1,4 +1,4 @@
-import { retrieveLaunchParams } from "@telegram-apps/sdk-react";
+import { initData } from "@telegram-apps/sdk-react";
 
 /**
  * Mock init data for development when environment is mocked
@@ -12,32 +12,26 @@ export const MOCK_INIT_DATA = new URLSearchParams([
 ]).toString();
 
 /**
- * Gets init data from Telegram launch params, with fallback to mock data
- * in development when the environment is mocked
+ * Gets init data from Telegram SDK (after restoreInitData() has been called),
+ * with fallback to mock data in development when the environment is mocked
  */
 export function getInitData(): string {
 	try {
-		const launchParams = retrieveLaunchParams();
-		const initData = (launchParams.initData as { raw?: string } | undefined)
-			?.raw;
-
-		if (initData) {
-			return initData;
+		const raw = initData.raw();
+		if (raw) {
+			return raw;
 		}
 
-		// If no init data and in development, return mock data
 		if (process.env.NODE_ENV === "development") {
-			console.log("[InitData] No launch params found, using mock init data");
+			console.log("[InitData] No init data found, using mock init data");
 			return MOCK_INIT_DATA;
 		}
 
 		return "";
 	} catch (error) {
-		console.warn("[InitData] Error retrieving launch params:", error);
-
-		// Fallback to mock data in development
+		console.error("[InitData] Error retrieving init data:", error);
 		if (process.env.NODE_ENV === "development") {
-			console.log("[InitData] Using mock init data due to error");
+			console.log("[InitData] Error occurred, using mock init data");
 			return MOCK_INIT_DATA;
 		}
 
