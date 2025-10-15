@@ -30,6 +30,11 @@ export function getInitData(): string {
 		return "";
 	} catch (error) {
 		console.error("[InitData] Error retrieving init data:", error);
+		if (process.env.NODE_ENV === "development") {
+			console.log("[InitData] Error occurred, using mock init data");
+			return MOCK_INIT_DATA;
+		}
+
 		return "";
 	}
 }
