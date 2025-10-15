@@ -1,6 +1,8 @@
-export { Avatar } from "./avatar";
-export { Badge } from "./badge";
-export { Button } from "./button";
-export { Card } from "./card";
-export { IconButton } from "./icon-button";
-export { Switch } from "./switch";
+export * from "./avatar";
+export * from "./badge";
+export * from "./button";
+export * from "./card";
+export * from "./error-state";
+export * from "./icon-button";
+export * from "./loading-state";
+export * from "./switch";
