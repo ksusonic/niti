@@ -22,9 +22,6 @@ export async function GET() {
 		return authResult;
 	}
 
-	const { initData } = authResult;
-	console.debug("authenticated user:", initData.user);
-
 	try {
 		const supabase = await createClient();
 

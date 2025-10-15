@@ -36,6 +36,7 @@ export function EnvUnsupported() {
 					width={144}
 					height={144}
 					style={{ display: "block" }}
+					unoptimized
 				/>
 			</Placeholder>
 		</AppRoot>

@@ -67,7 +67,6 @@ export default function Home() {
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
-	// Fetch events from API
 	useEffect(() => {
 		let isMounted = true;
 
