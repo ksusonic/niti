@@ -140,17 +140,15 @@ export default function Home() {
 				[TELEGRAM_INIT_DATA_HEADER]: initData,
 			},
 			body: JSON.stringify({
-				eventId: eventId,
+				eventId: parseInt(eventId, 10),
 				action,
 			}),
 		})
 			.then((response) => {
-				if (response.status === 409) {
-					// Already subscribed, treat as success
-					return response.json();
-				}
 				if (!response.ok) {
-					throw new Error(`Failed to ${action}`);
+					return response.json().then((data) => {
+						throw new Error(data.error || `Failed to ${action}`);
+					});
 				}
 				return response.json();
 			})

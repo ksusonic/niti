@@ -194,8 +194,7 @@ export async function POST(request: Request) {
 				// User is already subscribed, return conflict
 				return NextResponse.json(
 					{
-						success: false,
-						message: "Already subscribed to this event",
+						error: "Already subscribed to this event",
 					},
 					{ status: 409 },
 				);
