@@ -92,7 +92,7 @@ export async function GET() {
 				const timeStr = startTime.toLocaleTimeString("ru-RU", {
 					hour: "numeric",
 					minute: "2-digit",
-					hour12: true,
+					hour12: false,
 				});
 
 				return {
@@ -113,7 +113,7 @@ export async function GET() {
 							time: `${new Date(lineup.start_time).toLocaleTimeString("en-US", {
 								hour: "numeric",
 								minute: "2-digit",
-								hour12: true,
+								hour12: false,
 							})}${
 								lineup.end_time
 									? ` - ${new Date(lineup.end_time).toLocaleTimeString(
@@ -121,7 +121,7 @@ export async function GET() {
 											{
 												hour: "numeric",
 												minute: "2-digit",
-												hour12: true,
+												hour12: false,
 											},
 										)}`
 									: ""

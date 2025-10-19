@@ -155,7 +155,6 @@ export default function Home() {
 				return response.json();
 			})
 			.then((data) => {
-				console.log(`Successfully ${action}d from event:`, data);
 				// Update UI with response data
 				setEvents((prevEvents) =>
 					prevEvents.map((e) =>

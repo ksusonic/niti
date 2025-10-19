@@ -97,7 +97,7 @@ export async function GET(request: Request) {
 			const timeStr = startTime.toLocaleTimeString("ru-RU", {
 				hour: "numeric",
 				minute: "2-digit",
-				hour12: true,
+				hour12: false,
 			});
 
 			return {
@@ -184,10 +184,17 @@ export async function POST(request: Request) {
 				.single();
 
 			if (existing) {
-				return NextResponse.json(
-					{ error: "Already subscribed to this event" },
-					{ status: 409 },
-				);
+				// Get updated participant count
+				const { count } = await supabase
+					.from("event_participants")
+					.select("*", { count: "exact", head: true })
+					.eq("event_id", eventId)
+					.eq("status", "going");
+				return NextResponse.json({
+					success: true,
+					message: "Already subscribed to this event",
+					participantCount: count || 0,
+				});
 			}
 
 			// Add subscription
