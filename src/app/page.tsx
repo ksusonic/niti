@@ -140,7 +140,7 @@ export default function Home() {
 				[TELEGRAM_INIT_DATA_HEADER]: initData,
 			},
 			body: JSON.stringify({
-				eventId: parseInt(eventId, 10),
+				eventId: eventId,
 				action,
 			}),
 		})

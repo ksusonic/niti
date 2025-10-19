@@ -145,6 +145,13 @@ export async function POST(request: Request) {
 			);
 		}
 
+		if (action === undefined || action === null) {
+			return NextResponse.json(
+				{ error: "action is required" },
+				{ status: 400 },
+			);
+		}
+
 		if (action !== "subscribe" && action !== "unsubscribe") {
 			return NextResponse.json(
 				{ error: "action must be 'subscribe' or 'unsubscribe'" },
@@ -184,17 +191,14 @@ export async function POST(request: Request) {
 				.single();
 
 			if (existing) {
-				// Get updated participant count
-				const { count } = await supabase
-					.from("event_participants")
-					.select("*", { count: "exact", head: true })
-					.eq("event_id", eventId)
-					.eq("status", "going");
-				return NextResponse.json({
-					success: true,
-					message: "Already subscribed to this event",
-					participantCount: count || 0,
-				});
+				// User is already subscribed, return conflict
+				return NextResponse.json(
+					{
+						success: false,
+						message: "Already subscribed to this event",
+					},
+					{ status: 409 },
+				);
 			}
 
 			// Add subscription
