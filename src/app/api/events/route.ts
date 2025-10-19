@@ -23,6 +23,14 @@ export async function GET() {
 	}
 
 	try {
+		const userId = authResult.initData.user?.id;
+		if (!userId) {
+			return NextResponse.json(
+				{ error: "User ID not found in auth data" },
+				{ status: 401 },
+			);
+		}
+
 		const supabase = await createClient();
 
 		// Fetch events with lineup and participant count
@@ -39,21 +47,39 @@ export async function GET() {
 			);
 		}
 
-		// Get participant counts for each event
-		const eventsWithCounts = await Promise.all(
-			(events || []).map(async (event) => {
-				const { count } = await supabase
-					.from("event_participants")
-					.select("*", { count: "exact", head: true })
-					.eq("event_id", event.id)
-					.eq("status", "going");
+		// Fetch all participant counts and user subscriptions in a single query
+		const { data: allParticipants, error: participantsError } = await supabase
+			.from("event_participants")
+			.select("event_id, user_id")
+			.eq("status", "going");
 
-				return {
-					...event,
-					participant_count: count || 0,
-				};
-			}),
-		);
+		if (participantsError) {
+			console.error("Error fetching participants:", participantsError);
+			return NextResponse.json(
+				{ error: "Failed to fetch participants" },
+				{ status: 500 },
+			);
+		}
+
+		// Build maps for participant counts and user subscriptions
+		const countMap = new Map<number, number>();
+		const subscribedEventIds = new Set<number>();
+
+		allParticipants?.forEach((record) => {
+			const eventId = record.event_id as number;
+			// Count participants
+			countMap.set(eventId, (countMap.get(eventId) || 0) + 1);
+			// Check user subscription
+			if (record.user_id === userId) {
+				subscribedEventIds.add(eventId);
+			}
+		});
+
+		// Add participant counts to events
+		const eventsWithCounts = (events || []).map((event) => ({
+			...event,
+			participant_count: countMap.get(event.id) || 0,
+		}));
 
 		// Transform to match frontend Event type
 		const transformedEvents = (eventsWithCounts as EventWithLineup[]).map(
@@ -66,7 +92,7 @@ export async function GET() {
 				const timeStr = startTime.toLocaleTimeString("ru-RU", {
 					hour: "numeric",
 					minute: "2-digit",
-					hour12: true,
+					hour12: false,
 				});
 
 				return {
@@ -87,7 +113,7 @@ export async function GET() {
 							time: `${new Date(lineup.start_time).toLocaleTimeString("en-US", {
 								hour: "numeric",
 								minute: "2-digit",
-								hour12: true,
+								hour12: false,
 							})}${
 								lineup.end_time
 									? ` - ${new Date(lineup.end_time).toLocaleTimeString(
@@ -95,7 +121,7 @@ export async function GET() {
 											{
 												hour: "numeric",
 												minute: "2-digit",
-												hour12: true,
+												hour12: false,
 											},
 										)}`
 									: ""
@@ -112,7 +138,7 @@ export async function GET() {
 							},
 						})) || [],
 					participantCount: event.participant_count,
-					isSubscribed: false, // TODO: Check if current user is subscribed
+					isSubscribed: subscribedEventIds.has(event.id),
 					date: dateStr,
 					time: timeStr,
 				};

@@ -10,99 +10,105 @@ import { TELEGRAM_INIT_DATA_HEADER } from "@/lib/constants";
 import { getInitData } from "@/lib/telegram-init-data";
 import type { Event, UserProfile } from "@/types/events";
 
-// Mock data
-const mockProfile: UserProfile = {
-	username: "RaveKid2024",
-	avatar:
-		"https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&h=150&fit=crop&crop=face",
-	isDJ: true,
-	bio: "Electronic music enthusiast and weekend DJ. Love deep house and techno vibes.",
-	socialLinks: {
-		instagram: "https://instagram.com/ravekid2024",
-		soundcloud: "https://soundcloud.com/ravekid2024",
-		spotify: "https://spotify.com/ravekid2024",
-	},
-	upcomingSets: [
-		{
-			id: "set1",
-			event: "Late Night Sessions",
-			date: "Jan 12",
-			venue: "Club Voltage",
-		},
-		{
-			id: "set2",
-			event: "Weekend Warrior",
-			date: "Jan 19",
-			venue: "The Underground",
-		},
-	],
-	subscribedEvents: [
-		{
-			id: "2",
-			title: "Neon Nights Festival",
-			date: "Dec 22",
-			location: "Metro Convention Center",
-			imageUrl:
-				"https://images.unsplash.com/photo-1630497326964-62cd41a012d7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxlbGVjdHJvbmljJTIwbXVzaWMlMjBmZXN0aXZhbHxlbnwxfHx8fDE3NTgxNTA5NTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
-		},
-		{
-			id: "4",
-			title: "Rave Revolution",
-			date: "Jan 5",
-			location: "Underground Tunnel System",
-			imageUrl:
-				"https://images.unsplash.com/photo-1465917031443-a76ab279572f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxyYXZlJTIwdW5kZXJncm91bmR8ZW58MXx8fHwxNzU4MjI1NTEzfDA&ixlib=rb-4.1.0&q=80&w=1080",
-		},
-	],
-	settings: {
-		notifications: true,
-		preferredVenues: ["The Basement Club", "Metro Convention Center"],
-	},
-};
+// Helper function to extract user data from init data string
+function parseInitDataForUser(
+	initDataStr: string,
+): { username: string; userId: number; firstName: string } | null {
+	try {
+		const params = new URLSearchParams(initDataStr);
+		const userStr = params.get("user");
+		if (!userStr) return null;
+		const user = JSON.parse(userStr);
+		return {
+			username: user.username || user.first_name || "User",
+			userId: user.id,
+			firstName: user.first_name,
+		};
+	} catch (error) {
+		console.error("Error parsing init data:", error);
+		return null;
+	}
+}
 
 export default function Home() {
 	const [activeTab, setActiveTab] = useState<"events" | "profile">("events");
 	const [events, setEvents] = useState<Event[]>([]);
-	const [profile, setProfile] = useState(mockProfile);
+	const [profile, setProfile] = useState<UserProfile | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
 	useEffect(() => {
 		let isMounted = true;
 
-		async function fetchEvents() {
+		async function fetchData() {
 			try {
 				setIsLoading(true);
 				setError(null);
 				const initData = getInitData();
 
-				const response = await fetch("/api/events", {
+				// Parse user data from initData
+				const userData = parseInitDataForUser(initData);
+				if (!userData) {
+					throw new Error("Failed to parse user data from authentication");
+				}
+
+				// Fetch events
+				const eventsResponse = await fetch("/api/events", {
 					headers: {
 						[TELEGRAM_INIT_DATA_HEADER]: initData,
 					},
 				});
-				if (!response.ok) {
+				if (!eventsResponse.ok) {
 					const errorMessage =
-						response.status === 401
+						eventsResponse.status === 401
 							? "Authentication failed. Please restart the app."
-							: response.status === 500
+							: eventsResponse.status === 500
 								? "Server error. Please try again later."
-								: `Failed to load events (${response.status})`;
+								: `Failed to load events (${eventsResponse.status})`;
 					throw new Error(errorMessage);
 				}
-				const data = await response.json();
+				const eventsData = await eventsResponse.json();
 
-				// Only update state if component is still mounted
+				// Fetch subscribed events (upcoming)
+				const subscriptionsResponse = await fetch(
+					"/api/subscriptions?includePast=false",
+					{
+						headers: {
+							[TELEGRAM_INIT_DATA_HEADER]: initData,
+						},
+					},
+				);
+				if (!subscriptionsResponse.ok) {
+					console.warn(
+						"Failed to fetch subscriptions, continuing without them",
+					);
+				}
+				const subscribedEvents = subscriptionsResponse.ok
+					? await subscriptionsResponse.json()
+					: [];
+
+				// Create local profile from parsed user data
 				if (isMounted) {
-					setEvents(data);
+					const localProfile: UserProfile = {
+						username: userData.username,
+						avatar: "", // Avatar would be set from Telegram if available
+						isDJ: false, // Can be determined from database if needed
+						subscribedEvents,
+						settings: {
+							notifications: true,
+							preferredVenues: [],
+						},
+					};
+					setProfile(localProfile);
+					setEvents(eventsData);
 				}
 			} catch (error) {
-				console.error("Error fetching events:", error);
+				console.error("Error fetching data:", error);
 				if (isMounted) {
 					setError(
 						error instanceof Error
 							? error.message
-							: "Unable to load events. Please check your connection.",
+							: "Unable to load data. Please check your connection.",
 					);
 				}
 			} finally {
@@ -112,7 +118,7 @@ export default function Home() {
 			}
 		}
 
-		fetchEvents();
+		fetchData();
 
 		return () => {
 			isMounted = false;
@@ -120,52 +126,86 @@ export default function Home() {
 	}, []);
 
 	const handleToggleSubscription = (eventId: string) => {
-		setEvents((prevEvents) => {
-			const updatedEvents = prevEvents.map((event) =>
-				event.id === eventId
-					? {
-							...event,
-							isSubscribed: !event.isSubscribed,
-							participantCount: event.isSubscribed
-								? event.participantCount - 1
-								: event.participantCount + 1,
-						}
-					: event,
-			);
-			// Find the updated event after toggling
-			const updatedEvent = updatedEvents.find((e) => e.id === eventId);
-			if (updatedEvent) {
-				if (updatedEvent.isSubscribed) {
-					// Add to subscribed events
-					setProfile((prev) => ({
-						...prev,
-						subscribedEvents: [
-							...prev.subscribedEvents,
-							{
-								id: updatedEvent.id,
-								title: updatedEvent.title,
-								date: updatedEvent.date,
-								location: updatedEvent.location,
-								imageUrl: updatedEvent.imageUrl,
-							},
-						],
-					}));
-				} else {
-					// Remove from subscribed events
-					setProfile((prev) => ({
-						...prev,
-						subscribedEvents: prev.subscribedEvents.filter(
-							(e) => e.id !== eventId,
-						),
-					}));
+		const event = events.find((e) => e.id === eventId);
+		if (!event) return;
+
+		const action = event.isSubscribed ? "unsubscribe" : "subscribe";
+		const initData = getInitData();
+
+		// Make API request
+		fetch("/api/subscriptions", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				[TELEGRAM_INIT_DATA_HEADER]: initData,
+			},
+			body: JSON.stringify({
+				eventId: parseInt(eventId, 10),
+				action,
+			}),
+		})
+			.then((response) => {
+				if (!response.ok) {
+					return response.json().then((data) => {
+						throw new Error(data.error || `Failed to ${action}`);
+					});
 				}
-			}
-			return updatedEvents;
-		});
+				return response.json();
+			})
+			.then((data) => {
+				// Update UI with response data
+				setEvents((prevEvents) =>
+					prevEvents.map((e) =>
+						e.id === eventId
+							? {
+									...e,
+									isSubscribed: !e.isSubscribed,
+									participantCount: data.participantCount,
+								}
+							: e,
+					),
+				);
+
+				// Update profile subscribed events if subscribing
+				if (action === "subscribe" && event) {
+					setProfile((prev) => {
+						if (!prev) return prev;
+						return {
+							...prev,
+							subscribedEvents: [
+								...prev.subscribedEvents,
+								{
+									id: event.id,
+									title: event.title,
+									date: event.date,
+									location: event.location,
+									imageUrl: event.imageUrl,
+								},
+							],
+						};
+					});
+				} else if (action === "unsubscribe") {
+					setProfile((prev) => {
+						if (!prev) return prev;
+						return {
+							...prev,
+							subscribedEvents: prev.subscribedEvents.filter(
+								(e) => e.id !== eventId,
+							),
+						};
+					});
+				}
+			})
+			.catch((error) => {
+				console.error(`Error ${action}ing from event:`, error);
+			});
 	};
 
-	const handleUpdateProfile = (updates: Partial<typeof profile>) => {
-		setProfile((prev) => ({ ...prev, ...updates }));
+	const handleUpdateProfile = (updates: Partial<UserProfile>) => {
+		setProfile((prev) => {
+			if (!prev) return prev;
+			return { ...prev, ...updates };
+		});
 	};
 
 	const handleTabChange = useCallback((tab: "events" | "profile") => {
@@ -192,11 +232,13 @@ export default function Home() {
 								events={events}
 								onToggleSubscription={handleToggleSubscription}
 							/>
-						) : (
+						) : profile ? (
 							<ProfilePage
 								profile={profile}
 								onUpdateProfile={handleUpdateProfile}
 							/>
+						) : (
+							<ErrorState error="Profile data not available" />
 						)}
 					</motion.div>
 				</AnimatePresence>
