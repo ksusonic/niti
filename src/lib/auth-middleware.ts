@@ -1,7 +1,6 @@
 "use server";
 
-import { parse, validate } from "@tma.js/init-data-node";
-import type { InitDataParsed } from "@tma.js/sdk";
+import { type InitDataParsed, parse, validate } from "@tma.js/init-data-node";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { TELEGRAM_INIT_DATA_HEADER } from "./constants";
