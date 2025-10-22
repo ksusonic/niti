@@ -13,6 +13,7 @@
 		"typegen": "npx supabase gen types typescript --local --schema public > src/types/supabase.ts"
 	},
 	"dependencies": {
+		"@sentry/nextjs": "^10.21.0",
 		"@supabase/ssr": "^0.7.0",
 		"@supabase/supabase-js": "^2.75.0",
 		"@telegram-apps/sdk-react": "^3.3.9",
