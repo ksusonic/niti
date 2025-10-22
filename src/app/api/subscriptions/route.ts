@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { checkAuthHeader } from "@/lib/auth-middleware";
-import { createClient } from "@/lib/supabase";
+import { createAdminClient } from "@/lib/supabase";
 
 interface SubscriptionEvent {
 	id: string;
@@ -30,7 +30,7 @@ export async function GET(request: Request) {
 		const { searchParams } = new URL(request.url);
 		const includePast = searchParams.get("includePast") === "true";
 
-		const supabase = await createClient();
+		const supabase = createAdminClient();
 
 		// Fetch events user has participated in
 		const { data: participants, error: participantsError } = await supabase
@@ -159,7 +159,7 @@ export async function POST(request: Request) {
 			);
 		}
 
-		const supabase = await createClient();
+		const supabase = createAdminClient();
 
 		// Ensure user exists in profiles table (lazy registration)
 		const { error: upsertError } = await supabase.from("profiles").upsert(

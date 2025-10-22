@@ -1,6 +1,6 @@
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import type { PropsWithChildren } from "react";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 
 import { Root } from "@/components/Root/Root";
 
