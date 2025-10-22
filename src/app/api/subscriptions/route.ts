@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { checkAuthHeader } from "@/lib/auth-middleware";
 import { createAdminClient } from "@/lib/supabase";
+import { POSTGRES_ERROR_UNIQUE_CONSTRAINT_VIOLATION } from "@/lib/constants";
 
 interface SubscriptionEvent {
 	id: string;
@@ -162,19 +163,20 @@ export async function POST(request: Request) {
 		const supabase = createAdminClient();
 
 		// Ensure user exists in profiles table (lazy registration)
-		const { error: upsertError } = await supabase.from("profiles").upsert(
-			{
+		const { error: insertError } = await supabase
+			.from("profiles")
+			.insert({
 				id: userId,
 				username: authResult.initData.user?.username || `user_${userId}`,
 				display_name: authResult.initData.user?.firstName || "",
 				role: "fan",
-				created_at: new Date().toISOString(),
-			},
-			{ onConflict: "id" },
-		);
+			})
+			.select()
+			.maybeSingle();
 
-		if (upsertError) {
-			console.error("Error upserting user profile:", upsertError);
+		// Ignore error if user already exists (conflict on id or username)
+		if (insertError && insertError.code !== POSTGRES_ERROR_UNIQUE_CONSTRAINT_VIOLATION) {
+			console.error("Error inserting user profile:", insertError);
 			return NextResponse.json(
 				{ error: "Failed to register user" },
 				{ status: 500 },
@@ -183,12 +185,20 @@ export async function POST(request: Request) {
 
 		if (action === "subscribe") {
 			// Check if already subscribed
-			const { data: existing } = await supabase
+			const { data: existing, error: checkError } = await supabase
 				.from("event_participants")
 				.select("id")
 				.eq("event_id", eventId)
 				.eq("user_id", userId)
-				.single();
+				.maybeSingle();
+
+			if (checkError) {
+				console.error("Error checking subscription status:", checkError);
+				return NextResponse.json(
+					{ error: "Failed to check subscription status" },
+					{ status: 500 },
+				);
+			}
 
 			if (existing) {
 				// User is already subscribed, return conflict

@@ -13,7 +13,7 @@ import type { Event, UserProfile } from "@/types/events";
 // Helper function to extract user data from init data string
 function parseInitDataForUser(
 	initDataStr: string,
-): { username: string; userId: number; firstName: string } | null {
+): { username: string; userId: number; firstName: string; lastName?: string } | null {
 	try {
 		const params = new URLSearchParams(initDataStr);
 		const userStr = params.get("user");
@@ -23,6 +23,7 @@ function parseInitDataForUser(
 			username: user.username || user.first_name || "User",
 			userId: user.id,
 			firstName: user.first_name,
+			lastName: user.last_name,
 		};
 	} catch (error) {
 		console.error("Error parsing init data:", error);
@@ -91,6 +92,8 @@ export default function Home() {
 				if (isMounted) {
 					const localProfile: UserProfile = {
 						username: userData.username,
+						firstName: userData.firstName,
+						lastName: userData.lastName,
 						avatar: "", // Avatar would be set from Telegram if available
 						isDJ: false, // Can be determined from database if needed
 						subscribedEvents,

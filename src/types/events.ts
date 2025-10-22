@@ -26,6 +26,8 @@ export interface Event {
 
 export interface UserProfile {
 	username: string;
+	firstName: string;
+	lastName?: string;
 	avatar: string;
 	isDJ: boolean;
 	bio?: string;
