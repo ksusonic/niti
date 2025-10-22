@@ -42,12 +42,12 @@ async function checkTelegramEnvAndInitialize() {
 if (typeof window !== "undefined") {
 	mockEnv()
 		.then(() => {
-			// After mocking, check if we're in Telegram environment
+			// After mocking setup, check if we're in Telegram environment
 			return checkTelegramEnvAndInitialize();
 		})
-		.catch((mockError) => {
-			console.warn("Mock environment setup failed:", mockError);
-			// If mocking fails, try to check if we're in real Telegram environment
+		.catch((error) => {
+			console.warn("Mock environment setup failed:", error);
+			// If mocking setup fails, try to check if we're in real Telegram environment
 			return checkTelegramEnvAndInitialize();
 		});
 }

@@ -1,15 +1,6 @@
 import { initData } from "@telegram-apps/sdk-react";
-
-/**
- * Mock init data for development when environment is mocked
- * This should match the data structure from mockEnv.ts
- */
-export const MOCK_INIT_DATA = new URLSearchParams([
-	["auth_date", ((Date.now() / 1000) | 0).toString()],
-	["hash", "some-hash"],
-	["signature", "mock-signature"],
-	["user", JSON.stringify({ id: 1, first_name: "Ksusonic" })],
-]).toString();
+import { MOCK_INIT_DATA } from "./mocks/config";
+import { isDevelopmentEnv } from "./mocks/utils";
 
 /**
  * Gets init data from Telegram SDK (after restoreInitData() has been called),
@@ -22,7 +13,7 @@ export function getInitData(): string {
 			return raw;
 		}
 
-		if (process.env.NODE_ENV === "development") {
+		if (isDevelopmentEnv()) {
 			console.log("[InitData] No init data found, using mock init data");
 			return MOCK_INIT_DATA;
 		}
@@ -30,7 +21,7 @@ export function getInitData(): string {
 		return "";
 	} catch (error) {
 		console.error("[InitData] Error retrieving init data:", error);
-		if (process.env.NODE_ENV === "development") {
+		if (isDevelopmentEnv()) {
 			console.log("[InitData] Error occurred, using mock init data");
 			return MOCK_INIT_DATA;
 		}

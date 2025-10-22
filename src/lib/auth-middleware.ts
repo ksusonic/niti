@@ -5,6 +5,7 @@ import type { InitDataParsed } from "@tma.js/sdk";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { TELEGRAM_INIT_DATA_HEADER } from "./constants";
+import { isDevelopmentEnv, isMockInitData } from "./mocks/utils";
 
 export type AuthResult = { initData: InitDataParsed } | NextResponse;
 
@@ -30,14 +31,8 @@ export async function checkAuthHeader(): Promise<AuthResult> {
 	}
 
 	try {
-		const isDevelopment = process.env.NODE_ENV === "development";
-		const botToken = process.env.TELEGRAM_BOT_TOKEN;
-
-		// Check if this is mock data (contains 'hash=some-hash')
-		const isMockData = rawInitData.includes("hash=some-hash");
-
 		// In development with mock data, skip validation
-		if (isDevelopment && isMockData) {
+		if (isDevelopmentEnv() && isMockInitData(rawInitData)) {
 			console.debug(
 				"[Auth] Development mode: skipping validation for mock data",
 			);
@@ -50,6 +45,8 @@ export async function checkAuthHeader(): Promise<AuthResult> {
 		}
 
 		// Production or real data: validate with bot token
+		const botToken = process.env.TELEGRAM_BOT_TOKEN;
+
 		if (!botToken) {
 			console.error(
 				"[Auth] Failed: TELEGRAM_BOT_TOKEN environment variable is not set",
