@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { checkAuthHeader } from "@/lib/auth-middleware";
-import { createClient } from "@/lib/supabase";
+import { createAdminClient } from "@/lib/supabase";
 import type { Database } from "@/types/supabase";
 
 type EventRow = Database["public"]["Tables"]["events"]["Row"];
@@ -31,7 +31,7 @@ export async function GET() {
 			);
 		}
 
-		const supabase = await createClient();
+		const supabase = createAdminClient();
 
 		// Fetch events with lineup and participant count
 		const { data: events, error } = await supabase
