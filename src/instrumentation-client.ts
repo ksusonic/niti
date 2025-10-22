@@ -1,6 +1,7 @@
 // This file is normally used for setting up analytics and other
 // services that require one-time initialization on the client.
 
+import * as Sentry from "@sentry/nextjs";
 import {
 	isLaunchParamsRetrieveError,
 	isTMA,
@@ -9,6 +10,8 @@ import {
 import { init } from "./core/init";
 import { setEnvUnsupported } from "./lib";
 import { mockEnv } from "./mockEnv";
+
+export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;
 
 async function checkTelegramEnvAndInitialize() {
 	const isTelegramEnv = await isTMA("complete");
