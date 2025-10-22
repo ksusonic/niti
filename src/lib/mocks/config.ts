@@ -4,7 +4,9 @@
 
 export const MOCK_USER = {
 	id: 1,
-	first_name: "Ksusonic",
+	username: "ksusonic",
+	first_name: "Daniil",
+	last_name: "Dev",
 } as const;
 
 export const MOCK_THEME_PARAMS = {

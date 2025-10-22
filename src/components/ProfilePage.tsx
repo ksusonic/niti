@@ -50,7 +50,7 @@ export function ProfilePage({ profile, onUpdateProfile }: ProfilePageProps) {
 						<div className="flex items-center gap-4">
 							<Avatar
 								src={profile.avatar}
-								alt={profile.username}
+								alt={`${profile.firstName}${profile.lastName ? ` ${profile.lastName}` : ""}`}
 								size="lg"
 								className="border-2 border-blue-500/30"
 							/>
@@ -58,7 +58,8 @@ export function ProfilePage({ profile, onUpdateProfile }: ProfilePageProps) {
 							<div className="flex-1">
 								<div className="flex items-center gap-2">
 									<h2 className="text-xl font-bold text-foreground">
-										{profile.username}
+										{profile.firstName}
+										{profile.lastName ? ` ${profile.lastName}` : ""}
 									</h2>
 									{profile.isDJ && (
 										<Badge

@@ -1,7 +1,7 @@
 import confetti from "canvas-confetti";
 import { motion } from "framer-motion";
 import { ExternalLink, MapPin, Users } from "lucide-react";
-import { useId, useRef } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { Avatar, Badge, Button, IconButton } from "@/components/ui";
 import { sanitizeVideoUrl } from "@/lib/video-url-validator";
 import type { Event } from "@/types/events";
@@ -82,15 +82,33 @@ export function EventCard({ event, onToggleSubscription }: EventCardProps) {
 	const safeVideoUrl = sanitizeVideoUrl(event.videoUrl);
 	const buttonRef = useRef<HTMLButtonElement>(null);
 	const lineupHeadingId = useId();
+	const [isLoading, setIsLoading] = useState(false);
+	const [previousSubscriptionState, setPreviousSubscriptionState] = useState(
+		event.isSubscribed,
+	);
+
+	// Trigger confetti when subscription state changes and reset loading
+	useEffect(() => {
+		if (previousSubscriptionState !== event.isSubscribed) {
+			// State changed, reset loading and trigger confetti if subscribed
+			setIsLoading(false);
+			if (
+				!previousSubscriptionState &&
+				event.isSubscribed &&
+				buttonRef.current
+			) {
+				const rect = buttonRef.current.getBoundingClientRect();
+				const x = (rect.left + rect.width / 2) / window.innerWidth;
+				const y = (rect.top + rect.height / 2) / window.innerHeight;
+
+				triggerConfettiCelebration(x, y);
+			}
+			setPreviousSubscriptionState(event.isSubscribed);
+		}
+	}, [event.isSubscribed, previousSubscriptionState]);
 
 	const handleSubscribe = () => {
-		if (!event.isSubscribed && buttonRef.current) {
-			const rect = buttonRef.current.getBoundingClientRect();
-			const x = (rect.left + rect.width / 2) / window.innerWidth;
-			const y = (rect.top + rect.height / 2) / window.innerHeight;
-
-			triggerConfettiCelebration(x, y);
-		}
+		setIsLoading(true);
 		onToggleSubscription(event.id);
 	};
 
@@ -247,14 +265,18 @@ export function EventCard({ event, onToggleSubscription }: EventCardProps) {
 						</span>
 					</div>
 
-					<Button
-						ref={buttonRef}
-						onClick={handleSubscribe}
-						variant={event.isSubscribed ? "secondary" : "primary"}
-						aria-pressed={event.isSubscribed}
-					>
-						{event.isSubscribed ? "Joined" : "Join Event"}
-					</Button>
+					<div className="w-28">
+						<Button
+							ref={buttonRef}
+							onClick={handleSubscribe}
+							isLoading={isLoading}
+							variant={event.isSubscribed ? "secondary" : "primary"}
+							aria-pressed={event.isSubscribed}
+							className="w-full"
+						>
+							{event.isSubscribed ? "Joined" : "Join Event"}
+						</Button>
+					</div>
 				</footer>
 			</div>
 		</motion.article>
