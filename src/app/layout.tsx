@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { PropsWithChildren } from "react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 import { Root } from "@/components/Root/Root";
 
@@ -17,6 +18,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
 		<html lang="ru" suppressHydrationWarning>
 			<body>
 				<Root>{children}</Root>
+				<SpeedInsights />
 				{/* CSS-only loading fallback for initial page load */}
 				<style
 					// biome-ignore lint/security/noDangerouslySetInnerHtml: Initial loading animation
