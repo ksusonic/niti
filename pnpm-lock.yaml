@@ -38,6 +38,9 @@ importers:
       framer-motion:
         specifier: ^12.23.24
         version: 12.23.24(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      import-in-the-middle:
+        specifier: ^1.15.0
+        version: 1.15.0
       lucide-react:
         specifier: ^0.546.0
         version: 0.546.0(react@19.2.0)
@@ -53,6 +56,9 @@ importers:
       react-dom:
         specifier: ^19.2.0
         version: 19.2.0(react@19.2.0)
+      require-in-the-middle:
+        specifier: ^7.5.2
+        version: 7.5.2
       tailwind-merge:
         specifier: ^3.3.1
         version: 3.3.1
