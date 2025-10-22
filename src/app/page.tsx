@@ -13,12 +13,7 @@ import type { Event, UserProfile } from "@/types/events";
 // Helper function to extract user data from init data string
 function parseInitDataForUser(
 	initDataStr: string,
-): {
-	username: string;
-	userId: number;
-	firstName: string;
-	lastName?: string;
-} | null {
+): { username: string; userId: number; firstName: string; lastName?: string } | null {
 	try {
 		const params = new URLSearchParams(initDataStr);
 		const userStr = params.get("user");
@@ -206,11 +201,6 @@ export default function Home() {
 			})
 			.catch((error) => {
 				console.error(`Error ${action}ing from event:`, error);
-				setError(
-					error instanceof Error
-						? error.message
-						: `Failed to ${action} event. Please try again.`,
-				);
 			});
 	};
 
