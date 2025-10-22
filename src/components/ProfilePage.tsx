@@ -58,7 +58,8 @@ export function ProfilePage({ profile, onUpdateProfile }: ProfilePageProps) {
 							<div className="flex-1">
 								<div className="flex items-center gap-2">
 									<h2 className="text-xl font-bold text-foreground">
-										{profile.firstName}{profile.lastName ? ` ${profile.lastName}` : ""}
+										{profile.firstName}
+										{profile.lastName ? ` ${profile.lastName}` : ""}
 									</h2>
 									{profile.isDJ && (
 										<Badge

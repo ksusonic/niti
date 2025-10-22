@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { checkAuthHeader } from "@/lib/auth-middleware";
-import { createAdminClient } from "@/lib/supabase";
 import { POSTGRES_ERROR_UNIQUE_CONSTRAINT_VIOLATION } from "@/lib/constants";
+import { createAdminClient } from "@/lib/supabase";
 
 interface SubscriptionEvent {
 	id: string;
@@ -175,7 +175,10 @@ export async function POST(request: Request) {
 			.maybeSingle();
 
 		// Ignore error if user already exists (conflict on id or username)
-		if (insertError && insertError.code !== POSTGRES_ERROR_UNIQUE_CONSTRAINT_VIOLATION) {
+		if (
+			insertError &&
+			insertError.code !== POSTGRES_ERROR_UNIQUE_CONSTRAINT_VIOLATION
+		) {
 			console.error("Error inserting user profile:", insertError);
 			return NextResponse.json(
 				{ error: "Failed to register user" },
