@@ -201,6 +201,11 @@ export default function Home() {
 			})
 			.catch((error) => {
 				console.error(`Error ${action}ing from event:`, error);
+				setError(
+					error instanceof Error
+						? error.message
+						: `Failed to ${action} event. Please try again.`,
+				);
 			});
 	};
 

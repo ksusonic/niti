@@ -201,12 +201,21 @@ export async function POST(request: Request) {
 			}
 
 			if (existing) {
-				// User is already subscribed, return conflict
+				// User is already subscribed, return success (idempotent)
+				// Get current participant count
+				const { count } = await supabase
+					.from("event_participants")
+					.select("*", { count: "exact", head: true })
+					.eq("event_id", eventId)
+					.eq("status", "going");
+
 				return NextResponse.json(
 					{
-						error: "Already subscribed to this event",
+						success: true,
+						message: "Already subscribed to this event",
+						participantCount: count || 0,
 					},
-					{ status: 409 },
+					{ status: 200 },
 				);
 			}
 
@@ -218,6 +227,25 @@ export async function POST(request: Request) {
 			});
 
 			if (error) {
+				// If it's a duplicate key error, treat as success (idempotent behavior)
+				if (error.code === POSTGRES_ERROR_UNIQUE_CONSTRAINT_VIOLATION) {
+					// Get current participant count
+					const { count } = await supabase
+						.from("event_participants")
+						.select("*", { count: "exact", head: true })
+						.eq("event_id", eventId)
+						.eq("status", "going");
+
+					return NextResponse.json(
+						{
+							success: true,
+							message: "Already subscribed to this event",
+							participantCount: count || 0,
+						},
+						{ status: 200 },
+					);
+				}
+
 				console.error("Error subscribing to event:", error);
 				return NextResponse.json(
 					{ error: "Failed to subscribe to event" },

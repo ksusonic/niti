@@ -36,10 +36,6 @@ export async function checkAuthHeader(): Promise<AuthResult> {
 				"[Auth] Development mode: skipping validation for mock data",
 			);
 			const initData = parse(rawInitData);
-			console.debug("[Auth] Parsed mock initData", {
-				userId: initData.user?.id,
-				firstName: initData.user?.firstName,
-			});
 			return { initData };
 		}
 
