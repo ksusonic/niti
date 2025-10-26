@@ -106,10 +106,9 @@ export default function Home() {
 			}
 		}
 
-		// Only fetch if we have user data
 		if (initDataState) {
 			fetchData();
-		} else if (!initDataState) {
+		} else {
 			// Wait a bit for SDK to initialize
 			const timeoutId = setTimeout(() => {
 				if (!initDataState) {
