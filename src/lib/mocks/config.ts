@@ -57,17 +57,6 @@ export const MOCK_VIEWPORT = {
 } as const;
 
 /**
- * Mock init data for development when environment is mocked
- * This creates a properly formatted init data string that matches what Telegram would send
- */
-export const MOCK_INIT_DATA = new URLSearchParams([
-	["auth_date", ((Date.now() / 1000) | 0).toString()],
-	["hash", "some-hash"],
-	["signature", "some-signature"],
-	["user", JSON.stringify(MOCK_USER)],
-]).toString();
-
-/**
  * Magic hash value that identifies mock data during development
  */
 export const MOCK_HASH_IDENTIFIER = "some-hash";
@@ -76,19 +65,17 @@ export const MOCK_HASH_IDENTIFIER = "some-hash";
  * Launch parameters for the mocked Telegram environment
  * Compatible with mockTelegramEnv from @telegram-apps/sdk-react
  */
-export function getMockLaunchParams(): URLSearchParams {
-	return new URLSearchParams([
-		["tgWebAppThemeParams", JSON.stringify(MOCK_THEME_PARAMS)],
-		[
-			"tgWebAppData",
-			new URLSearchParams([
-				["auth_date", ((Date.now() / 1000) | 0).toString()],
-				["hash", MOCK_HASH_IDENTIFIER],
-				["signature", "some-signature"],
-				["user", JSON.stringify(MOCK_USER)],
-			]).toString(),
-		],
-		["tgWebAppVersion", "8.4"],
-		["tgWebAppPlatform", "tdesktop"],
-	]);
-}
+export const MOCK_LAUNCH_PARAMS = new URLSearchParams([
+	["tgWebAppThemeParams", JSON.stringify(MOCK_THEME_PARAMS)],
+	[
+		"tgWebAppData",
+		new URLSearchParams([
+			["auth_date", ((Date.now() / 1000) | 0).toString()],
+			["hash", MOCK_HASH_IDENTIFIER],
+			["signature", "some-signature"],
+			["user", JSON.stringify(MOCK_USER)],
+		]).toString(),
+	],
+	["tgWebAppVersion", "8.4"],
+	["tgWebAppPlatform", "tdesktop"],
+]);

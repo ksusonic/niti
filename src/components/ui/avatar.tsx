@@ -50,6 +50,7 @@ export function Avatar({ src, alt, className, size = "md" }: AvatarProps) {
 			alt={alt}
 			width={sizeDimensions[size]}
 			height={sizeDimensions[size]}
+			referrerPolicy="no-referrer"
 			onError={() => setError(true)}
 			className={cn("rounded-full object-cover", sizeClasses[size], className)}
 		/>

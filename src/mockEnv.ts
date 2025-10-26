@@ -1,6 +1,6 @@
 import { emitEvent, isTMA, mockTelegramEnv } from "@telegram-apps/sdk-react";
 import {
-	getMockLaunchParams,
+	MOCK_LAUNCH_PARAMS,
 	MOCK_SAFE_AREA,
 	MOCK_THEME_PARAMS,
 	MOCK_VIEWPORT,
@@ -38,7 +38,7 @@ export async function mockEnv(): Promise<void> {
 				return emitEvent("safe_area_changed", MOCK_SAFE_AREA);
 			}
 		},
-		launchParams: getMockLaunchParams(),
+		launchParams: MOCK_LAUNCH_PARAMS,
 	});
 
 	console.info(
