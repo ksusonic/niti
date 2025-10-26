@@ -25,10 +25,7 @@ export async function GET() {
 	try {
 		const userId = authResult.initData.user?.id;
 		if (!userId) {
-			return NextResponse.json(
-				{ error: "User ID not found in auth data" },
-				{ status: 401 },
-			);
+			return NextResponse.json({ error: "Bad request" }, { status: 401 });
 		}
 
 		const supabase = createAdminClient();
@@ -42,7 +39,7 @@ export async function GET() {
 		if (error) {
 			console.error("Error fetching events:", error);
 			return NextResponse.json(
-				{ error: "Failed to fetch events" },
+				{ error: "Не удалось загрузить ивенты" },
 				{ status: 500 },
 			);
 		}
@@ -56,7 +53,7 @@ export async function GET() {
 		if (participantsError) {
 			console.error("Error fetching participants:", participantsError);
 			return NextResponse.json(
-				{ error: "Failed to fetch participants" },
+				{ error: "Не удалось загрузить участников" },
 				{ status: 500 },
 			);
 		}
@@ -110,14 +107,14 @@ export async function GET() {
 								lineup.profiles?.username ||
 								"",
 							avatar: lineup.profiles?.avatar_url || "",
-							time: `${new Date(lineup.start_time).toLocaleTimeString("en-US", {
+							time: `${new Date(lineup.start_time).toLocaleTimeString("ru-RU", {
 								hour: "numeric",
 								minute: "2-digit",
 								hour12: false,
 							})}${
 								lineup.end_time
 									? ` - ${new Date(lineup.end_time).toLocaleTimeString(
-											"en-US",
+											"ru-RU",
 											{
 												hour: "numeric",
 												minute: "2-digit",

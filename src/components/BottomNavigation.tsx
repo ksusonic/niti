@@ -17,12 +17,12 @@ interface Tab {
 const tabs: Tab[] = [
 	{
 		id: "events",
-		label: "Events",
+		label: "События",
 		icon: Calendar,
 	},
 	{
 		id: "profile",
-		label: "Profile",
+		label: "Профиль",
 		icon: User,
 	},
 ];
@@ -33,11 +33,11 @@ const BottomNavigationComponent = ({
 }: BottomNavigationProps) => {
 	return (
 		<nav
-			className="bg-card/95 backdrop-blur-xl border-t border-border/50 shadow-lg"
+			className="fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-black via-black/98 to-black/95 backdrop-blur-2xl border-t border-blue-500/20 shadow-2xl safe-area-inset-bottom"
 			aria-label="Main navigation"
 		>
 			<div className="relative max-w-md mx-auto">
-				<div className="flex items-center justify-around px-2 py-2 safe-area-inset-bottom">
+				<div className="flex items-center justify-around px-6 py-3 safe-area-inset-bottom">
 					{tabs.map((tab) => {
 						const Icon = tab.icon;
 						const isActive = activeTab === tab.id;
@@ -50,31 +50,41 @@ const BottomNavigationComponent = ({
 								aria-pressed={isActive}
 								aria-label={tab.label}
 								className={cn(
-									"relative flex flex-col items-center gap-1.5 px-8 py-2.5 rounded-2xl transition-all duration-150",
-									"active:scale-[0.97] touch-manipulation",
-									"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
+									"relative flex flex-col items-center gap-2 px-10 py-3 rounded-2xl transition-all duration-300",
+									"active:scale-95 touch-manipulation",
+									"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50",
 									isActive
-										? "text-primary bg-primary/10"
-										: "text-muted-foreground hover:text-foreground/80",
+										? "text-white bg-gradient-to-br from-blue-500/30 to-purple-500/20 shadow-lg shadow-blue-500/20 border border-blue-500/30"
+										: "text-gray-400 hover:text-white hover:bg-gray-800/30",
 								)}
 							>
-								<Icon
-									className={cn(
-										"relative h-5 w-5 transition-transform duration-150",
-										isActive && "scale-110",
+								<div className="relative">
+									<Icon
+										className={cn(
+											"relative h-6 w-6 transition-all duration-300",
+											isActive &&
+												"scale-110 drop-shadow-[0_0_8px_rgba(59,130,246,0.8)]",
+										)}
+										strokeWidth={isActive ? 2.5 : 2}
+										aria-hidden="true"
+									/>
+									{isActive && (
+										<div className="absolute inset-0 bg-blue-500/20 blur-md rounded-full transition-[filter] duration-300" />
 									)}
-									strokeWidth={isActive ? 2.5 : 2}
-									aria-hidden="true"
-								/>
+								</div>
 
 								<span
 									className={cn(
-										"relative text-[11px] font-semibold tracking-wide",
-										isActive && "text-primary",
+										"relative text-xs font-semibold tracking-wide transition-all duration-300",
+										isActive ? "text-white" : "text-gray-400",
 									)}
 								>
 									{tab.label}
 								</span>
+
+								{isActive && (
+									<div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-12 h-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full" />
+								)}
 							</button>
 						);
 					})}
