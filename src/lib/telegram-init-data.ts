@@ -3,16 +3,20 @@ import { MOCK_INIT_DATA } from "./mocks/config";
 import { isDevelopmentEnv } from "./mocks/utils";
 
 /**
- * Gets init data from Telegram SDK (after restoreInitData() has been called),
- * with fallback to mock data in development when the environment is mocked
+ * Gets raw init data string from Telegram SDK
+ * This is used for API authentication headers
+ *
+ * @returns The raw initData string, mock data in development, or empty string if unavailable
  */
 export function getInitData(): string {
 	try {
+		// Try to get raw init data from SDK
 		const raw = initData.raw();
 		if (raw) {
 			return raw;
 		}
 
+		// Fallback to mock data in development
 		if (isDevelopmentEnv()) {
 			console.log("[InitData] No init data found, using mock init data");
 			return MOCK_INIT_DATA;
@@ -21,6 +25,8 @@ export function getInitData(): string {
 		return "";
 	} catch (error) {
 		console.error("[InitData] Error retrieving init data:", error);
+
+		// Fallback to mock data in development on error
 		if (isDevelopmentEnv()) {
 			console.log("[InitData] Error occurred, using mock init data");
 			return MOCK_INIT_DATA;

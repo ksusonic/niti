@@ -6,35 +6,9 @@ import { BottomNavigation } from "@/components/BottomNavigation";
 import { EventFeed } from "@/components/EventFeed";
 import { ProfilePage } from "@/components/ProfilePage";
 import { ErrorState, LoadingState } from "@/components/ui";
+import { useInitDataRaw, useTelegramUser } from "@/hooks/useTelegramUser";
 import { TELEGRAM_INIT_DATA_HEADER } from "@/lib/constants";
-import { getInitData } from "@/lib/telegram-init-data";
 import type { Event, UserProfile } from "@/types/events";
-
-// Helper function to extract user data from init data string
-function parseInitDataForUser(
-	initDataStr: string,
-): {
-	username: string;
-	userId: number;
-	firstName: string;
-	lastName?: string;
-} | null {
-	try {
-		const params = new URLSearchParams(initDataStr);
-		const userStr = params.get("user");
-		if (!userStr) return null;
-		const user = JSON.parse(userStr);
-		return {
-			username: user.username || user.first_name || "User",
-			userId: user.id,
-			firstName: user.first_name,
-			lastName: user.last_name,
-		};
-	} catch (error) {
-		console.error("Error parsing init data:", error);
-		return null;
-	}
-}
 
 export default function Home() {
 	const [activeTab, setActiveTab] = useState<"events" | "profile">("events");
@@ -43,6 +17,9 @@ export default function Home() {
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
+	const telegramUser = useTelegramUser();
+	const initDataRaw = useInitDataRaw();
+
 	useEffect(() => {
 		let isMounted = true;
 
@@ -50,18 +27,19 @@ export default function Home() {
 			try {
 				setIsLoading(true);
 				setError(null);
-				const initData = getInitData();
 
-				// Parse user data from initData
-				const userData = parseInitDataForUser(initData);
-				if (!userData) {
-					throw new Error("Failed to parse user data from authentication");
+				if (!telegramUser) {
+					throw new Error("Telegram user data not available");
+				}
+
+				if (!initDataRaw) {
+					throw new Error("Telegram init data not available");
 				}
 
 				// Fetch events
 				const eventsResponse = await fetch("/api/events", {
 					headers: {
-						[TELEGRAM_INIT_DATA_HEADER]: initData,
+						[TELEGRAM_INIT_DATA_HEADER]: initDataRaw,
 					},
 				});
 				if (!eventsResponse.ok) {
@@ -80,7 +58,7 @@ export default function Home() {
 					"/api/subscriptions?includePast=false",
 					{
 						headers: {
-							[TELEGRAM_INIT_DATA_HEADER]: initData,
+							[TELEGRAM_INIT_DATA_HEADER]: initDataRaw,
 						},
 					},
 				);
@@ -93,13 +71,14 @@ export default function Home() {
 					? await subscriptionsResponse.json()
 					: [];
 
-				// Create local profile from parsed user data
+				// Create profile from typed Telegram user data
 				if (isMounted) {
 					const localProfile: UserProfile = {
-						username: userData.username,
-						firstName: userData.firstName,
-						lastName: userData.lastName,
-						avatar: "", // Avatar would be set from Telegram if available
+						username:
+							telegramUser.username || telegramUser.first_name || "User",
+						firstName: telegramUser.first_name,
+						lastName: telegramUser.last_name,
+						avatar: telegramUser.photo_url || "", // Use photo_url from SDK
 						isDJ: false, // Can be determined from database if needed
 						subscribedEvents,
 						settings: {
@@ -126,26 +105,37 @@ export default function Home() {
 			}
 		}
 
-		fetchData();
+		// Only fetch if we have user data
+		if (telegramUser && initDataRaw) {
+			fetchData();
+		} else if (!telegramUser || !initDataRaw) {
+			// Wait a bit for SDK to initialize
+			const timeoutId = setTimeout(() => {
+				if (!telegramUser || !initDataRaw) {
+					setError("Waiting for Telegram initialization...");
+				}
+			}, 1000);
+
+			return () => clearTimeout(timeoutId);
+		}
 
 		return () => {
 			isMounted = false;
 		};
-	}, []);
+	}, [telegramUser, initDataRaw]);
 
 	const handleToggleSubscription = (eventId: string) => {
 		const event = events.find((e) => e.id === eventId);
-		if (!event) return;
+		if (!event || !initDataRaw) return;
 
 		const action = event.isSubscribed ? "unsubscribe" : "subscribe";
-		const initData = getInitData();
 
 		// Make API request
 		fetch("/api/subscriptions", {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
-				[TELEGRAM_INIT_DATA_HEADER]: initData,
+				[TELEGRAM_INIT_DATA_HEADER]: initDataRaw,
 			},
 			body: JSON.stringify({
 				eventId: parseInt(eventId, 10),

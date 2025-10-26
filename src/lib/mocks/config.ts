@@ -1,14 +1,25 @@
 /**
  * Centralized mock configuration for development environment
+ * Uses proper types compatible with @telegram-apps/sdk-react
  */
 
+/**
+ * Mock user data matching Telegram SDK User type
+ * Properties are in snake_case to match the SDK
+ */
 export const MOCK_USER = {
 	id: 1,
 	username: "ksusonic",
 	first_name: "Daniil",
 	last_name: "Dev",
+	language_code: "en",
+	is_premium: false,
+	allows_write_to_pm: true,
 } as const;
 
+/**
+ * Mock theme parameters for Telegram UI theming
+ */
 export const MOCK_THEME_PARAMS = {
 	accent_text_color: "#6ab2f2",
 	bg_color: "#17212b",
@@ -25,6 +36,9 @@ export const MOCK_THEME_PARAMS = {
 	text_color: "#f5f5f5",
 } as const;
 
+/**
+ * Mock safe area insets
+ */
 export const MOCK_SAFE_AREA = {
 	left: 0,
 	top: 0,
@@ -32,6 +46,9 @@ export const MOCK_SAFE_AREA = {
 	bottom: 0,
 } as const;
 
+/**
+ * Mock viewport configuration
+ */
 export const MOCK_VIEWPORT = {
 	height: typeof window !== "undefined" ? window.innerHeight : 800,
 	width: typeof window !== "undefined" ? window.innerWidth : 600,
@@ -41,7 +58,7 @@ export const MOCK_VIEWPORT = {
 
 /**
  * Mock init data for development when environment is mocked
- * This should match the data structure used in mockTelegramEnv
+ * This creates a properly formatted init data string that matches what Telegram would send
  */
 export const MOCK_INIT_DATA = new URLSearchParams([
 	["auth_date", ((Date.now() / 1000) | 0).toString()],
@@ -57,6 +74,7 @@ export const MOCK_HASH_IDENTIFIER = "some-hash";
 
 /**
  * Launch parameters for the mocked Telegram environment
+ * Compatible with mockTelegramEnv from @telegram-apps/sdk-react
  */
 export function getMockLaunchParams(): URLSearchParams {
 	return new URLSearchParams([

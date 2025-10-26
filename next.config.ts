@@ -2,19 +2,20 @@ import {withSentryConfig} from "@sentry/nextjs";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-				images: {
-								remotePatterns: [
-												{
-																protocol: "https",
-																hostname: "xelene.me",
-																pathname: "/telegram.gif",
-												},
-												{
-																protocol: "https",
-																hostname: "images.unsplash.com",
-												},
-								],
-				},
+	images: {
+		dangerouslyAllowLocalIP: true,
+		remotePatterns: [
+			{
+				protocol: "https",
+				hostname: "xelene.me",
+				pathname: "/telegram.gif",
+			},
+			{
+				protocol: "https",
+				hostname: "images.unsplash.com",
+			},
+		],
+	},
 };
 
 export default withSentryConfig(nextConfig, {
