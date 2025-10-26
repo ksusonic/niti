@@ -23,11 +23,11 @@ export function EventFeed({ events, onToggleSubscription }: EventFeedProps) {
 							/>
 						</div>
 						<div className="flex flex-col">
-							<h1 className="text-2xl font-bold text-white !m-0 tracking-tight">
+							<h1 className="text-2xl font-bold text-white !m-0 !mt-2 tracking-tight">
 								События
 							</h1>
 							<p className="text-xs text-gray-400 !m-0">
-								Лучшие ивенты в городе
+								Лучшие тусовки Рязани
 							</p>
 						</div>
 					</div>

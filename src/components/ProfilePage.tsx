@@ -71,7 +71,7 @@ export function ProfilePage({
 						)}
 					</div>
 					<div className="flex-1 min-w-0">
-						<h1 className="text-2xl font-bold text-white truncate tracking-tight">
+						<h1 className="text-2xl font-bold text-white !m-0 !mt-2 tracking-tight">
 							{user.first_name}
 							{user.last_name ? ` ${user.last_name}` : ""}
 						</h1>
@@ -81,7 +81,7 @@ export function ProfilePage({
 							</p>
 						) : (
 							<p className="text-gray-500 text-sm mt-0.5">
-								{profileData.isDJ ? "Диджей" : "Тусовщик"}
+								{profileData.isDJ ? "Диджей" : "Гость"}
 							</p>
 						)}
 					</div>
