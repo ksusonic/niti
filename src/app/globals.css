@@ -34,10 +34,6 @@
 }
 
 @layer utilities {
-	.page-transition {
-		will-change: transform;
-	}
-
 	/* Hide scrollbar during transitions to prevent layout shifts */
 	body {
 		overflow-x: hidden;
