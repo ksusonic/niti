@@ -6,7 +6,6 @@ import {
 	Instagram,
 	MapPin,
 	Music,
-	Music2,
 } from "lucide-react";
 import Image from "next/image";
 import { Avatar, Badge, Card, IconButton, Switch } from "@/components/ui";
@@ -15,6 +14,7 @@ interface ProfileData {
 	isDJ: boolean;
 	bio?: string;
 	socialLinks?: {
+		telegram?: string;
 		instagram?: string;
 		soundcloud?: string;
 		spotify?: string;
@@ -110,6 +110,21 @@ export function ProfilePage({
 								className="flex items-center gap-2"
 								aria-label="Social media links"
 							>
+								{profileData.socialLinks.telegram && (
+									<IconButton
+										href={profileData.socialLinks.telegram}
+										target="_blank"
+										rel="noopener noreferrer"
+										variant="blue"
+										aria-label="Telegram"
+										className="flex-1"
+									>
+										<svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+											<title>Telegram</title>
+											<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
+										</svg>
+									</IconButton>
+								)}
 								{profileData.socialLinks.instagram && (
 									<IconButton
 										href={profileData.socialLinks.instagram}
@@ -131,7 +146,10 @@ export function ProfilePage({
 										aria-label="SoundCloud"
 										className="flex-1"
 									>
-										<Music2 className="h-4 w-4" />
+										<svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+											<title>SoundCloud</title>
+											<path d="M1.5 15.5h.938V11.875h-.938zm1.563 0h.937V10.938h-.937zm1.562 0h.938V12.813h-.938zm1.563 0h.937V10h-.937zm1.562 0h.938v-6.25h-.938zm1.563 0h.937V8.125h-.937zm1.562 0h.938V10h-.938zM20 13.75c0 1.031-.813 1.875-1.813 1.875H11.25V7.531c1.156.438 2.281 1.156 3.094 2.094C15.719 8.188 17.75 7.5 19.875 7.5c1.375 0 2.625.75 3.281 1.938.625 1.094.656 2.406.063 3.531C22.531 13.844 21.281 14.5 20 13.75z"/>
+										</svg>
 									</IconButton>
 								)}
 								{profileData.socialLinks.spotify && (
@@ -143,7 +161,10 @@ export function ProfilePage({
 										aria-label="Spotify"
 										className="flex-1"
 									>
-										<Music className="h-4 w-4" />
+										<svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+											<title>Spotify</title>
+											<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm3.64 14.3c-.14.23-.44.3-.68.17-1.87-1.14-4.22-1.4-6.99-.77-.27.07-.55-.1-.62-.37-.07-.27.1-.55.37-.62 3.04-.69 5.64-.39 7.72.89.23.13.3.43.17.68l.03.02zm.98-2.18c-.18.29-.56.38-.85.2-2.14-1.31-5.4-1.69-7.94-.93-.33.1-.68-.09-.78-.42s.09-.68.42-.78c2.9-.87 6.54-.45 8.95 1.08.29.18.38.56.2.85zm.09-2.27c-2.57-1.52-6.81-1.66-9.26-.92-.4.12-.82-.11-.94-.51s.11-.82.51-.94c2.81-.85 7.5-.69 10.44 1.07.36.21.48.68.27 1.04-.21.36-.68.48-1.04.27l.02-.01z"/>
+										</svg>
 									</IconButton>
 								)}
 							</nav>
