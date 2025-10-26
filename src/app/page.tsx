@@ -1,47 +1,52 @@
 "use client";
 
+import type { User } from "@telegram-apps/sdk-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
 import { BottomNavigation } from "@/components/BottomNavigation";
 import { EventFeed } from "@/components/EventFeed";
 import { ProfilePage } from "@/components/ProfilePage";
 import { ErrorState, LoadingState } from "@/components/ui";
-import { TELEGRAM_INIT_DATA_HEADER } from "@/lib/constants";
-import { getInitData } from "@/lib/telegram-init-data";
-import type { Event, UserProfile } from "@/types/events";
+import { useInitData } from "@/hooks/useTelegramUser";
+import { authenticatedFetchJson } from "@/lib/api-client";
+import type { Event } from "@/types/events";
 
-// Helper function to extract user data from init data string
-function parseInitDataForUser(
-	initDataStr: string,
-): {
-	username: string;
-	userId: number;
-	firstName: string;
-	lastName?: string;
-} | null {
-	try {
-		const params = new URLSearchParams(initDataStr);
-		const userStr = params.get("user");
-		if (!userStr) return null;
-		const user = JSON.parse(userStr);
-		return {
-			username: user.username || user.first_name || "User",
-			userId: user.id,
-			firstName: user.first_name,
-			lastName: user.last_name,
-		};
-	} catch (error) {
-		console.error("Error parsing init data:", error);
-		return null;
-	}
+interface ProfileData {
+	isDJ: boolean;
+	bio?: string;
+	socialLinks?: {
+		instagram?: string;
+		soundcloud?: string;
+		spotify?: string;
+	};
+	upcomingSets?: Array<{
+		id: string;
+		event: string;
+		date: string;
+		venue: string;
+	}>;
+	subscribedEvents: Array<{
+		id: string;
+		title: string;
+		date: string;
+		location: string;
+		imageUrl: string;
+	}>;
+	settings: {
+		notifications: boolean;
+		preferredVenues: string[];
+	};
 }
 
 export default function Home() {
 	const [activeTab, setActiveTab] = useState<"events" | "profile">("events");
 	const [events, setEvents] = useState<Event[]>([]);
-	const [profile, setProfile] = useState<UserProfile | null>(null);
+	const [user, setUser] = useState<User | null>(null);
+	const [profileData, setProfileData] = useState<ProfileData | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
+
+	const initDataState = useInitData();
 
 	useEffect(() => {
 		let isMounted = true;
@@ -50,64 +55,39 @@ export default function Home() {
 			try {
 				setIsLoading(true);
 				setError(null);
-				const initData = getInitData();
 
-				// Parse user data from initData
-				const userData = parseInitDataForUser(initData);
-				if (!userData) {
-					throw new Error("Failed to parse user data from authentication");
+				if (!initDataState || !initDataState.user) {
+					throw new Error("Telegram init data not available");
 				}
 
-				// Fetch events
-				const eventsResponse = await fetch("/api/events", {
-					headers: {
-						[TELEGRAM_INIT_DATA_HEADER]: initData,
-					},
-				});
-				if (!eventsResponse.ok) {
-					const errorMessage =
-						eventsResponse.status === 401
-							? "Authentication failed. Please restart the app."
-							: eventsResponse.status === 500
-								? "Server error. Please try again later."
-								: `Failed to load events (${eventsResponse.status})`;
-					throw new Error(errorMessage);
-				}
-				const eventsData = await eventsResponse.json();
+				// Fetch events with automatic authentication
+				const eventsData = await authenticatedFetchJson<Event[]>("/api/events");
 
 				// Fetch subscribed events (upcoming)
-				const subscriptionsResponse = await fetch(
-					"/api/subscriptions?includePast=false",
-					{
-						headers: {
-							[TELEGRAM_INIT_DATA_HEADER]: initData,
-						},
-					},
-				);
-				if (!subscriptionsResponse.ok) {
+				let subscribedEvents: Event[] = [];
+				try {
+					subscribedEvents = await authenticatedFetchJson<Event[]>(
+						"/api/subscriptions?includePast=false",
+					);
+				} catch (error) {
 					console.warn(
-						"Failed to fetch subscriptions, continuing without them",
+						"Failed to fetch subscriptions, continuing without them:",
+						error,
 					);
 				}
-				const subscribedEvents = subscriptionsResponse.ok
-					? await subscriptionsResponse.json()
-					: [];
 
-				// Create local profile from parsed user data
+				// Create profile from typed Telegram user data
 				if (isMounted) {
-					const localProfile: UserProfile = {
-						username: userData.username,
-						firstName: userData.firstName,
-						lastName: userData.lastName,
-						avatar: "", // Avatar would be set from Telegram if available
-						isDJ: false, // Can be determined from database if needed
+					const localProfileData: ProfileData = {
+						isDJ: false,
 						subscribedEvents,
 						settings: {
 							notifications: true,
 							preferredVenues: [],
 						},
 					};
-					setProfile(localProfile);
+					setUser(initDataState.user);
+					setProfileData(localProfileData);
 					setEvents(eventsData);
 				}
 			} catch (error) {
@@ -126,91 +106,94 @@ export default function Home() {
 			}
 		}
 
-		fetchData();
+		if (initDataState) {
+			fetchData();
+		} else {
+			// Wait a bit for SDK to initialize
+			const timeoutId = setTimeout(() => {
+				if (!initDataState) {
+					setError("Waiting for Telegram initialization...");
+				}
+			}, 1000);
+
+			return () => clearTimeout(timeoutId);
+		}
 
 		return () => {
 			isMounted = false;
 		};
-	}, []);
+	}, [initDataState]);
 
-	const handleToggleSubscription = (eventId: string) => {
+	const handleToggleSubscription = async (eventId: string) => {
 		const event = events.find((e) => e.id === eventId);
-		if (!event) return;
+		if (!event || !initDataState) return;
 
 		const action = event.isSubscribed ? "unsubscribe" : "subscribe";
-		const initData = getInitData();
 
-		// Make API request
-		fetch("/api/subscriptions", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				[TELEGRAM_INIT_DATA_HEADER]: initData,
-			},
-			body: JSON.stringify({
-				eventId: parseInt(eventId, 10),
-				action,
-			}),
-		})
-			.then((response) => {
-				if (!response.ok) {
-					return response.json().then((data) => {
-						throw new Error(data.error || `Failed to ${action}`);
-					});
-				}
-				return response.json();
-			})
-			.then((data) => {
-				// Update UI with response data
-				setEvents((prevEvents) =>
-					prevEvents.map((e) =>
-						e.id === eventId
-							? {
-									...e,
-									isSubscribed: !e.isSubscribed,
-									participantCount: data.participantCount,
-								}
-							: e,
-					),
-				);
-
-				// Update profile subscribed events if subscribing
-				if (action === "subscribe" && event) {
-					setProfile((prev) => {
-						if (!prev) return prev;
-						return {
-							...prev,
-							subscribedEvents: [
-								...prev.subscribedEvents,
-								{
-									id: event.id,
-									title: event.title,
-									date: event.date,
-									location: event.location,
-									imageUrl: event.imageUrl,
-								},
-							],
-						};
-					});
-				} else if (action === "unsubscribe") {
-					setProfile((prev) => {
-						if (!prev) return prev;
-						return {
-							...prev,
-							subscribedEvents: prev.subscribedEvents.filter(
-								(e) => e.id !== eventId,
-							),
-						};
-					});
-				}
-			})
-			.catch((error) => {
-				console.error(`Error ${action}ing from event:`, error);
+		try {
+			const data = await authenticatedFetchJson<{
+				success: boolean;
+				participantCount: number;
+			}>("/api/subscriptions", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					eventId: parseInt(eventId, 10),
+					action,
+				}),
 			});
+
+			// Update UI with response data
+			setEvents((prevEvents) =>
+				prevEvents.map((e) =>
+					e.id === eventId
+						? {
+								...e,
+								isSubscribed: !e.isSubscribed,
+								participantCount: data.participantCount,
+							}
+						: e,
+				),
+			);
+
+			// Update profile subscribed events
+			if (action === "subscribe" && event) {
+				setProfileData((prev) => {
+					if (!prev) return prev;
+					return {
+						...prev,
+						subscribedEvents: [
+							...prev.subscribedEvents,
+							{
+								id: event.id,
+								title: event.title,
+								date: event.date,
+								location: event.location,
+								imageUrl: event.imageUrl,
+							},
+						],
+					};
+				});
+			} else if (action === "unsubscribe") {
+				setProfileData((prev) => {
+					if (!prev) return prev;
+					return {
+						...prev,
+						subscribedEvents: prev.subscribedEvents.filter(
+							(e) => e.id !== eventId,
+						),
+					};
+				});
+			}
+		} catch (error) {
+			console.error(`Error ${action}ing from event:`, error);
+		}
 	};
 
-	const handleUpdateProfile = (updates: Partial<UserProfile>) => {
-		setProfile((prev) => {
+	const handleUpdateProfileData = (updates: Partial<ProfileData>) => {
+		setProfileData((prev) => {
 			if (!prev) return prev;
 			return { ...prev, ...updates };
 		});
@@ -240,10 +223,11 @@ export default function Home() {
 								events={events}
 								onToggleSubscription={handleToggleSubscription}
 							/>
-						) : profile ? (
+						) : user && profileData ? (
 							<ProfilePage
-								profile={profile}
-								onUpdateProfile={handleUpdateProfile}
+								user={user}
+								profileData={profileData}
+								onUpdateProfileData={handleUpdateProfileData}
 							/>
 						) : (
 							<ErrorState error="Profile data not available" />

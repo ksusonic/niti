@@ -1,3 +1,4 @@
+import type { User } from "@telegram-apps/sdk-react";
 import { motion } from "framer-motion";
 import {
 	Bell,
@@ -10,19 +11,50 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { Avatar, Badge, Card, IconButton, Switch } from "@/components/ui";
-import type { UserProfile } from "@/types/events";
 
-interface ProfilePageProps {
-	profile: UserProfile;
-	onUpdateProfile: (updates: Partial<UserProfile>) => void;
+interface ProfileData {
+	isDJ: boolean;
+	bio?: string;
+	socialLinks?: {
+		instagram?: string;
+		soundcloud?: string;
+		spotify?: string;
+	};
+	upcomingSets?: Array<{
+		id: string;
+		event: string;
+		date: string;
+		venue: string;
+	}>;
+	subscribedEvents: Array<{
+		id: string;
+		title: string;
+		date: string;
+		location: string;
+		imageUrl: string;
+	}>;
+	settings: {
+		notifications: boolean;
+		preferredVenues: string[];
+	};
 }
 
-export function ProfilePage({ profile, onUpdateProfile }: ProfilePageProps) {
+interface ProfilePageProps {
+	user: User;
+	profileData: ProfileData;
+	onUpdateProfileData: (updates: Partial<ProfileData>) => void;
+}
+
+export function ProfilePage({
+	user,
+	profileData,
+	onUpdateProfileData,
+}: ProfilePageProps) {
 	const handleToggleNotifications = () => {
-		onUpdateProfile({
+		onUpdateProfileData({
 			settings: {
-				...profile.settings,
-				notifications: !profile.settings.notifications,
+				...profileData.settings,
+				notifications: !profileData.settings.notifications,
 			},
 		});
 	};
@@ -49,8 +81,8 @@ export function ProfilePage({ profile, onUpdateProfile }: ProfilePageProps) {
 					<Card className="p-6">
 						<div className="flex items-center gap-4">
 							<Avatar
-								src={profile.avatar}
-								alt={`${profile.firstName}${profile.lastName ? ` ${profile.lastName}` : ""}`}
+								src={user.photo_url || ""}
+								alt={`${user.first_name}${user.last_name ? ` ${user.last_name}` : ""}`}
 								size="lg"
 								className="border-2 border-blue-500/30"
 							/>
@@ -58,10 +90,10 @@ export function ProfilePage({ profile, onUpdateProfile }: ProfilePageProps) {
 							<div className="flex-1">
 								<div className="flex items-center gap-2">
 									<h2 className="text-xl font-bold text-foreground">
-										{profile.firstName}
-										{profile.lastName ? ` ${profile.lastName}` : ""}
+										{user.first_name}
+										{user.last_name ? ` ${user.last_name}` : ""}
 									</h2>
-									{profile.isDJ && (
+									{profileData.isDJ && (
 										<Badge
 											variant="primary"
 											className="bg-blue-500/20 text-blue-400 border border-blue-500/30"
@@ -71,23 +103,23 @@ export function ProfilePage({ profile, onUpdateProfile }: ProfilePageProps) {
 										</Badge>
 									)}
 								</div>
-								{profile.bio && (
+								{profileData.bio && (
 									<p className="text-muted-foreground text-sm mt-1">
-										{profile.bio}
+										{profileData.bio}
 									</p>
 								)}
 							</div>
 						</div>
 
 						{/* Social Links */}
-						{profile.socialLinks && (
+						{profileData.socialLinks && (
 							<nav
 								className="flex items-center gap-3 mt-4"
 								aria-label="Social media links"
 							>
-								{profile.socialLinks.instagram && (
+								{profileData.socialLinks.instagram && (
 									<IconButton
-										href={profile.socialLinks.instagram}
+										href={profileData.socialLinks.instagram}
 										target="_blank"
 										rel="noopener noreferrer"
 										variant="blue"
@@ -96,9 +128,9 @@ export function ProfilePage({ profile, onUpdateProfile }: ProfilePageProps) {
 										<Instagram className="h-4 w-4" />
 									</IconButton>
 								)}
-								{profile.socialLinks.soundcloud && (
+								{profileData.socialLinks.soundcloud && (
 									<IconButton
-										href={profile.socialLinks.soundcloud}
+										href={profileData.socialLinks.soundcloud}
 										target="_blank"
 										rel="noopener noreferrer"
 										variant="orange"
@@ -107,9 +139,9 @@ export function ProfilePage({ profile, onUpdateProfile }: ProfilePageProps) {
 										<Music2 className="h-4 w-4" />
 									</IconButton>
 								)}
-								{profile.socialLinks.spotify && (
+								{profileData.socialLinks.spotify && (
 									<IconButton
-										href={profile.socialLinks.spotify}
+										href={profileData.socialLinks.spotify}
 										target="_blank"
 										rel="noopener noreferrer"
 										variant="green"
@@ -124,14 +156,14 @@ export function ProfilePage({ profile, onUpdateProfile }: ProfilePageProps) {
 				</div>
 
 				{/* DJ Profile Section */}
-				{profile.isDJ && profile.upcomingSets && (
+				{profileData.isDJ && profileData.upcomingSets && (
 					<div>
 						<Card className="p-6">
 							<h3 className="text-lg font-semibold text-muted-foreground mb-4">
 								Upcoming Sets
 							</h3>
 							<ul className="space-y-3">
-								{profile.upcomingSets.map((set) => (
+								{profileData.upcomingSets.map((set) => (
 									<li
 										key={set.id}
 										className="p-3 bg-secondary/50 rounded-lg border border-gray-800/50"
@@ -174,7 +206,7 @@ export function ProfilePage({ profile, onUpdateProfile }: ProfilePageProps) {
 									</div>
 								</div>
 								<Switch
-									checked={profile.settings.notifications}
+									checked={profileData.settings.notifications}
 									onCheckedChange={handleToggleNotifications}
 								/>
 							</div>
@@ -189,7 +221,7 @@ export function ProfilePage({ profile, onUpdateProfile }: ProfilePageProps) {
 							My Events
 						</h3>
 						<ul className="space-y-3">
-							{profile.subscribedEvents.map((event) => (
+							{profileData.subscribedEvents.map((event) => (
 								<motion.li
 									key={event.id}
 									whileHover={{ x: 5 }}

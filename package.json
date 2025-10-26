@@ -16,6 +16,7 @@
 		"@sentry/nextjs": "^10.21.0",
 		"@supabase/ssr": "^0.7.0",
 		"@supabase/supabase-js": "^2.76.1",
+		"@telegram-apps/bridge": "^2.11.0",
 		"@telegram-apps/sdk-react": "^3.3.9",
 		"@telegram-apps/telegram-ui": "^2.1.13",
 		"@tma.js/init-data-node": "^1.4.0",
