@@ -215,8 +215,8 @@ export default function Home() {
 						key={activeTab}
 						className="min-h-screen page-transition"
 						animate={{ opacity: 1, x: 0 }}
-						exit={{ opacity: 0, x: -40 }}
-						transition={{ duration: 0.3 }}
+						exit={{ opacity: 0, x: 20 }}
+						transition={{ duration: 0.15, ease: "easeInOut" }}
 					>
 						{activeTab === "events" ? (
 							<EventFeed

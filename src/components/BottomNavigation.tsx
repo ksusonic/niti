@@ -50,7 +50,7 @@ const BottomNavigationComponent = ({
 								aria-pressed={isActive}
 								aria-label={tab.label}
 								className={cn(
-									"relative flex flex-col items-center gap-1.5 px-8 py-2.5 rounded-2xl transition-all duration-200",
+									"relative flex flex-col items-center gap-1.5 px-8 py-2.5 rounded-2xl transition-all duration-150",
 									"active:scale-[0.97] touch-manipulation",
 									"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
 									isActive
@@ -60,7 +60,7 @@ const BottomNavigationComponent = ({
 							>
 								<Icon
 									className={cn(
-										"relative h-5 w-5 transition-transform duration-200",
+										"relative h-5 w-5 transition-transform duration-150",
 										isActive && "scale-110",
 									)}
 									strokeWidth={isActive ? 2.5 : 2}
