@@ -50,9 +50,5 @@ export async function mockEnv(): Promise<void> {
 		"\n\n⚠️ IMPORTANT: This behavior is ONLY for development.",
 		"\nIn production builds, mocking is automatically disabled,",
 		"\nand the app will only work inside Telegram.",
-		"\n\nMock user data:",
-		"\n- ID: 1",
-		"\n- Username: ksusonic",
-		"\n- Name: Daniil Dev",
 	);
 }

@@ -162,26 +162,25 @@ export async function POST(request: Request) {
 
 		const supabase = createAdminClient();
 
-		// Ensure user exists in profiles table (lazy registration)
-		const { error: insertError } = await supabase
+		// Ensure user exists in profiles table (lazy registration, update on conflict)
+		const { error: upsertError } = await supabase
 			.from("profiles")
-			.insert({
-				id: userId,
-				username: authResult.initData.user?.username || `user_${userId}`,
-				display_name: authResult.initData.user?.firstName || "",
-				role: "fan",
-			})
+			.upsert(
+				{
+					id: Number(userId),
+					username: authResult.initData.user?.username || `user_${userId}`,
+					display_name: authResult.initData.user?.firstName || "",
+					avatar_url: authResult.initData.user?.photoUrl || "",
+				},
+				{ onConflict: "id", ignoreDuplicates: false },
+			)
 			.select()
 			.maybeSingle();
 
-		// Ignore error if user already exists (conflict on id or username)
-		if (
-			insertError &&
-			insertError.code !== POSTGRES_ERROR_UNIQUE_CONSTRAINT_VIOLATION
-		) {
-			console.error("Error inserting user profile:", insertError);
+		if (upsertError) {
+			console.error("Error upserting user profile:", upsertError);
 			return NextResponse.json(
-				{ error: "Failed to register user" },
+				{ error: "Failed to register or update user" },
 				{ status: 500 },
 			);
 		}

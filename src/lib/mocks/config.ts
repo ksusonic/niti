@@ -9,9 +9,10 @@
  */
 export const MOCK_USER = {
 	id: 1,
-	username: "ksusonic",
-	first_name: "Daniil",
-	last_name: "Dev",
+	username: "ryangosling",
+	first_name: "Ryan",
+	last_name: "Gosling",
+	photo_url: "/ryan-gosling.jpg",
 	language_code: "en",
 	is_premium: false,
 	allows_write_to_pm: true,
