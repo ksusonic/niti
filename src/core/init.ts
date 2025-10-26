@@ -91,9 +91,8 @@ export async function init(options: {
 			}
 
 			try {
-				// Mount viewport asynchronously
 				if (viewport.mount.isAvailable()) {
-					await viewport
+					viewport
 						.mount()
 						.then(() => {
 							// Bind viewport CSS variables
