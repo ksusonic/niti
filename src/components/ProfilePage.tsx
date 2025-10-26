@@ -53,7 +53,7 @@ export function ProfilePage({
 	};
 
 	return (
-		<div className="bg-background min-h-screen">
+		<div className="bg-black min-h-screen">
 			{/* Header */}
 			<header className="sticky top-0 z-50 bg-gradient-to-b from-black via-black/95 to-black/90 backdrop-blur-xl border-b border-blue-500/20 px-5 py-5">
 				<div className="flex items-center gap-4">
@@ -261,7 +261,7 @@ export function ProfilePage({
 				</motion.div>
 
 				{/* Subscribed Events */}
-				{profileData.subscribedEvents.length > 0 && (
+				{profileData.subscribedEvents.length > 0 ? (
 					<motion.div
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
@@ -285,7 +285,10 @@ export function ProfilePage({
 										key={event.id}
 										initial={{ opacity: 0, x: -20 }}
 										animate={{ opacity: 1, x: 0 }}
-										transition={{ duration: 0.3, delay: 0.1 * index }}
+										transition={{
+											duration: 0.3,
+											delay: Math.min(0.1 * index, 0.3),
+										}}
 										whileHover={{ x: 4, scale: 1.01 }}
 										className="group"
 									>
@@ -319,6 +322,21 @@ export function ProfilePage({
 									</motion.li>
 								))}
 							</ul>
+						</Card>
+					</motion.div>
+				) : (
+					<motion.div
+						initial={{ opacity: 0, y: 20 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.3, delay: 0.3 }}
+					>
+						<Card className="p-5 bg-gradient-to-br from-gray-900/80 to-gray-900/40 border-gray-800/50">
+							<div className="flex items-center justify-between mb-4">
+								<h3 className="text-base font-semibold text-white">
+									Мои события
+								</h3>
+							</div>
+							<p className="text-gray-400 text-sm">У вас пока нет событий.</p>
 						</Card>
 					</motion.div>
 				)}
