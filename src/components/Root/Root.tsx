@@ -2,6 +2,7 @@
 
 import { miniApp, useLaunchParams, useSignal } from "@telegram-apps/sdk-react";
 import { AppRoot } from "@telegram-apps/telegram-ui";
+import { Analytics } from "@vercel/analytics/next";
 import { type PropsWithChildren, useEffect, useState } from "react";
 import { EnvUnsupported } from "@/components/EnvUnsupported";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -66,6 +67,7 @@ export function Root(props: PropsWithChildren) {
 		<ErrorBoundary fallback={ErrorPage}>
 			<TelegramEnvErrorBoundary>
 				<RootInner {...props} />
+				<Analytics />
 			</TelegramEnvErrorBoundary>
 		</ErrorBoundary>
 	);
