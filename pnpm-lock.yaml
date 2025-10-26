@@ -9,7 +9,7 @@ importers:
   .:
     dependencies:
       '@sentry/nextjs':
-        specifier: ^10.21.0
+        specifier: ^10
         version: 10.21.0(@opentelemetry/context-async-hooks@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/core@2.2.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.2.0(@opentelemetry/api@1.9.0))(next@16.0.0(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react@19.2.0)(webpack@5.102.1)
       '@supabase/ssr':
         specifier: ^0.7.0
@@ -17,15 +17,15 @@ importers:
       '@supabase/supabase-js':
         specifier: ^2.76.1
         version: 2.76.1
-      '@telegram-apps/bridge':
-        specifier: ^2.11.0
-        version: 2.11.0(typescript@5.9.3)
       '@telegram-apps/sdk-react':
         specifier: ^3.3.9
         version: 3.3.9(@types/react@19.2.2)(react@19.2.0)(typescript@5.9.3)
       '@telegram-apps/telegram-ui':
         specifier: ^2.1.13
         version: 2.1.13(@types/react-dom@19.2.2(@types/react@19.2.2))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      '@tma.js/bridge':
+        specifier: ^2.1.3
+        version: 2.1.3(typescript@5.9.3)
       '@tma.js/init-data-node':
         specifier: ^1.4.0
         version: 1.4.0
@@ -1241,8 +1241,8 @@ packages:
     resolution: {integrity: sha512-pXh9BdnLZF3e2BGc4WL+RTRMAUpqKpaSP3Rs8rB4WyRwIoRSGWFKE4gtT/9m42LGixB8YVwdo/pJ+9XO765XEA==}
     deprecated: This package is not supported anymore. Use @tma.js/types instead
 
-  '@tma.js/bridge@2.1.2':
-    resolution: {integrity: sha512-aAkHT7qhiEcr8uzoUaK0yI20eTz2EKw2+h21WkCmFmeyRLM0xPcwffUWQNpH9LR0bVuO/LMX/7ntsf9WOCYimw==}
+  '@tma.js/bridge@2.1.3':
+    resolution: {integrity: sha512-mJPdGP3AgQ10ovW2A/yKdLPqhMt1Mx/uHvXRz1qyyy9L6kQlCojx68ib1Km7jumKdYvljy3470Yhk18V65pcdw==}
 
   '@tma.js/init-data-node@1.4.0':
     resolution: {integrity: sha512-ppLWVcy5myLDERlvCM4gnLI6LNYaEsGzhMnIVThmxYqSuXhMSMWuGJOWU2gHCp2rF4zoNJYMQqGHa+kOLnQ1jA==}
@@ -3513,7 +3513,7 @@ snapshots:
 
   '@telegram-apps/types@2.0.3': {}
 
-  '@tma.js/bridge@2.1.2(typescript@5.9.3)':
+  '@tma.js/bridge@2.1.3(typescript@5.9.3)':
     dependencies:
       '@tma.js/signals': 1.0.1
       '@tma.js/toolkit': 1.0.2
@@ -3535,7 +3535,7 @@ snapshots:
 
   '@tma.js/sdk@3.0.6(typescript@5.9.3)':
     dependencies:
-      '@tma.js/bridge': 2.1.2(typescript@5.9.3)
+      '@tma.js/bridge': 2.1.3(typescript@5.9.3)
       '@tma.js/signals': 1.0.1
       '@tma.js/toolkit': 1.0.2
       '@tma.js/transformers': 1.1.1(typescript@5.9.3)
