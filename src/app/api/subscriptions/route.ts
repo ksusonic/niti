@@ -162,17 +162,19 @@ export async function POST(request: Request) {
 
 		const supabase = createAdminClient();
 
-		// Ensure user exists in profiles table (lazy registration, update on conflict)
+		// Ensure user exists in profiles table (lazy registration only)
+		// We use ignoreDuplicates: true to avoid overwriting existing profile data
+		// that users might have customized (bio, social_links, role, etc.)
 		const { error: upsertError } = await supabase
 			.from("profiles")
 			.upsert(
 				{
-					id: Number(userId),
+					id: userId,
 					username: authResult.initData.user?.username || `user_${userId}`,
 					display_name: authResult.initData.user?.firstName || "",
 					avatar_url: authResult.initData.user?.photoUrl || "",
 				},
-				{ onConflict: "id", ignoreDuplicates: false },
+				{ onConflict: "id", ignoreDuplicates: true },
 			)
 			.select()
 			.maybeSingle();

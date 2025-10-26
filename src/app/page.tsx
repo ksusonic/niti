@@ -40,6 +40,7 @@ interface ProfileData {
 
 export default function Home() {
 	const [activeTab, setActiveTab] = useState<"events" | "profile">("events");
+	const [direction, setDirection] = useState(0);
 	const [events, setEvents] = useState<Event[]>([]);
 	const [user, setUser] = useState<User | null>(null);
 	const [profileData, setProfileData] = useState<ProfileData | null>(null);
@@ -199,24 +200,68 @@ export default function Home() {
 		});
 	};
 
-	const handleTabChange = useCallback((tab: "events" | "profile") => {
-		setActiveTab(tab);
-	}, []);
+	const handleTabChange = useCallback(
+		(tab: "events" | "profile") => {
+			// Determine direction: events is 0 (left), profile is 1 (right)
+			const tabIndex = tab === "events" ? 0 : 1;
+			const currentIndex = activeTab === "events" ? 0 : 1;
+			setDirection(tabIndex - currentIndex);
+			setActiveTab(tab);
+		},
+		[activeTab],
+	);
+
+	const slideVariants = {
+		enter: (direction: number) => ({
+			x: direction > 0 ? "100%" : "-100%",
+			position: "absolute" as const,
+		}),
+		center: {
+			x: 0,
+			position: "relative" as const,
+		},
+		exit: (direction: number) => ({
+			x: direction > 0 ? "-100%" : "100%",
+			position: "absolute" as const,
+		}),
+	};
 
 	return (
-		<div className="bg-background text-foreground dark pb-24">
+		<div className="bg-background text-foreground dark pb-24 relative overflow-hidden">
 			{isLoading ? (
 				<LoadingState message="Loading events..." />
 			) : error ? (
 				<ErrorState error={error} />
 			) : (
-				<AnimatePresence mode="wait">
+				<AnimatePresence initial={false} custom={direction}>
 					<motion.div
 						key={activeTab}
-						className="min-h-screen page-transition"
-						animate={{ opacity: 1, x: 0 }}
-						exit={{ opacity: 0, x: -40 }}
-						transition={{ duration: 0.3 }}
+						custom={direction}
+						variants={slideVariants}
+						initial="enter"
+						animate="center"
+						exit="exit"
+						transition={{
+							x: { type: "spring", stiffness: 300, damping: 30 },
+							duration: 0.2,
+						}}
+						drag="x"
+						dragConstraints={{ left: 0, right: 0 }}
+						dragElastic={0.2}
+						onDragEnd={(_, info) => {
+							const swipeThreshold = 50;
+							if (info.offset.x > swipeThreshold && activeTab === "profile") {
+								// Swipe right → go to events (left)
+								handleTabChange("events");
+							} else if (
+								info.offset.x < -swipeThreshold &&
+								activeTab === "events"
+							) {
+								// Swipe left → go to profile (right)
+								handleTabChange("profile");
+							}
+						}}
+						className="min-h-screen w-full"
 					>
 						{activeTab === "events" ? (
 							<EventFeed
