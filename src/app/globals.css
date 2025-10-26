@@ -35,19 +35,12 @@
 
 @layer utilities {
 	.page-transition {
-		animation: fadeInSlide 0.15s ease-in-out;
-		will-change: opacity, transform;
+		will-change: transform;
 	}
 
-	@keyframes fadeInSlide {
-		from {
-			opacity: 0;
-			transform: translateX(20px);
-		}
-		to {
-			opacity: 1;
-			transform: translateX(0);
-		}
+	/* Hide scrollbar during transitions to prevent layout shifts */
+	body {
+		overflow-x: hidden;
 	}
 
 	/* Ensure animations work immediately, even before JS loads */
