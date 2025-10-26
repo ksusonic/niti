@@ -1,19 +1,16 @@
 import {
-	bindThemeParamsCssVars,
-	bindViewportCssVars,
+	backButton,
 	emitEvent,
 	init as initSDK,
 	isTMA,
+	miniApp,
 	mockTelegramEnv,
-	mountBackButton,
-	mountMiniAppSync,
-	mountViewport,
-	restoreInitData,
 	retrieveLaunchParams,
 	setDebug,
 	type ThemeParams,
-	themeParamsState,
-} from "@telegram-apps/sdk-react";
+	themeParams,
+	viewport,
+} from "@tma.js/sdk-react";
 
 /**
  * Initializes the application and configures its dependencies.
@@ -23,7 +20,6 @@ export async function init(options: {
 	mockForMacOS: boolean;
 }): Promise<void> {
 	try {
-		// Set @telegram-apps/sdk-react debug mode and initialize it.
 		setDebug(options.debug);
 		initSDK();
 
@@ -34,10 +30,10 @@ export async function init(options: {
 			let firstThemeSent = false;
 			mockTelegramEnv({
 				onEvent(event, next) {
-					if (event[0] === "web_app_request_theme") {
+					if (event.name === "web_app_request_theme") {
 						let tp: ThemeParams = {};
 						if (firstThemeSent) {
-							tp = themeParamsState();
+							tp = themeParams.state();
 						} else {
 							firstThemeSent = true;
 							tp ||= retrieveLaunchParams().tgWebAppThemeParams;
@@ -45,7 +41,7 @@ export async function init(options: {
 						return emitEvent("theme_changed", { theme_params: tp });
 					}
 
-					if (event[0] === "web_app_request_safe_area") {
+					if (event.name === "web_app_request_safe_area") {
 						return emitEvent("safe_area_changed", {
 							left: 0,
 							top: 0,
@@ -66,33 +62,44 @@ export async function init(options: {
 
 		if (isTelegramEnv) {
 			try {
-				mountBackButton.ifAvailable();
+				// Mount back button if available
+				if (backButton.mount.isAvailable()) {
+					backButton.mount();
+				}
 			} catch (error) {
 				console.warn("Failed to mount back button:", error);
 			}
 
 			try {
-				restoreInitData();
+				// Mount theme params first
+				if (themeParams.mount.isAvailable()) {
+					themeParams.mount();
+				}
 			} catch (error) {
-				console.warn("Failed to restore init data:", error);
+				console.warn("Failed to mount theme params:", error);
 			}
 
 			try {
-				if (mountMiniAppSync.isAvailable()) {
-					mountMiniAppSync();
-					bindThemeParamsCssVars();
+				// Mount mini app (requires theme params)
+				if (miniApp.mount.isAvailable()) {
+					miniApp.mount();
+					// Bind CSS variables for theming
+					themeParams.bindCssVars();
 				}
 			} catch (error) {
 				console.warn("Failed to mount mini app or bind theme params:", error);
 			}
 
 			try {
-				if (mountViewport.isAvailable()) {
-					mountViewport()
+				// Mount viewport asynchronously
+				if (viewport.mount.isAvailable()) {
+					await viewport
+						.mount()
 						.then(() => {
-							bindViewportCssVars();
+							// Bind viewport CSS variables
+							viewport.bindCssVars();
 						})
-						.catch((error) => {
+						.catch((error: Error) => {
 							console.warn("Failed to bind viewport CSS vars:", error);
 						});
 				}

@@ -1,4 +1,4 @@
-import type { User } from "@telegram-apps/sdk-react";
+import type { User } from "@tma.js/sdk-react";
 import { motion } from "framer-motion";
 import {
 	Bell,

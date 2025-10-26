@@ -6,7 +6,7 @@ This is a **Next.js 16 (App Router) Telegram Mini App** for discovering and join
 
 ### Tech Stack
 - **Frontend**: Next.js 16, React 19, TypeScript, Tailwind CSS 4
-- **Telegram SDK**: `@telegram-apps/sdk-react` + `@telegram-apps/telegram-ui`
+- **Telegram SDK**: `@tma.js/sdk-react`
 - **Backend**: Next.js API routes with Supabase (PostgreSQL)
 - **Auth**: Telegram init data validation (no separate auth system)
 - **Tooling**: Biome (lint/format), pnpm, Sentry
@@ -120,7 +120,7 @@ src/
 
 ## Integration Points
 
-- **Telegram Mini Apps SDK**: `@telegram-apps/sdk-react` provides hooks (`useLaunchParams`, `useSignal(miniApp.isDark)`, `initData`)
+- **Telegram Mini Apps SDK**: `@tma.js/sdk-react` provides hooks (`useLaunchParams`, `useSignal(miniApp.isDark)`, `initData`)
 - **Supabase**: Direct SQL via service role client; no auth integration (Telegram handles identity)
 - **Sentry**: Configured in `instrumentation.ts`, tunneled via `/monitoring` route to bypass ad-blockers
 - **Vercel**: Deployment platform; Sentry monitors enabled via `automaticVercelMonitors: true`

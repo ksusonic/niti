@@ -3,10 +3,10 @@
 
 import * as Sentry from "@sentry/nextjs";
 import {
-	isLaunchParamsRetrieveError,
 	isTMA,
+	LaunchParamsRetrieveError,
 	retrieveLaunchParams,
-} from "@telegram-apps/sdk-react";
+} from "@tma.js/sdk-react";
 import { init } from "./core/init";
 import { setEnvUnsupported } from "./lib";
 import { mockEnv } from "./mockEnv";
@@ -31,7 +31,7 @@ async function checkTelegramEnvAndInitialize() {
 			mockForMacOS: platform === "macos",
 		});
 	} catch (e) {
-		if (isLaunchParamsRetrieveError(e)) {
+		if (e instanceof LaunchParamsRetrieveError) {
 			console.warn(
 				"LaunchParamsRetrieveError: App running outside Telegram environment",
 			);

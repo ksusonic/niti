@@ -1,4 +1,4 @@
-import { emitEvent, isTMA, mockTelegramEnv } from "@telegram-apps/sdk-react";
+import { emitEvent, isTMA, mockTelegramEnv } from "@tma.js/sdk-react";
 import {
 	MOCK_LAUNCH_PARAMS,
 	MOCK_SAFE_AREA,
@@ -20,21 +20,21 @@ export async function mockEnv(): Promise<void> {
 
 	mockTelegramEnv({
 		onEvent(e) {
-			if (e[0] === "web_app_request_theme") {
+			if (e.name === "web_app_request_theme") {
 				return emitEvent("theme_changed", {
 					theme_params: MOCK_THEME_PARAMS,
 				});
 			}
 
-			if (e[0] === "web_app_request_viewport") {
+			if (e.name === "web_app_request_viewport") {
 				return emitEvent("viewport_changed", MOCK_VIEWPORT);
 			}
 
-			if (e[0] === "web_app_request_content_safe_area") {
+			if (e.name === "web_app_request_content_safe_area") {
 				return emitEvent("content_safe_area_changed", MOCK_SAFE_AREA);
 			}
 
-			if (e[0] === "web_app_request_safe_area") {
+			if (e.name === "web_app_request_safe_area") {
 				return emitEvent("safe_area_changed", MOCK_SAFE_AREA);
 			}
 		},

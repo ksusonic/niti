@@ -1,6 +1,6 @@
 /**
  * Centralized mock configuration for development environment
- * Uses proper types compatible with @telegram-apps/sdk-react
+ * Uses proper types compatible with @tma.js/sdk-react
  */
 
 /**
@@ -64,7 +64,7 @@ export const MOCK_HASH_IDENTIFIER = "some-hash";
 
 /**
  * Launch parameters for the mocked Telegram environment
- * Compatible with mockTelegramEnv from @telegram-apps/sdk-react
+ * Compatible with mockTelegramEnv from @tma.js/sdk-react
  */
 export const MOCK_LAUNCH_PARAMS = new URLSearchParams([
 	["tgWebAppThemeParams", JSON.stringify(MOCK_THEME_PARAMS)],

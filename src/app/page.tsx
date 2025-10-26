@@ -1,6 +1,6 @@
 "use client";
 
-import type { User } from "@telegram-apps/sdk-react";
+import type { User } from "@tma.js/sdk-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
 import { BottomNavigation } from "@/components/BottomNavigation";
@@ -47,7 +47,7 @@ export default function Home() {
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
-	const initDataState = useInitData();
+	const initData = useInitData();
 
 	useEffect(() => {
 		let isMounted = true;
@@ -57,7 +57,7 @@ export default function Home() {
 				setIsLoading(true);
 				setError(null);
 
-				if (!initDataState || !initDataState.user) {
+				if (!initData?.user) {
 					throw new Error("Telegram init data not available");
 				}
 
@@ -87,7 +87,7 @@ export default function Home() {
 							preferredVenues: [],
 						},
 					};
-					setUser(initDataState.user);
+					setUser(initData.user);
 					setProfileData(localProfileData);
 					setEvents(eventsData);
 				}
@@ -107,12 +107,12 @@ export default function Home() {
 			}
 		}
 
-		if (initDataState) {
+		if (initData) {
 			fetchData();
 		} else {
 			// Wait a bit for SDK to initialize
 			const timeoutId = setTimeout(() => {
-				if (!initDataState) {
+				if (!initData) {
 					setError("Waiting for Telegram initialization...");
 				}
 			}, 1000);
@@ -123,11 +123,11 @@ export default function Home() {
 		return () => {
 			isMounted = false;
 		};
-	}, [initDataState]);
+	}, [initData]);
 
 	const handleToggleSubscription = async (eventId: string) => {
 		const event = events.find((e) => e.id === eventId);
-		if (!event || !initDataState) return;
+		if (!event || !initData) return;
 
 		const action = event.isSubscribed ? "unsubscribe" : "subscribe";
 
