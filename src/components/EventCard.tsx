@@ -1,6 +1,6 @@
 import confetti from "canvas-confetti";
 import { motion } from "framer-motion";
-import { MapPin, Users, Instagram } from "lucide-react";
+import { Instagram, MapPin, Users } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { Avatar, Badge, Button, IconButton } from "@/components/ui";
 import { sanitizeVideoUrl } from "@/lib/video-url-validator";
@@ -147,8 +147,8 @@ export function EventCard({ event, onToggleSubscription }: EventCardProps) {
 
 				{/* Event Date/Time Badge */}
 				<div className="absolute top-4 left-4 z-20">
-					<Badge 
-						variant="primary" 
+					<Badge
+						variant="primary"
 						className="bg-blue-500/90 backdrop-blur-sm text-white border-blue-400/50 shadow-lg shadow-blue-500/20"
 					>
 						<time dateTime={event.date}>
@@ -159,7 +159,9 @@ export function EventCard({ event, onToggleSubscription }: EventCardProps) {
 
 				{/* Event Title Overlay */}
 				<header className="absolute bottom-0 left-0 right-0 z-10 p-6 bg-gradient-to-t from-black/80 to-transparent">
-					<h3 className="text-3xl font-bold text-white mb-2 drop-shadow-lg">{event.title}</h3>
+					<h3 className="text-3xl font-bold text-white mb-2 drop-shadow-lg">
+						{event.title}
+					</h3>
 					<address className="flex items-center gap-2 text-sm text-gray-300 not-italic">
 						<MapPin className="h-4 w-4 text-blue-400" aria-hidden="true" />
 						<span>{event.location}</span>
@@ -232,9 +234,14 @@ export function EventCard({ event, onToggleSubscription }: EventCardProps) {
 											variant="orange"
 											aria-label={`${dj.name} on SoundCloud`}
 										>
-											<svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+											<svg
+												className="h-3.5 w-3.5"
+												viewBox="0 0 24 24"
+												fill="currentColor"
+												aria-hidden="true"
+											>
 												<title>SoundCloud</title>
-												<path d="M1.5 15.5h.938V11.875h-.938zm1.563 0h.937V10.938h-.937zm1.562 0h.938V12.813h-.938zm1.563 0h.937V10h-.937zm1.562 0h.938v-6.25h-.938zm1.563 0h.937V8.125h-.937zm1.562 0h.938V10h-.938zM20 13.75c0 1.031-.813 1.875-1.813 1.875H11.25V7.531c1.156.438 2.281 1.156 3.094 2.094C15.719 8.188 17.75 7.5 19.875 7.5c1.375 0 2.625.75 3.281 1.938.625 1.094.656 2.406.063 3.531C22.531 13.844 21.281 14.5 20 13.75z"/>
+												<path d="M1.5 15.5h.938V11.875h-.938zm1.563 0h.937V10.938h-.937zm1.562 0h.938V12.813h-.938zm1.563 0h.937V10h-.937zm1.562 0h.938v-6.25h-.938zm1.563 0h.937V8.125h-.937zm1.562 0h.938V10h-.938zM20 13.75c0 1.031-.813 1.875-1.813 1.875H11.25V7.531c1.156.438 2.281 1.156 3.094 2.094C15.719 8.188 17.75 7.5 19.875 7.5c1.375 0 2.625.75 3.281 1.938.625 1.094.656 2.406.063 3.531C22.531 13.844 21.281 14.5 20 13.75z" />
 											</svg>
 										</IconButton>
 									)}
@@ -246,9 +253,14 @@ export function EventCard({ event, onToggleSubscription }: EventCardProps) {
 											variant="green"
 											aria-label={`${dj.name} on Spotify`}
 										>
-											<svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+											<svg
+												className="h-3.5 w-3.5"
+												viewBox="0 0 24 24"
+												fill="currentColor"
+												aria-hidden="true"
+											>
 												<title>Spotify</title>
-												<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm3.64 14.3c-.14.23-.44.3-.68.17-1.87-1.14-4.22-1.4-6.99-.77-.27.07-.55-.1-.62-.37-.07-.27.1-.55.37-.62 3.04-.69 5.64-.39 7.72.89.23.13.3.43.17.68l.03.02zm.98-2.18c-.18.29-.56.38-.85.2-2.14-1.31-5.4-1.69-7.94-.93-.33.1-.68-.09-.78-.42s.09-.68.42-.78c2.9-.87 6.54-.45 8.95 1.08.29.18.38.56.2.85zm.09-2.27c-2.57-1.52-6.81-1.66-9.26-.92-.4.12-.82-.11-.94-.51s.11-.82.51-.94c2.81-.85 7.5-.69 10.44 1.07.36.21.48.68.27 1.04-.21.36-.68.48-1.04.27l.02-.01z"/>
+												<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm3.64 14.3c-.14.23-.44.3-.68.17-1.87-1.14-4.22-1.4-6.99-.77-.27.07-.55-.1-.62-.37-.07-.27.1-.55.37-.62 3.04-.69 5.64-.39 7.72.89.23.13.3.43.17.68l.03.02zm.98-2.18c-.18.29-.56.38-.85.2-2.14-1.31-5.4-1.69-7.94-.93-.33.1-.68-.09-.78-.42s.09-.68.42-.78c2.9-.87 6.54-.45 8.95 1.08.29.18.38.56.2.85zm.09-2.27c-2.57-1.52-6.81-1.66-9.26-.92-.4.12-.82-.11-.94-.51s.11-.82.51-.94c2.81-.85 7.5-.69 10.44 1.07.36.21.48.68.27 1.04-.21.36-.68.48-1.04.27l.02-.01z" />
 											</svg>
 										</IconButton>
 									)}
@@ -268,7 +280,7 @@ export function EventCard({ event, onToggleSubscription }: EventCardProps) {
 							<strong className="font-semibold text-white">
 								{event.participantCount}
 							</strong>{" "}
-							going
+							идёт
 						</span>
 					</div>
 
@@ -281,7 +293,7 @@ export function EventCard({ event, onToggleSubscription }: EventCardProps) {
 							aria-pressed={event.isSubscribed}
 							className="w-full"
 						>
-							{event.isSubscribed ? "Joined" : "Join Event"}
+							{event.isSubscribed ? "Приду ✅" : "Пойду"}
 						</Button>
 					</div>
 				</footer>

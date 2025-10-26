@@ -21,10 +21,7 @@ export async function GET(request: Request) {
 	try {
 		const userId = authResult.initData.user?.id;
 		if (!userId) {
-			return NextResponse.json(
-				{ error: "User ID not found in auth data" },
-				{ status: 401 },
-			);
+			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 		}
 
 		// Parse query parameter: "includePast" to show past events
@@ -43,7 +40,7 @@ export async function GET(request: Request) {
 		if (participantsError) {
 			console.error("Error fetching subscribed events:", participantsError);
 			return NextResponse.json(
-				{ error: "Failed to fetch subscribed events" },
+				{ error: "Не удалось загрузить события" },
 				{ status: 500 },
 			);
 		}
@@ -66,7 +63,7 @@ export async function GET(request: Request) {
 		if (eventsError) {
 			console.error("Error fetching event details:", eventsError);
 			return NextResponse.json(
-				{ error: "Failed to fetch event details" },
+				{ error: "Не удалось загрузить детали события" },
 				{ status: 500 },
 			);
 		}
@@ -130,34 +127,22 @@ export async function POST(request: Request) {
 	try {
 		const userId = authResult.initData.user?.id;
 		if (!userId) {
-			return NextResponse.json(
-				{ error: "User ID not found in auth data" },
-				{ status: 401 },
-			);
+			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 		}
 
 		const body = await request.json();
 		const { eventId, action } = body;
 
 		if (!eventId) {
-			return NextResponse.json(
-				{ error: "eventId is required" },
-				{ status: 400 },
-			);
+			return NextResponse.json({ error: "Bad request" }, { status: 400 });
 		}
 
 		if (action === undefined || action === null) {
-			return NextResponse.json(
-				{ error: "action is required" },
-				{ status: 400 },
-			);
+			return NextResponse.json({ error: "Bad request" }, { status: 400 });
 		}
 
 		if (action !== "subscribe" && action !== "unsubscribe") {
-			return NextResponse.json(
-				{ error: "action must be 'subscribe' or 'unsubscribe'" },
-				{ status: 400 },
-			);
+			return NextResponse.json({ error: "Bad request" }, { status: 400 });
 		}
 
 		const supabase = createAdminClient();
@@ -181,10 +166,7 @@ export async function POST(request: Request) {
 
 		if (upsertError) {
 			console.error("Error upserting user profile:", upsertError);
-			return NextResponse.json(
-				{ error: "Failed to register or update user" },
-				{ status: 500 },
-			);
+			return NextResponse.json({ error: "Unknown error" }, { status: 500 });
 		}
 
 		if (action === "subscribe") {
@@ -199,7 +181,7 @@ export async function POST(request: Request) {
 			if (checkError) {
 				console.error("Error checking subscription status:", checkError);
 				return NextResponse.json(
-					{ error: "Failed to check subscription status" },
+					{ error: "Не удалось проверить статус подписки" },
 					{ status: 500 },
 				);
 			}
@@ -216,7 +198,7 @@ export async function POST(request: Request) {
 				return NextResponse.json(
 					{
 						success: true,
-						message: "Already subscribed to this event",
+						message: "Подписка уже существует",
 						participantCount: count || 0,
 					},
 					{ status: 200 },
@@ -243,7 +225,7 @@ export async function POST(request: Request) {
 					return NextResponse.json(
 						{
 							success: true,
-							message: "Already subscribed to this event",
+							message: "Подписка уже существует",
 							participantCount: count || 0,
 						},
 						{ status: 200 },
@@ -252,7 +234,7 @@ export async function POST(request: Request) {
 
 				console.error("Error subscribing to event:", error);
 				return NextResponse.json(
-					{ error: "Failed to subscribe to event" },
+					{ error: "Не удалось подписаться на ивент" },
 					{ status: 500 },
 				);
 			}
@@ -267,7 +249,7 @@ export async function POST(request: Request) {
 			return NextResponse.json(
 				{
 					success: true,
-					message: "Successfully subscribed to event",
+					message: "Успешная подписка",
 					participantCount: count || 0,
 				},
 				{ status: 201 },
@@ -283,7 +265,7 @@ export async function POST(request: Request) {
 			if (error) {
 				console.error("Error unsubscribing from event:", error);
 				return NextResponse.json(
-					{ error: "Failed to unsubscribe from event" },
+					{ error: "Не удалось отписаться от события" },
 					{ status: 500 },
 				);
 			}
@@ -298,7 +280,7 @@ export async function POST(request: Request) {
 			return NextResponse.json(
 				{
 					success: true,
-					message: "Successfully unsubscribed from event",
+					message: "Успешно отписался от события",
 					participantCount: count || 0,
 				},
 				{ status: 200 },

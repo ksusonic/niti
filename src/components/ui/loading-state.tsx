@@ -4,9 +4,7 @@ interface LoadingStateProps {
 	message?: string;
 }
 
-export function LoadingState({
-	message = "Loading events...",
-}: LoadingStateProps) {
+export function LoadingState({ message = "Загрузка..." }: LoadingStateProps) {
 	const gradientId = useId();
 	const filterId = useId();
 
@@ -24,8 +22,6 @@ export function LoadingState({
 					role="img"
 					aria-label="DJ Controller Loading Animation"
 				>
-					<title>DJ Controller Loading</title>
-
 					{/* Controller body with glow */}
 					<defs>
 						<linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
@@ -508,7 +504,7 @@ export function LoadingState({
 
 			{/* Loading text with gradient */}
 			<h2 className="text-2xl font-bold mb-2 bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 bg-clip-text text-transparent animate-pulse bg-[length:200%_auto]">
-				Spinning Up The Decks...
+				Крутим диски...
 			</h2>
 			<p className="text-muted-foreground text-lg">{message}</p>
 

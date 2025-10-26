@@ -42,7 +42,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
 							
 							#__next:empty::after,
 							body > div:first-child:empty::after {
-								content: 'Spinning Up The Decks...';
+								content: 'Крутим диски...';
 								position: fixed;
 								top: 60%;
 								left: 50%;

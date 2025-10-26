@@ -198,10 +198,10 @@ export function ErrorState({ error, onRetry }: ErrorStateProps) {
 			</div>
 
 			<h2 className="text-2xl font-bold mb-2 bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent">
-				Connection Dropped!
+				Связь оборвалась!
 			</h2>
 			<p className="text-muted-foreground mb-2 max-w-sm">
-				The beat stopped... Looks like we lost connection to the decks.
+				Битос остановился... Кажется, потеряли связь с пультами.
 			</p>
 			<p className="text-sm text-muted-foreground/80 mb-6 font-mono">{error}</p>
 			<button
@@ -209,7 +209,7 @@ export function ErrorState({ error, onRetry }: ErrorStateProps) {
 				onClick={handleRetry}
 				className="px-8 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all transform hover:scale-105 shadow-lg"
 			>
-				🎧 Reconnect
+				🎧 Переподключиться
 			</button>
 		</div>
 	);

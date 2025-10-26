@@ -17,12 +17,12 @@ interface Tab {
 const tabs: Tab[] = [
 	{
 		id: "events",
-		label: "Events",
+		label: "События",
 		icon: Calendar,
 	},
 	{
 		id: "profile",
-		label: "Profile",
+		label: "Профиль",
 		icon: User,
 	},
 ];
@@ -62,7 +62,8 @@ const BottomNavigationComponent = ({
 									<Icon
 										className={cn(
 											"relative h-6 w-6 transition-all duration-300",
-											isActive && "scale-110 drop-shadow-[0_0_8px_rgba(59,130,246,0.8)]",
+											isActive &&
+												"scale-110 drop-shadow-[0_0_8px_rgba(59,130,246,0.8)]",
 										)}
 										strokeWidth={isActive ? 2.5 : 2}
 										aria-hidden="true"
@@ -80,7 +81,7 @@ const BottomNavigationComponent = ({
 								>
 									{tab.label}
 								</span>
-								
+
 								{isActive && (
 									<div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-12 h-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full" />
 								)}

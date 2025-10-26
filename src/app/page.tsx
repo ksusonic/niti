@@ -97,7 +97,7 @@ export default function Home() {
 					setError(
 						error instanceof Error
 							? error.message
-							: "Unable to load data. Please check your connection.",
+							: "Не удалось загрузить данные. Проверь соединение.",
 					);
 				}
 			} finally {
@@ -113,7 +113,7 @@ export default function Home() {
 			// Wait a bit for SDK to initialize
 			const timeoutId = setTimeout(() => {
 				if (!initDataState) {
-					setError("Waiting for Telegram initialization...");
+					setError("Ждём инициализацию Telegram...");
 				}
 			}, 1000);
 
@@ -229,7 +229,7 @@ export default function Home() {
 	return (
 		<div className="bg-background text-foreground dark pb-24 relative overflow-hidden">
 			{isLoading ? (
-				<LoadingState message="Loading events..." />
+				<LoadingState />
 			) : error ? (
 				<ErrorState error={error} />
 			) : (
@@ -275,7 +275,7 @@ export default function Home() {
 								onUpdateProfileData={handleUpdateProfileData}
 							/>
 						) : (
-							<ErrorState error="Profile data not available" />
+							<ErrorState error="Профиль недоступен" />
 						)}
 					</motion.div>
 				</AnimatePresence>

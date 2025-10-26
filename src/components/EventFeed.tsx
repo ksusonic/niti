@@ -24,10 +24,10 @@ export function EventFeed({ events, onToggleSubscription }: EventFeedProps) {
 						</div>
 						<div className="flex flex-col">
 							<h1 className="text-2xl font-bold text-white !m-0 tracking-tight">
-								Events
+								События
 							</h1>
 							<p className="text-xs text-gray-400 !m-0">
-								Discover amazing DJ events
+								Лучшие ивенты в городе
 							</p>
 						</div>
 					</div>
