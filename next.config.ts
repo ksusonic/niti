@@ -2,6 +2,9 @@ import {withSentryConfig} from "@sentry/nextjs";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+	experimental: {
+		serverComponentsExternalPackages: ['grammy'],
+	},
 	images: {
 		dangerouslyAllowLocalIP: true,
 		remotePatterns: [
