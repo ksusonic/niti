@@ -116,13 +116,13 @@ export function EventCard({ event, onToggleSubscription }: EventCardProps) {
 		<motion.article
 			initial={{ opacity: 0, y: 20 }}
 			animate={{ opacity: 1, y: 0 }}
-			whileHover={{ y: -5 }}
+			whileHover={{ y: -8, scale: 1.01 }}
 			transition={{ duration: 0.3 }}
-			className="relative bg-card backdrop-blur-sm rounded-xl overflow-hidden border border-gray-800/30 shadow-lg"
+			className="relative bg-gradient-to-br from-gray-900/80 to-gray-900/40 backdrop-blur-sm rounded-2xl overflow-hidden border border-gray-800/50 shadow-2xl hover:border-blue-500/30 hover:shadow-blue-500/10"
 			aria-label={`Event: ${event.title}`}
 		>
 			{/* Video/Image Background */}
-			<div className="relative h-64 overflow-hidden">
+			<div className="relative h-72 overflow-hidden">
 				{safeVideoUrl ? (
 					<>
 						<iframe
@@ -131,23 +131,26 @@ export function EventCard({ event, onToggleSubscription }: EventCardProps) {
 							allow="autoplay; fullscreen"
 							title={`${event.title} video`}
 						/>
-						<div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+						<div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
 					</>
 				) : (
 					<>
 						<div
-							className="absolute inset-0 bg-cover bg-center blur-sm scale-110 opacity-30"
+							className="absolute inset-0 bg-cover bg-center blur-sm scale-110 opacity-40"
 							style={{ backgroundImage: `url(${event.imageUrl})` }}
 							role="img"
 							aria-label={event.title}
 						/>
-						<div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+						<div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
 					</>
 				)}
 
 				{/* Event Date/Time Badge */}
 				<div className="absolute top-4 left-4 z-20">
-					<Badge variant="primary">
+					<Badge 
+						variant="primary" 
+						className="bg-blue-500/90 backdrop-blur-sm text-white border-blue-400/50 shadow-lg shadow-blue-500/20"
+					>
 						<time dateTime={event.date}>
 							{event.date} • {event.time}
 						</time>
@@ -155,48 +158,53 @@ export function EventCard({ event, onToggleSubscription }: EventCardProps) {
 				</div>
 
 				{/* Event Title Overlay */}
-				<header className="absolute bottom-0 left-0 right-0 z-10 p-6">
-					<h3 className="text-2xl font-bold text-white mb-1">{event.title}</h3>
-					<address className="flex items-center gap-2 text-sm text-white/70 not-italic">
-						<MapPin className="h-4 w-4" aria-hidden="true" />
+				<header className="absolute bottom-0 left-0 right-0 z-10 p-6 bg-gradient-to-t from-black/80 to-transparent">
+					<h3 className="text-3xl font-bold text-white mb-2 drop-shadow-lg">{event.title}</h3>
+					<address className="flex items-center gap-2 text-sm text-gray-300 not-italic">
+						<MapPin className="h-4 w-4 text-blue-400" aria-hidden="true" />
 						<span>{event.location}</span>
 					</address>
 				</header>
 			</div>
 
 			{/* Content */}
-			<div className="p-6 space-y-4">
+			<div className="p-5 space-y-5">
 				{/* Event Description */}
-				<p className="text-muted-foreground text-sm leading-relaxed">
+				<p className="text-gray-400 text-sm leading-relaxed">
 					{event.description}
 				</p>
 
 				{/* DJ Lineup */}
 				<section className="space-y-3" aria-labelledby={lineupHeadingId}>
-					<h4
-						id={lineupHeadingId}
-						className="text-sm font-medium text-muted-foreground"
-					>
-						Lineup
-					</h4>
+					<div className="flex items-center gap-2">
+						<div className="p-1.5 bg-blue-500/20 rounded-lg">
+							<Users className="h-4 w-4 text-blue-400" />
+						</div>
+						<h4
+							id={lineupHeadingId}
+							className="text-sm font-semibold text-white"
+						>
+							Lineup
+						</h4>
+					</div>
 					<ul className="space-y-2">
 						{event.djLineup.map((dj) => (
 							<motion.li
 								key={dj.id}
-								whileHover={{ x: 3 }}
-								className="flex items-center justify-between bg-secondary/50 rounded-lg p-3 border border-gray-800/50"
+								whileHover={{ x: 4, scale: 1.01 }}
+								className="flex items-center justify-between bg-black/30 backdrop-blur-sm rounded-xl p-4 border border-gray-800/50 hover:border-blue-500/30 transition-all"
 							>
 								<div className="flex items-center gap-3 flex-1">
 									<Avatar
 										src={dj.avatar}
 										alt={dj.name}
-										className="border border-blue-500/20"
+										className="border-2 border-blue-500/30"
 									/>
 									<div className="flex-1 min-w-0">
-										<span className="font-medium block truncate text-white">
+										<span className="font-semibold block truncate text-white">
 											{dj.name}
 										</span>
-										<time className="text-xs text-gray-500">{dj.time}</time>
+										<time className="text-xs text-gray-400">{dj.time}</time>
 									</div>
 								</div>
 
@@ -255,17 +263,19 @@ export function EventCard({ event, onToggleSubscription }: EventCardProps) {
 
 				{/* Participants and Subscribe Button */}
 				<footer className="flex items-center justify-between pt-4 border-t border-gray-800/50">
-					<div className="flex items-center gap-2 text-sm text-gray-500">
-						<Users className="h-4 w-4" aria-hidden="true" />
-						<span>
-							<strong className="font-medium text-white">
+					<div className="flex items-center gap-2 text-sm">
+						<div className="p-2 bg-blue-500/20 rounded-lg">
+							<Users className="h-4 w-4 text-blue-400" aria-hidden="true" />
+						</div>
+						<span className="text-gray-400">
+							<strong className="font-semibold text-white">
 								{event.participantCount}
 							</strong>{" "}
 							going
 						</span>
 					</div>
 
-					<div className="w-28">
+					<div className="w-32">
 						<Button
 							ref={buttonRef}
 							onClick={handleSubscribe}
