@@ -69,7 +69,7 @@ const BottomNavigationComponent = ({
 										aria-hidden="true"
 									/>
 									{isActive && (
-										<div className="absolute inset-0 bg-blue-500/20 blur-xl rounded-full" />
+										<div className="absolute inset-0 bg-blue-500/20 blur-md rounded-full transition-[filter] duration-300" />
 									)}
 								</div>
 
