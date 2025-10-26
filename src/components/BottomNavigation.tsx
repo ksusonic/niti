@@ -33,7 +33,7 @@ const BottomNavigationComponent = ({
 }: BottomNavigationProps) => {
 	return (
 		<nav
-			className="fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-black via-black/98 to-black/95 backdrop-blur-2xl border-t border-blue-500/20 shadow-2xl"
+			className="fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-black via-black/98 to-black/95 backdrop-blur-2xl border-t border-blue-500/20 shadow-2xl safe-area-inset-bottom"
 			aria-label="Main navigation"
 		>
 			<div className="relative max-w-md mx-auto">
