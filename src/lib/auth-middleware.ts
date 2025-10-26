@@ -16,11 +16,6 @@ export async function checkAuthHeader(): Promise<AuthResult> {
 	const headersList = await headers();
 	const rawInitData = headersList.get(TELEGRAM_INIT_DATA_HEADER);
 
-	console.debug(
-		"[Auth] Raw init data received:",
-		rawInitData ? "✓ present" : "✗ missing",
-	);
-
 	if (!rawInitData) {
 		console.debug("[Auth] Auth failed: Missing init data header");
 		return NextResponse.json(
