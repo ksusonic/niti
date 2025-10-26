@@ -1,11 +1,17 @@
+export const dynamic = "force-dynamic";
+
+export const fetchCache = "force-no-store";
+
 import { Bot, webhookCallback } from "grammy";
 
-if (!process.env.TELEGRAM_BOT_TOKEN) {
-	throw new Error("TELEGRAM_BOT_TOKEN environment variable is not set.");
-}
+const token = process.env.TELEGRAM_BOT_TOKEN;
 
-const bot = new Bot(process.env.TELEGRAM_BOT_TOKEN);
+if (!token)
+	throw new Error("TELEGRAM_BOT_TOKEN environment variable not found.");
 
-bot.on("message:text", (ctx) => ctx.reply("Hello!"));
+const bot = new Bot(token);
+bot.on("message:text", async (ctx) => {
+	await ctx.reply(ctx.message.text);
+});
 
 export const POST = webhookCallback(bot, "std/http");
