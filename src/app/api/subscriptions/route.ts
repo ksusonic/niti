@@ -167,7 +167,7 @@ export async function POST(request: Request) {
 			.from("profiles")
 			.upsert(
 				{
-					id: Number(userId),
+					id: userId,
 					username: authResult.initData.user?.username || `user_${userId}`,
 					display_name: authResult.initData.user?.firstName || "",
 					avatar_url: authResult.initData.user?.photoUrl || "",
