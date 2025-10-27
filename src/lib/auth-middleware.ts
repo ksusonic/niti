@@ -1,12 +1,12 @@
 "use server";
 
-import { type InitDataParsed, parse, validate } from "@tma.js/init-data-node";
+import { type InitData, parse, validate } from "@tma.js/init-data-node";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { TELEGRAM_INIT_DATA_HEADER } from "./constants";
 import { isDevelopmentEnv, isMockInitData } from "./mocks/utils";
 
-export type AuthResult = { initData: InitDataParsed } | NextResponse;
+export type AuthResult = { initData: InitData } | NextResponse;
 
 /**
  * Checks for Telegram auth header in the request, validates it with bot token, and parses init data

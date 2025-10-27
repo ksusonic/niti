@@ -156,8 +156,8 @@ export async function POST(request: Request) {
 				{
 					id: userId,
 					username: authResult.initData.user?.username || `user_${userId}`,
-					display_name: authResult.initData.user?.firstName || "",
-					avatar_url: authResult.initData.user?.photoUrl || "",
+					display_name: authResult.initData.user?.first_name || "",
+					avatar_url: authResult.initData.user?.photo_url || "",
 				},
 				{ onConflict: "id", ignoreDuplicates: true },
 			)
