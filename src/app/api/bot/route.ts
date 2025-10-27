@@ -4,14 +4,14 @@ export const fetchCache = "force-no-store";
 import { Bot, webhookCallback } from "grammy";
 
 const token = process.env.TELEGRAM_BOT_TOKEN;
-const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+const appUrl = process.env.NEXT_PUBLIC_VERCEL_URL;
 
 if (!token) {
 	throw new Error("TELEGRAM_BOT_TOKEN environment variable not found.");
 }
 
 if (!appUrl) {
-	throw new Error("NEXT_PUBLIC_APP_URL environment variable not found.");
+	throw new Error("NEXT_PUBLIC_VERCEL_URL environment variable not found.");
 }
 
 const bot = new Bot(token);

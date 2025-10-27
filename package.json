@@ -1,5 +1,5 @@
 {
-	"name": "nextjs-template",
+	"name": "niti-telegram-web-app",
 	"version": "0.1.0",
 	"private": true,
 	"scripts": {
@@ -45,5 +45,12 @@
 		"@types/react-dom": "^19.2.2",
 		"tailwindcss": "^4.1.16",
 		"typescript": "^5.9.3"
-	}
+  },
+  "pnpm": {
+    "overrides": {
+      "import-in-the-middle": "2.0.0",
+      "require-in-the-middle": "8.0.1",
+      "@opentelemetry/instrumentation": "0.204.0"
+    }
+  }
 }
