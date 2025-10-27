@@ -31,7 +31,7 @@ bot.command("start", async (ctx) => {
 					[
 						{
 							text: "Открыть события",
-							web_app: { url: appUrl },
+							web_app: { url: `https://${appUrl}` },
 						},
 					],
 				],
