@@ -71,10 +71,12 @@ Open [http://localhost:3000](http://localhost:3000). The app will use mock Teleg
 pnpm run dev:https
 ```
 
-Then:
+Then (for local development):
 1. Visit [https://localhost:3000](https://localhost:3000) and accept the SSL warning
 2. Submit `https://127.0.0.1:3000` to [@BotFather](https://t.me/botfather) as your Mini App URL
 3. Open [Telegram Web](https://web.telegram.org/k/), find your bot, and launch the Mini App
+
+> **Note:** Using `https://127.0.0.1:3000` as the Mini App URL is only suitable for local development. For production deployment or testing from other devices, configure a publicly accessible HTTPS URL (for example, a proper domain name or a tunnel such as ngrok) in BotFather.
 
 ### Available Scripts
 
@@ -121,7 +123,11 @@ src/
 3. **Backend**: `checkAuthHeader()` validates signature using `TELEGRAM_BOT_TOKEN`
 4. **Database**: Service-role Supabase client executes queries (no RLS, auth handled by Telegram)
 
+> **⚠️ Security Warning:** The service-role key bypasses all Postgres Row Level Security (RLS) policies. All authorization logic **must** be implemented in the API middleware layer. Every API route must call `checkAuthHeader()` at the start — a missing check could expose sensitive data or operations. Never commit the service-role key to version control.
+
 Mock mode (`NEXT_PUBLIC_ENABLE_MOCKS=true`) bypasses validation for local development.
+
+> **⚠️ Development Only:** `NEXT_PUBLIC_ENABLE_MOCKS=true` disables authentication and should **only** be used for local development. Never set this variable in production environments — doing so would allow unauthorized access to all API endpoints.
 
 ## 🗄️ Database Schema
 
